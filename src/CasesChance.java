@@ -1,7 +1,7 @@
 
 public class CasesChance extends Cases {
 
-	public CasesChance(String type) {
+	public CasesChance() {
 		super("Chance");
 	}
 	

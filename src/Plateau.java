@@ -1,16 +1,27 @@
+
 public class Plateau {
 
-    Cases[] plateau;
-    int banque;
-    String[] posJoueurs;
+    private Cases[] grille;
+    private int banque;
+    private String[] posJoueurs;
 
     Plateau(){
-        plateau = new Cases[40];
+        grille = new Cases[40];
         posJoueurs = new String[40];
         for(int i =0;i<40;i++){
             posJoueurs[i] = "";
         }
         posJoueurs[0] = "1,2,3,4";
+    }
+    
+    public void actualisePosJoueurs(Joueur[] joueurs) {
+    	for (int i=0; i<40; i++) {
+    		posJoueurs[i] = "";
+    	}
+    	for (Joueur joueur : joueurs) {
+			int position = joueur.getPion().getPosition();
+			posJoueurs[position] = joueur.getNom();
+		}
     }
 
     public void affiche(){
@@ -85,6 +96,10 @@ public class Plateau {
         System.out.println("-".repeat(111));
 
     }
+
+	public Cases[] getGrille() {
+		return grille;
+	}
 
 
 }

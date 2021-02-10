@@ -1,17 +1,32 @@
+
 public class Jeu {
 
-    Joueur[] joueurs;
-    Plateau p;
-    int curseur;
+    private Joueur[] joueurs;
+    private Plateau plateau;
+    private int curseur;
 
-    Jeu(){
+    public Jeu() {
         joueurs = new Joueur[4];
-        p = new Plateau();
+        joueurs[0] = new Joueur("1");
+        joueurs[1] = new Joueur("2");
+        joueurs[2] = new Joueur("3");
+        joueurs[3] = new Joueur("4");
+        plateau = new Plateau();
         curseur = 0;
     }
 
-    void affiche(){
-        p.affiche();
+    public void affiche(){
+    	plateau.actualisePosJoueurs(joueurs);
+        plateau.affiche();
     }
+    
+    public void deplace(Pion pion, int nbCases) {
+    	pion.setPosition((pion.getPosition() + nbCases) % 40);
+    	
+    }
+
+	public Joueur[] getJoueurs() {
+		return joueurs;
+	}
 
 }
