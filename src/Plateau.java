@@ -20,7 +20,12 @@ public class Plateau {
     	}
     	for (Joueur joueur : joueurs) {
 			int position = joueur.getPion().getPosition();
-			posJoueurs[position] = joueur.getNom();
+			if (!posJoueurs[position].equals("")) {
+				posJoueurs[position] = posJoueurs[position] + "," + joueur.getNom();
+			}
+            else {
+            	posJoueurs[position] = joueur.getNom();
+            }
 		}
     }
 
