@@ -11,7 +11,7 @@ public class Jeu {
     }
 
     void affiche(){
-        p.Fonaffiche();
+        p.affiche();
     }
 
 }
