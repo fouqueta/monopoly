@@ -1,4 +1,3 @@
-
 public class Jeu {
 
     private Joueur[] joueurs;
@@ -29,4 +28,13 @@ public class Jeu {
 		return joueurs;
 	}
 
+    public int[] lancer_de_des() {
+		int[] des = new int[2];
+		Random aleatoire = new Random();
+		for(int i = 0; i<des.length; i++) {
+			int intervalle = 1 + aleatoire.nextInt(7-1);
+			des[i] = intervalle;
+		}
+		return des;
+	}
 }
