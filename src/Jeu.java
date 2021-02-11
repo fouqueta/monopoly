@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Jeu {
 
     private Joueur[] joueurs;
@@ -21,6 +23,8 @@ public class Jeu {
     
     public void deplace(Pion pion, int nbCases) {
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
+    	//fin du tour quand le deplacement a ete fait
+    	finTour();
     	
     }
 
@@ -37,4 +41,24 @@ public class Jeu {
 		}
 		return des;
 	}
+    
+    public void debutTour() {
+    	System.out.println("Joueur "+joueurs[curseur]+", c'est a vous de jouer !");
+    	String s = joueurs[curseur].questionDes();
+    	if (s=="go") {
+    		lancer_de_des();
+    		//TODO: Faire le cas prison pour plus tard (dans lancer_de_des ?)
+    	}else debutTour();
+    	
+    }
+    
+    public void finTour() {
+    	if (curseur==4) {
+    		curseur=0;
+    	}else {
+    		curseur++;
+    	}
+    	debutTour();
+    }
+    
 }
