@@ -43,7 +43,7 @@ public class Jeu {
 	}
     
     public void debutTour() {
-    	System.out.println("Joueur "+joueurs[curseur]+", c'est a vous de jouer !");
+    	System.out.println("Joueur "+curseur+", c'est a vous de jouer !");
     	String s = joueurs[curseur].questionDes();
     	if (s=="go") {
     		lancer_de_des();
