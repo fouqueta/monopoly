@@ -32,6 +32,7 @@ public class Jeu {
 		return joueurs;
 	}
 
+	//Gestion de lancement de dés
     public int[] lancer_de_des() {
 		int[] des = new int[2];
 		Random aleatoire = new Random();
@@ -42,12 +43,14 @@ public class Jeu {
 		return des;
 	}
     
+    //Gestion de début et fin de tour
     public void debutTour() {
     	System.out.println("Joueur "+curseur+", c'est a vous de jouer !");
     	String s = joueurs[curseur].questionDes();
     	if (s=="go") {
     		lancer_de_des();
     		//TODO: Faire le cas prison pour plus tard (dans lancer_de_des ?)
+    		//prout(joueurs[curseur].getPion());
     	}else debutTour();
     	
     }
@@ -61,4 +64,30 @@ public class Jeu {
     	debutTour();
     }
     
+    //Gestion de l'achat/vente de propriétés
+   public void prout(Pion p) {
+	   Cases case_actuelle = plateau.getCases(p.getPosition());
+	   if(case_actuelle.getType() == "Propriete") {
+		   Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
+		   if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+			   pos_actuelle.toString();
+			   if(joueurs[curseur].decision_achat()) {
+				   int prix = pos_actuelle.getPrix();
+				   joueurs[curseur].achat_effectue(prix);
+			   }
+		   }
+		   else if(!(pos_actuelle.est_Libre()) && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+			   Joueur proprietaire = pos_actuelle.getProprietaire();
+			   if(joueurs[curseur].decision_vente(proprietaire)) {
+				   int prix = pos_actuelle.getPrix();
+				   joueurs[curseur].achat_effectue(prix);
+				   proprietaire.vente_effectuee(prix);
+			   }
+		   }
+		   else {
+			   //TODO: Loyer
+		   }
+	   }
+   }
+   
 }
