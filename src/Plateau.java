@@ -10,6 +10,7 @@ public class Plateau {
         posJoueurs = new String[40];
         for(int i =0;i<40;i++){
             posJoueurs[i] = "";
+            grille[i] = new Proprietes(i,i,"", String.valueOf(i));
         }
         posJoueurs[0] = "1,2,3,4";
     }
@@ -29,76 +30,127 @@ public class Plateau {
 		}
     }
 
-    public void affiche(){
-        System.out.println("-".repeat(111));
-        for(int i=0; i<11;i++){
-            String tmp = "|    " + (i+1);
-            while(tmp.length() != 10) tmp = tmp + " ";
-            System.out.print(tmp);
-        }
-        System.out.println("|");
-        System.out.println("|         ".repeat(11) + "|");
-        for(int i=0; i<11;i++){
-            String tmp = "| ";
-            if(posJoueurs[i].length()!=0){
-                tmp = tmp + posJoueurs[i];
+    // AFFICHAGE :
 
+    private void afficheLigne(int n){
+        System.out.println("-".repeat(n));
+    }
+
+    private String complete(String s, int n){
+        while(s.length() != n) s = s + " ";
+        return s;
+    }
+
+    private void afficheLigneCentre(int n){
+        System.out.println("-----------" + " ".repeat(n) + "-----------");
+    }
+
+    private String buildNom(int n){
+        String tmp = "|    " + grille[n].getNom();
+        tmp = complete(tmp,10);
+        return tmp;
+    }
+
+    private String buildPrixProp(int n){
+        String tmp = "|";
+        if(grille[n].type.equals("Propriete")) {
+            Proprietes prop = (Proprietes) (grille[n]);
+            tmp = tmp + prop.getPrix();
+            if (prop.getProp() != null) {
+                tmp = tmp + "-" + prop.getProp().getNom();
             }
-            while(tmp.length() != 10) tmp = tmp + " ";
-            System.out.print(tmp);
+        }
+        tmp = complete(tmp, 10);
+        return tmp;
+    }
+
+    private String buildLigneJoueur(int n){
+        String tmp = "| ";
+        if(posJoueurs[n].length()!=0){
+            tmp = tmp + posJoueurs[n];
 
         }
+        tmp = complete(tmp, 10);
+        return tmp;
+    }
+
+    private void afficheNom(int n, int p){
+        if(n<p){
+            for(int i=n; i<p;i++){
+                System.out.print(buildNom(i));
+            }
+        }else{
+            for(int i=n; i>p;i--){
+                System.out.print(buildNom(i));
+            }
+        }
         System.out.println("|");
-        System.out.println("-".repeat(111));
+        affichePrixProp(n,p);
+        afficheJoueurs(n,p);
+    }
+
+    private void affichePrixProp(int n, int p){
+        if(n<p){
+            for(int i=n; i<p;i++){
+                System.out.print(buildPrixProp(i));
+            }
+        }else{
+            for(int i=n; i>p;i--){
+                System.out.print(buildPrixProp(i));
+            }
+        }
+        System.out.println("|");
+    }
+
+    private void afficheJoueurs(int n, int p){
+        if(n<p){
+            for(int i=n; i<p;i++){
+                System.out.print(buildLigneJoueur(i));
+            }
+        }else{
+            for(int i=n; i>p;i--){
+                System.out.print(buildLigneJoueur(i));
+            }
+        }
+        System.out.println("|");
+    }
+
+
+    private void afficheCentrePlateau(){
         int cpt = 28;
         for(int i =11;i<20;i++){
-            String tmp = "|    " + (i+1+cpt);
-            while(tmp.length() != 10) tmp = tmp + " ";
-            tmp = tmp + "|" + " ".repeat(89);
-            String droite = "|    " + (i+1);
-            while(droite.length() != 10) droite = droite + " ";
-            tmp = tmp + droite + "|";
-            System.out.println(tmp);
+            String gauche = buildNom(i+cpt);
+            String droite = buildNom(i);
 
-            System.out.println("|         |" + " " .repeat(89) + "|         |");
-            tmp = "| ";
-            if(posJoueurs[i+cpt].length()!=0){
-                tmp = tmp + posJoueurs[i];
+            System.out.println(gauche + "|" + " ".repeat(89) + droite + "|");
 
-            }
-            while(tmp.length() != 10) tmp = tmp + " ";
-            tmp = tmp + "|" + " ".repeat(89);
-            droite = "| ";
-            if(posJoueurs[i].length()!=0){
-                droite = droite + posJoueurs[i];
+            String prixPropG = buildPrixProp(i+cpt);
+            String prixPropD = buildPrixProp(i);
 
-            }
-            while(droite.length() != 10) droite = droite + " ";
-            System.out.println(tmp + droite + "|");
-            if(i!=19) System.out.println("-----------" + " ".repeat(89) + "-----------");
+            System.out.println(prixPropG + "|" + " ".repeat(89) + prixPropD + "|");
+
+            String joueursG = buildLigneJoueur(i+cpt);
+            String joueursD = buildLigneJoueur(i+cpt);
+
+            System.out.println(joueursG + "|" + " ".repeat(89) + joueursD + "|");
+
+            if(i!=19) afficheLigneCentre(89);
+
             cpt = cpt - 2;
         }
+    }
 
-        System.out.println("-".repeat(111));
-        for(int i=30; i>19;i--){
-            String tmp = "|    " + (i+1);
-            while(tmp.length() != 10) tmp = tmp + " ";
-            System.out.print(tmp);
-        }
-        System.out.println("|");
-        System.out.println("|         ".repeat(11) + "|");
-        for(int i=30; i>19;i--){
-            String tmp = "| ";
-            if(posJoueurs[i].length()!=0){
-                tmp = tmp + posJoueurs[i];
 
-            }
-            while(tmp.length() != 10) tmp = tmp + " ";
-            System.out.print(tmp);
+    public void affiche(){
+        afficheLigne(111);
+        afficheNom(0,11);
+        afficheLigne(111);
 
-        }
-        System.out.println("|");
-        System.out.println("-".repeat(111));
+        afficheCentrePlateau();
+
+        afficheLigne(111);
+        afficheNom(30,19);
+        afficheLigne(111);
 
     }
 

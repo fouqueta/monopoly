@@ -6,5 +6,6 @@ public abstract class Cases {
 	public Cases(String type) {
 		this.type = type;
 	}
-	
+
+	public abstract String getNom();
 }

@@ -12,6 +12,7 @@ public class Joueur{
     	pion = new Pion(0);
     	argent = 1500;
     	proprietes = null;
+		this.reponse = new Scanner(System.in);
     }
     
     public Joueur() { //FIXME: jsp si je le met direct dans le 1er constructeur
