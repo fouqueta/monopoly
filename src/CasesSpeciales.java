@@ -9,5 +9,9 @@ public class CasesSpeciales extends Cases {
 		this.evenement = evenement;
 		this.transaction = transaction;		
 	}
-	
+
+	@Override
+	public String getNom() {
+		return evenement;
+	}
 }
