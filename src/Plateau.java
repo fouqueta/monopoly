@@ -130,7 +130,7 @@ public class Plateau {
             System.out.println(prixPropG + "|" + " ".repeat(89) + prixPropD + "|");
 
             String joueursG = buildLigneJoueur(i+cpt);
-            String joueursD = buildLigneJoueur(i+cpt);
+            String joueursD = buildLigneJoueur(i);
 
             System.out.println(joueursG + "|" + " ".repeat(89) + joueursD + "|");
 
