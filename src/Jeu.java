@@ -21,11 +21,12 @@ public class Jeu {
         plateau.affiche();
     }
     
-    public void deplace(Pion pion, int nbCases) {
+    public void deplace(Pion pion, int[] des) {
+    	int nbCases = des[0] + des[1];
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
+    	affiche();
     	//fin du tour quand le deplacement a ete fait
     	finTour();
-    	
     }
 
 	public Joueur[] getJoueurs() {
@@ -45,10 +46,11 @@ public class Jeu {
     
     //Gestion de début et fin de tour
     public void debutTour() {
-    	System.out.println("Joueur "+curseur+", c'est a vous de jouer !");
+    	System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
     	String s = joueurs[curseur].questionDes();
     	if (s=="go") {
-    		lancer_de_des();
+    		int[] des = lancer_de_des();
+    		deplace(joueurs[curseur].getPion(), des);
     		//TODO: Faire le cas prison pour plus tard (dans lancer_de_des ?)
     		//prout(joueurs[curseur].getPion());
     	}else debutTour();
@@ -56,7 +58,7 @@ public class Jeu {
     }
     
     public void finTour() {
-    	if (curseur==4) {
+    	if (curseur==3) {
     		curseur=0;
     	}else {
     		curseur++;
