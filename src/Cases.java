@@ -1,4 +1,3 @@
-
 public abstract class Cases {
 	
 	String type;
@@ -8,4 +7,6 @@ public abstract class Cases {
 	}
 
 	public abstract String getNom();
+	
+	public String getType() { return type; }
 }
