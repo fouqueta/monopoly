@@ -56,8 +56,8 @@ public class Plateau {
         if(grille[n].type.equals("Propriete")) {
             Proprietes prop = (Proprietes) (grille[n]);
             tmp = tmp + prop.getPrix();
-            if (prop.getProp() != null) {
-                tmp = tmp + "-" + prop.getProp().getNom();
+            if (prop.getProprietaire() != null) {
+                tmp = tmp + "-" + prop.getProprietaire().getNom();
             }
         }
         tmp = complete(tmp, 10);
@@ -158,5 +158,7 @@ public class Plateau {
 		return grille;
 	}
 
-
+	public Cases getCases(int position) {
+		return grille[position];
+	}
 }
