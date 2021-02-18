@@ -7,10 +7,10 @@ public class Joueur{
     private Cases[] proprietes; // Les proprietes que le joueur possede
     Scanner reponse;
     
-    public Joueur(String nom) { // Au debut, le joueur est en case 0, a 1500 clochettes et pas de propriete
+    public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et pas de propriete
     	this.nom = nom;
     	pion = new Pion(0);
-    	argent = 1500;
+    	argent = 15000;
     	proprietes = null;
     	this.reponse = new Scanner(System.in);
     }

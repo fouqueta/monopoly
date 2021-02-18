@@ -12,7 +12,7 @@ public class Jeu {
         joueurs[1] = new Joueur("2");
         joueurs[2] = new Joueur("3");
         joueurs[3] = new Joueur("4");
-        plateau = new Plateau();
+        plateau = new Plateau("cases.csv");
         curseur = 0;
     }
 
@@ -91,6 +91,6 @@ public class Jeu {
 			    }
 			}
 	   }
-   }
+    }
    
 }

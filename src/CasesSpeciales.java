@@ -1,17 +1,12 @@
 
 public class CasesSpeciales extends Cases {
 	
-	private String evenement;
 	private int transaction;
 	
-	public CasesSpeciales(String evenement, int transaction) {
-		super("Speciale");
-		this.evenement = evenement;
+	public CasesSpeciales(String nom, int transaction) {
+		super("Speciale", nom);
 		this.transaction = transaction;		
 	}
 
-	@Override
-	public String getNom() {
-		return evenement;
-	}
+
 }
