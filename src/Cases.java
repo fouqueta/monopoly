@@ -1,12 +1,14 @@
 public abstract class Cases {
 	
 	String type;
+	String nom;
 	
-	public Cases(String type) {
+	public Cases(String type, String nom) {
 		this.type = type;
+		this.nom = nom;
 	}
 
-	public abstract String getNom();
+	public String getNom() { return nom; }
 	
 	public String getType() { return type; }
 }

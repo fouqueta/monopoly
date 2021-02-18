@@ -1,12 +1,8 @@
 
 public class CasesCommunaute extends Cases {
 
-	public CasesCommunaute() {
-		super("Communaute");
+	public CasesCommunaute(String nom) {
+		super("Communaute", nom);
 	}
 
-	@Override
-	public String getNom() {
-		return "Communauté";
-	}
 }

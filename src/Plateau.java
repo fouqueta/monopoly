@@ -1,16 +1,50 @@
+import java.io.File;
+import java.util.Scanner;
 
 public class Plateau {
 
     private Cases[] grille;
     private int banque;
     private String[] posJoueurs;
+    private Scanner scan;
 
-    Plateau(){
-        grille = new Cases[40];
+    Plateau(String fichier){
+    	scan = null;
+    	try {
+    		scan = new Scanner(new File(fichier), "UTF-8");
+    	}
+    	catch(Exception e) {
+    		System.out.println("Erreur lors d’ouverture fichier:");
+    		e.printStackTrace();
+    		System.exit(1);
+    	}
+    	init_plateau();
+    }
+    
+    public void init_plateau() {
+    	grille = new Cases[40];
         posJoueurs = new String[40];
-        for(int i =0;i<40;i++){
+        int i = 0;
+        scan.nextLine(); //Pour sauter la ligne des titres des categories
+        while (scan.hasNextLine()) {
+        	String casePlateau = scan.nextLine();
+        	String[] attributs = casePlateau.split(";"); //tab de taille 6, voir cases.csv
+            switch (attributs[0]) {
+            	case "Proprietes": 
+            		grille[i] = new Proprietes(attributs[1], attributs[2], Integer.parseInt(attributs[3]), Integer.parseInt(attributs[4]));
+            		break;
+            	case "CasesSpeciales":
+            		grille[i] = new CasesSpeciales(attributs[1], Integer.parseInt(attributs[5]));
+            		break;
+            	case "CasesCommunaute":
+            		grille[i] = new CasesCommunaute(attributs[1]);
+            		break;
+            	case "CasesChance":
+            		grille[i] = new CasesChance(attributs[1]);
+            		break;
+            }
             posJoueurs[i] = "";
-            grille[i] = new Proprietes(i,i,"", String.valueOf(i));
+        	i++;
         }
         posJoueurs[0] = "1,2,3,4";
 
@@ -47,7 +81,7 @@ public class Plateau {
     }
 
     private String buildNom(int n){
-        String tmp = "|    " + grille[n].getNom();
+        String tmp = "|  " + grille[n].getNom() + " ";
         tmp = complete(tmp,10);
         return tmp;
     }
