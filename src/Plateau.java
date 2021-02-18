@@ -13,6 +13,7 @@ public class Plateau {
             grille[i] = new Proprietes(i,i,"", String.valueOf(i));
         }
         posJoueurs[0] = "1,2,3,4";
+
     }
     
     public void actualisePosJoueurs(Joueur[] joueurs) {
@@ -51,13 +52,25 @@ public class Plateau {
         return tmp;
     }
 
-    private String buildPrixProp(int n){
-        String tmp = "|";
+    private String buildPrix(int n){
+        String tmp = "|   ";
         if(grille[n].type.equals("Propriete")) {
             Proprietes prop = (Proprietes) (grille[n]);
-            tmp = tmp + prop.getPrix();
+            tmp = tmp + prop.getPrix() + "€";
+        }
+        tmp = complete(tmp, 10);
+        return tmp;
+    }
+
+
+    private String buildProp(int n){
+        String tmp = "| ";
+        if(grille[n].type.equals("Propriete")) {
+            Proprietes prop = (Proprietes) (grille[n]);
+
             if (prop.getProprietaire() != null) {
-                tmp = tmp + "-" + prop.getProprietaire().getNom();
+                tmp = tmp + prop.getLoyer();
+                tmp = tmp + "€ - " + prop.getProprietaire().getNom();
             }
         }
         tmp = complete(tmp, 10);
@@ -85,18 +98,32 @@ public class Plateau {
             }
         }
         System.out.println("|");
-        affichePrixProp(n,p);
+        affichePrix(n,p);
+        afficheProp(n,p);
         afficheJoueurs(n,p);
     }
 
-    private void affichePrixProp(int n, int p){
+    private void affichePrix(int n, int p){
         if(n<p){
             for(int i=n; i<p;i++){
-                System.out.print(buildPrixProp(i));
+                System.out.print(buildPrix(i));
             }
         }else{
             for(int i=n; i>p;i--){
-                System.out.print(buildPrixProp(i));
+                System.out.print(buildPrix(i));
+            }
+        }
+        System.out.println("|");
+    }
+
+    private void afficheProp(int n, int p){
+        if(n<p){
+            for(int i=n; i<p;i++){
+                System.out.print(buildProp(i));
+            }
+        }else{
+            for(int i=n; i>p;i--){
+                System.out.print(buildProp(i));
             }
         }
         System.out.println("|");
@@ -124,10 +151,15 @@ public class Plateau {
 
             System.out.println(gauche + "|" + " ".repeat(89) + droite + "|");
 
-            String prixPropG = buildPrixProp(i+cpt);
-            String prixPropD = buildPrixProp(i);
+            String prixG = buildPrix(i+cpt);
+            String prixD = buildPrix(i);
 
-            System.out.println(prixPropG + "|" + " ".repeat(89) + prixPropD + "|");
+            System.out.println(prixG + "|" + " ".repeat(89) + prixD + "|");
+
+            String propG = buildProp(i+cpt);
+            String propD = buildProp(i);
+
+            System.out.println(propG + "|" + " ".repeat(89) + propD + "|");
 
             String joueursG = buildLigneJoueur(i+cpt);
             String joueursD = buildLigneJoueur(i);
