@@ -11,10 +11,10 @@ public class Plateau {
     Plateau(String fichier){
     	scan = null;
     	try {
-    		scan = new Scanner(new File(fichier), "UTF-8");
+    		scan = new Scanner(new File("../"+fichier), "UTF-8");
     	}
     	catch(Exception e) {
-    		System.out.println("Erreur lors d’ouverture fichier:");
+    		System.out.println("Erreur lors dï¿½ouverture fichier:");
     		e.printStackTrace();
     		System.exit(1);
     	}
@@ -77,28 +77,28 @@ public class Plateau {
     }
 
     private void afficheLigneCentre(int n){
-        System.out.println("-----------" + " ".repeat(n) + "-----------");
+        System.out.println("----------------" + " ".repeat(n) + "----------------");
     }
 
     private String buildNom(int n){
-        String tmp = "|   " + grille[n].getNom();
-        tmp = complete(tmp,10);
+        String tmp = "|" + grille[n].getNom();
+        tmp = complete(tmp,15);
         return tmp;
     }
 
     private String buildPrix(int n){
-        String tmp = "|  ";
+        String tmp = "|";
         if(grille[n].type.equals("Propriete")) {
             Proprietes prop = (Proprietes) (grille[n]);
             tmp = tmp + prop.getPrix() + "e";
         }
-        tmp = complete(tmp, 10);
+        tmp = complete(tmp, 15);
         return tmp;
     }
 
 
     private String buildProp(int n){
-        String tmp = "| ";
+        String tmp = "|";
         if(grille[n].type.equals("Propriete")) {
             Proprietes prop = (Proprietes) (grille[n]);
 
@@ -107,17 +107,17 @@ public class Plateau {
                 tmp = tmp + "e-" + prop.getProprietaire().getNom();
             }
         }
-        tmp = complete(tmp, 10);
+        tmp = complete(tmp, 15);
         return tmp;
     }
 
     private String buildLigneJoueur(int n){
-        String tmp = "| ";
+        String tmp = "|";
         if(posJoueurs[n].length()!=0){
             tmp = tmp + posJoueurs[n];
 
         }
-        tmp = complete(tmp, 10);
+        tmp = complete(tmp, 15);
         return tmp;
     }
 
@@ -177,30 +177,30 @@ public class Plateau {
     }
 
 
-    private void afficheCentrePlateau(){
-        int cpt = 28;
-        for(int i =11;i<20;i++){
+    private void afficheCentrePlateau(int n, int p){
+        int cpt = 39-n;
+        for(int i = n;i<p;i++){
             String gauche = buildNom(i+cpt);
             String droite = buildNom(i);
 
-            System.out.println(gauche + "|" + " ".repeat(89) + droite + "|");
+            System.out.println(gauche + "|" + " ".repeat(134) + droite + "|");
 
             String prixG = buildPrix(i+cpt);
             String prixD = buildPrix(i);
 
-            System.out.println(prixG + "|" + " ".repeat(89) + prixD + "|");
+            System.out.println(prixG + "|" + " ".repeat(134) + prixD + "|");
 
             String propG = buildProp(i+cpt);
             String propD = buildProp(i);
 
-            System.out.println(propG + "|" + " ".repeat(89) + propD + "|");
+            System.out.println(propG + "|" + " ".repeat(134) + propD + "|");
 
             String joueursG = buildLigneJoueur(i+cpt);
             String joueursD = buildLigneJoueur(i);
 
-            System.out.println(joueursG + "|" + " ".repeat(89) + joueursD + "|");
+            System.out.println(joueursG + "|" + " ".repeat(134) + joueursD + "|");
 
-            if(i!=19) afficheLigneCentre(89);
+            if(i!=19) afficheLigneCentre(134);
 
             cpt = cpt - 2;
         }
@@ -208,15 +208,15 @@ public class Plateau {
 
 
     public void affiche(){
-        afficheLigne(111);
+        afficheLigne(166);
         afficheNom(0,11);
-        afficheLigne(111);
+        afficheLigne(166);
 
-        afficheCentrePlateau();
+        afficheCentrePlateau(11,20);
 
-        afficheLigne(111);
+        afficheLigne(166);
         afficheNom(30,19);
-        afficheLigne(111);
+        afficheLigne(166);
 
     }
 
