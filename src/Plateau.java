@@ -81,16 +81,16 @@ public class Plateau {
     }
 
     private String buildNom(int n){
-        String tmp = "|  " + grille[n].getNom() + " ";
+        String tmp = "|   " + grille[n].getNom();
         tmp = complete(tmp,10);
         return tmp;
     }
 
     private String buildPrix(int n){
-        String tmp = "|   ";
+        String tmp = "|  ";
         if(grille[n].type.equals("Propriete")) {
             Proprietes prop = (Proprietes) (grille[n]);
-            tmp = tmp + prop.getPrix() + "€";
+            tmp = tmp + prop.getPrix() + "e";
         }
         tmp = complete(tmp, 10);
         return tmp;
@@ -104,7 +104,7 @@ public class Plateau {
 
             if (prop.getProprietaire() != null) {
                 tmp = tmp + prop.getLoyer();
-                tmp = tmp + "€ - " + prop.getProprietaire().getNom();
+                tmp = tmp + "e-" + prop.getProprietaire().getNom();
             }
         }
         tmp = complete(tmp, 10);

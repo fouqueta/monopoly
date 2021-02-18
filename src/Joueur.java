@@ -21,7 +21,7 @@ public class Joueur{
 	    if(s.equals("go")) {
 	    	return "go";
     	}else {
-    		System.out.println("Erreur de frappe. Tapez \"go\" pour lancer les des");
+    		System.out.println("Erreur de frappe.");
     		return questionDes();
     	}
     }
@@ -46,7 +46,7 @@ public class Joueur{
 	    	return false;
 	    }
 	    else {
-    		System.out.println("Erreur de frappe. Tapez \"oui\" ou \"non\".");
+    		System.out.println("Erreur de frappe.");
     		return decision_achat();
     	}
 	}
@@ -72,7 +72,7 @@ public class Joueur{
 	    	return false;
 	    }
 	    else {
-    		System.out.println(proprietaire.getNom() + ", souhaitez-vous vendre cette propriete a " + this.getNom() + "?");
+	    	System.out.println("Erreur de frappe.");
     		return decision_vente(proprietaire);
     	}
 	}
