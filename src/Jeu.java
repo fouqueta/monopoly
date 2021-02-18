@@ -25,15 +25,13 @@ public class Jeu {
     	int nbCases = des[0] + des[1];
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
     	affiche();
-    	//fin du tour quand le deplacement a ete fait
-    	finTour();
     }
 
 	public Joueur[] getJoueurs() {
 		return joueurs;
 	}
 
-	//Gestion de lancement de dés
+	//Gestion de lancement de des
     public int[] lancer_de_des() {
 		int[] des = new int[2];
 		Random aleatoire = new Random();
@@ -41,18 +39,19 @@ public class Jeu {
 			int intervalle = 1 + aleatoire.nextInt(7-1);
 			des[i] = intervalle;
 		}
+		//TODO: Faire le cas prison pour plus tard
 		return des;
 	}
     
-    //Gestion de début et fin de tour
+    //Gestion de debut et fin de tour
     public void debutTour() {
     	System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
     	String s = joueurs[curseur].questionDes();
     	if (s=="go") {
     		int[] des = lancer_de_des();
     		deplace(joueurs[curseur].getPion(), des);
-    		//TODO: Faire le cas prison pour plus tard (dans lancer_de_des ?)
-    		//prout(joueurs[curseur].getPion());
+    		achat_ou_vente(joueurs[curseur].getPion());
+    		finTour();
     	}else debutTour();
     	
     }
@@ -66,8 +65,8 @@ public class Jeu {
     	debutTour();
     }
     
-    //Gestion de l'achat/vente de propriétés
-   public void prout(Pion p) {
+    //Gestion de l'achat/vente de proprietes
+   public void achat_ou_vente(Pion p) {
 	   Cases case_actuelle = plateau.getCases(p.getPosition());
 	   if(case_actuelle.getType() == "Propriete") {
 		   Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
@@ -76,19 +75,21 @@ public class Jeu {
 			   if(joueurs[curseur].decision_achat()) {
 				   int prix = pos_actuelle.getPrix();
 				   joueurs[curseur].achat_effectue(prix);
-			   }
-		   }
-		   else if(!(pos_actuelle.est_Libre()) && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
-			   Joueur proprietaire = pos_actuelle.getProprietaire();
-			   if(joueurs[curseur].decision_vente(proprietaire)) {
-				   int prix = pos_actuelle.getPrix();
-				   joueurs[curseur].achat_effectue(prix);
-				   proprietaire.vente_effectuee(prix);
+				   pos_actuelle.setProprietaire(joueurs[curseur]);
 			   }
 		   }
 		   else {
-			   //TODO: Loyer
-		   }
+			    //TODO: Loyer
+			    if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+			        Joueur proprietaire = pos_actuelle.getProprietaire();
+			        if(joueurs[curseur].decision_vente(proprietaire)) {
+			            int prix = pos_actuelle.getPrix();
+			            joueurs[curseur].achat_effectue(prix);
+			            proprietaire.vente_effectuee(prix);
+			            pos_actuelle.setProprietaire(joueurs[curseur]);
+			       }
+			    }
+			}
 	   }
    }
    
