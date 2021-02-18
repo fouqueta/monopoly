@@ -33,14 +33,16 @@ public class Joueur{
 	
 	public int getArgent() { return argent; }
 	
-	//Gestion de l'achat/vente de propriétés
+	//Gestion de l'achat/vente de proprietes
 	public boolean decision_achat() {
-		System.out.println(this.getNom() + ", si vous souhaitez acheter la propriété, tapez \"oui\" sinon \"non\".");
+		System.out.println(this.getNom() + ", si vous souhaitez acheter la propriete, tapez \"oui\" sinon \"non\".");
     	String s = reponse.next();
 	    if(s.equals("oui")) {
+	    	System.out.println("Achat effectue.");
 	    	return true;
     	}
 	    else if(s.equals("non")) {
+	    	System.out.println("Achat non-effectue.");
 	    	return false;
 	    }
 	    else {
@@ -58,17 +60,19 @@ public class Joueur{
 	}
 	
 	public boolean decision_vente(Joueur proprietaire) {
-		System.out.println(proprietaire.getNom() + ", souhaitez-vous vendre cette propriété à " + this.getNom() + "?");
-		System.out.println(proprietaire.getNom() + ", si vous souhaitez vendre la propriété, tapez \"oui\" sinon \"non\".");
+		System.out.println(proprietaire.getNom() + ", souhaitez-vous vendre cette propriete a " + this.getNom() + "?");
+		System.out.println(proprietaire.getNom() + ", si vous souhaitez vendre la propriete, tapez \"oui\" sinon \"non\".");
     	String s = reponse.next();
 	    if(s.equals("oui")) {
+	    	System.out.println(proprietaire.getNom() + " accepte de vendre cette propriete a " + this.getNom());
 	    	return decision_achat();
     	}
 	    else if(s.equals("non")) {
+	    	System.out.println(proprietaire.getNom() + " refuse de vendre cette propriete a " + this.getNom());
 	    	return false;
 	    }
 	    else {
-    		System.out.println(proprietaire.getNom() + ", souhaitez-vous vendre cette propriété à " + this.getNom() + "?");
+    		System.out.println(proprietaire.getNom() + ", souhaitez-vous vendre cette propriete a " + this.getNom() + "?");
     		return decision_vente(proprietaire);
     	}
 	}
