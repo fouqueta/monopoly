@@ -23,10 +23,15 @@ public class Jeu {
     
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
+	  	for(int i=0;i<nbCases;i++){
+	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
+	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
+	  		}
+	  	} 
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
     	affiche();
     }
-
+    
 	public Joueur[] getJoueurs() {
 		return joueurs;
 	}

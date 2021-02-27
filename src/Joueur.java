@@ -33,6 +33,9 @@ public class Joueur{
 	
 	public int getArgent() { return argent; }
 	
+	//Setters
+	public void setArgent(int argent) { this.argent=argent; }
+	
 	//Gestion de l'achat/vente de proprietes
 	public boolean decision_achat() {
 		System.out.println(this.getNom() + ", si vous souhaitez acheter la propriete, tapez \"oui\" sinon \"non\".");
