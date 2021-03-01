@@ -1,3 +1,5 @@
+package monopoly;
+
 import java.io.File;
 import java.util.Scanner;
 
@@ -21,6 +23,16 @@ public class Plateau {
     	init_plateau();
     }
     
+    //Getters
+  	public Cases[] getGrille() {
+  		return grille;
+  	}
+
+  	public Cases getCases(int position) {
+  		return grille[position];
+  	}
+    
+    //Initilisation du plateau
     public void init_plateau() {
     	grille = new Cases[40];
         posJoueurs = new String[40];
@@ -50,6 +62,7 @@ public class Plateau {
 
     }
     
+    //Actualisation de la position des joueurs
     public void actualisePosJoueurs(Joueur[] joueurs) {
     	for (int i=0; i<40; i++) {
     		posJoueurs[i] = "";
@@ -65,8 +78,7 @@ public class Plateau {
 		}
     }
 
-    // AFFICHAGE :
-
+    //Affichage
     private void afficheLigne(int n){
         System.out.println("-".repeat(n));
     }
@@ -219,12 +231,4 @@ public class Plateau {
         afficheLigne(166);
 
     }
-
-	public Cases[] getGrille() {
-		return grille;
-	}
-
-	public Cases getCases(int position) {
-		return grille[position];
-	}
 }
