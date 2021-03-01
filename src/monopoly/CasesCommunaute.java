@@ -1,3 +1,4 @@
+package monopoly;
 
 public class CasesCommunaute extends Cases {
 
