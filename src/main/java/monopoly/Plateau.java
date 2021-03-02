@@ -16,7 +16,7 @@ public class Plateau {
     		scan = new Scanner(new File("../"+fichier), "UTF-8");
     	}
     	catch(Exception e) {
-    		System.out.println("Erreur lors d�ouverture fichier:");
+    		System.out.println("Erreur lors d ouverture fichier:");
     		e.printStackTrace();
     		System.exit(1);
     	}

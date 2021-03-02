@@ -64,7 +64,7 @@ public class Vue {
 	//Interface graphique : Initialisation
 	void initilisation_scene_jeu() {
 		scene_jeu = new Scene(root,900,600);
-		scene_jeu.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		//scene_jeu.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		stage.setScene(scene_jeu);	
 	}
 	
