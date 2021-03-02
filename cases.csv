@@ -1,0 +1,41 @@
+TYPE;NOM;COULEUR;PRIXACHAT;LOYER;TRANSACTION
+CasesSpeciales;Départ;;;;2000
+Proprietes;Belleville;violet;600;20;
+CasesCommunaute;Communauté;;;;
+Proprietes;Lecourbe;violet;600;40;
+CasesSpeciales;Impôts revenu;;;;-2000
+Proprietes;G Montparnasse;gare;2000;250;
+Proprietes;Vaugirard;ciel;1000;60;
+CasesChance;Chance;;;;
+Proprietes;Courcelles;ciel;1000;60;
+Proprietes;République;ciel;1200;80;
+CasesSpeciales;Prison;;;;0
+Proprietes;La Villette;rose;1400;100;
+Proprietes;Electricité;compagnie;1500;40;
+Proprietes;Neuilly;rose;1400;100;
+Proprietes;Paradis;rose;1600;120;
+Proprietes;G. de Lyon;gare;2000;250;
+Proprietes;Mozart;orange;1800;140;
+CasesCommunaute;Communauté;;;;
+Proprietes;Saint-Michel;orange;1800;140;
+Proprietes;Pigalle;orange;2000;160;
+CasesSpeciales;Parc gratuit;;;;0
+Proprietes;Matignon;rouge;2200;180;
+CasesChance;Chance;;;;
+Proprietes;Malesherbes;rouge;2200;180;
+Proprietes;Henri-Martin;rouge;2400;200;
+Proprietes;G. du Nord;gare;2000;250;
+Proprietes;Saint-Honoré;jaune;2600;220;
+Proprietes;La Bourse;jaune;2600;220;
+Proprietes;Eaux;compagnie;1500;40;
+Proprietes;La Fayette;jaune;2800;240;
+CasesSpeciales;Aller prison;;;;0
+Proprietes;Breteuil;vert;3000;260;
+Proprietes;Foch;vert;3000;260;
+CasesCommunaute;Communauté;;;;
+Proprietes;Capucines;vert;3200;280;
+Proprietes;G. St-Lazare;gare;2000;250;
+CasesChance;Chance;;;;
+Proprietes;Champs-Elysées;bleu;3500;350;
+CasesSpeciales;Taxe de luxe;;;;-1000
+Proprietes;Rue de la Paix;bleu;4000;500;
