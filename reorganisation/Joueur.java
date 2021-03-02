@@ -4,10 +4,10 @@ public class Joueur{
     private String nom;
     private Pion pion;
     private int argent;
-    private Cases[] proprietes; // Les proprietes que le joueur possede
+    private Cases[] proprietes; // Proprietes possedees par un joueur
     Scanner reponse;
     
-    public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et pas de propriete
+    public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
     	this.nom = nom;
     	pion = new Pion(0);
     	argent = 15000;
@@ -15,27 +15,29 @@ public class Joueur{
     	this.reponse = new Scanner(System.in);
     }
     
-   public String questionDes() {
-    	System.out.println("Tapez \"go\" pour lancer les des");
-    	String s = reponse.next();
-	    if(s.equals("go")) {
-	    	return "go";
-    	}else {
-    		System.out.println("Erreur de frappe.");
-    		return questionDes();
-    	}
-    }
-   
-   //Getters
-	public Pion getPion() { return pion; }
+    //Getters
+    public Pion getPion() { return pion; }
 	
 	public String getNom() { return nom; }
 	
 	public int getArgent() { return argent; }
 	
 	//Setters
-	public void setArgent(int argent) { this.argent=argent; }
-	
+	public void setArgent(int argent) { this.argent = argent; }
+   
+    //Gestion de lancement de des
+    public String questionDes() {
+    	System.out.println("Tapez \"go\" pour lancer les des");
+    	String s = reponse.next();
+	    if(s.equals("go")) {
+	    	return "go";
+    	}
+	    else{
+    		System.out.println("Erreur de frappe.");
+    		return questionDes();
+    	}
+    }
+   
 	//Gestion de l'achat/vente de proprietes
 	public boolean decision_achat() {
 		System.out.println(this.getNom() + ", si vous souhaitez acheter la propriete, tapez \"oui\" sinon \"non\".");

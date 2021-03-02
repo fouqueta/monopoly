@@ -15,15 +15,22 @@ public class Jeu {
         plateau = new Plateau("cases.csv");
         curseur = 0;
     }
-
+    
+    //Getters
+  	public Joueur[] getJoueurs() {
+  		return joueurs;
+  	}
+    
+    //Affichage
     public void affiche(){
     	plateau.actualisePosJoueurs(joueurs);
         plateau.affiche();
     }
     
+    //Gestion des deplacements
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
-	  	for(int i=0;i<nbCases;i++){
+    	for(int i=0;i<nbCases;i++){
 	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
 	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
 	  		}
@@ -31,10 +38,6 @@ public class Jeu {
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
     	affiche();
     }
-    
-	public Joueur[] getJoueurs() {
-		return joueurs;
-	}
 
 	//Gestion de lancement de des
     public int[] lancer_de_des() {
@@ -44,7 +47,7 @@ public class Jeu {
 			int intervalle = 1 + aleatoire.nextInt(7-1);
 			des[i] = intervalle;
 		}
-		//TODO: Faire le cas prison pour plus tard
+		//TODO: Prison
 		return des;
 	}
     
@@ -71,31 +74,31 @@ public class Jeu {
     }
     
     //Gestion de l'achat/vente de proprietes
-   public void achat_ou_vente(Pion p) {
-	   Cases case_actuelle = plateau.getCases(p.getPosition());
-	   if(case_actuelle.getType() == "Propriete") {
-		   Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
-		   if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
-			   pos_actuelle.toString();
-			   if(joueurs[curseur].decision_achat()) {
-				   int prix = pos_actuelle.getPrix();
-				   joueurs[curseur].achat_effectue(prix);
-				   pos_actuelle.setProprietaire(joueurs[curseur]);
-			   }
-		   }
-		   else {
-			    //TODO: Loyer
-			    if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
-			        Joueur proprietaire = pos_actuelle.getProprietaire();
+    public void achat_ou_vente(Pion p) {
+    	Cases case_actuelle = plateau.getCases(p.getPosition());
+    	if(case_actuelle.getType() == "Propriete") {
+    		Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
+    		if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    			pos_actuelle.toString();
+    			if(joueurs[curseur].decision_achat()) {
+    				int prix = pos_actuelle.getPrix();
+    				joueurs[curseur].achat_effectue(prix);
+    				pos_actuelle.setProprietaire(joueurs[curseur]);
+    			}
+    		}
+    		else {
+    			//TODO: Loyer
+    			if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    				Joueur proprietaire = pos_actuelle.getProprietaire();
 			        if(joueurs[curseur].decision_vente(proprietaire)) {
 			            int prix = pos_actuelle.getPrix();
 			            joueurs[curseur].achat_effectue(prix);
 			            proprietaire.vente_effectuee(prix);
 			            pos_actuelle.setProprietaire(joueurs[curseur]);
-			       }
-			    }
-			}
-	   }
+			        }
+    			}
+    		}
+    	}
     }
    
 }

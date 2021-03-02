@@ -1,3 +1,5 @@
+package monopoly;
+
 public abstract class Cases {
 	
 	String type;
@@ -8,6 +10,7 @@ public abstract class Cases {
 		this.nom = nom;
 	}
 
+	//Getters
 	public String getNom() { return nom; }
 	
 	public String getType() { return type; }
