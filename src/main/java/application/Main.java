@@ -2,6 +2,7 @@ package application;
 	
 import javafx.application.Application;
 import javafx.stage.Stage;
+import monopoly.*;
 
 public class Main extends Application {
 	
@@ -9,21 +10,10 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-		/*try {
-			URL url = getClass().getResource("/Monopoly.fxml");
-			FXMLLoader fxmlLoader = new FXMLLoader(url);
-			AnchorPane root = (AnchorPane) fxmlLoader.load();
-			Scene scene = new Scene(root, 400, 400);
-			primaryStage.setMaximized(true);
-			primaryStage.setScene(scene);
-			
-			primaryStage.show();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		*/
 		
-		Controleur controleur = new Controleur();
+		//Controleur controleur = new Controleur();
+		Jeu jeu = new Jeu();
+		Controleur controleur = new Controleur(jeu);
 		vue = new Vue(controleur);
 		controleur.setVue(vue);
 	}
