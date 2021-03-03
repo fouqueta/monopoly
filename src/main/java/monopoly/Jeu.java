@@ -73,7 +73,7 @@ public class Jeu {
     }
     
     public void finTour() {
-    	if (curseur==3) {
+    	if (curseur==5) {
     		curseur=0;
     	}else {
     		curseur++;
@@ -84,7 +84,7 @@ public class Jeu {
     //Gestion de l'achat/vente de proprietes
     public void achat_ou_vente(Pion p) {
     	Cases case_actuelle = plateau.getCases(p.getPosition());
-    	if(case_actuelle.getType() == "Propriete") {
+    	if(case_actuelle.getType().equals("Propriete")) {
     		Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
     		if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
     			pos_actuelle.toString();
