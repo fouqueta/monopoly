@@ -32,7 +32,7 @@ public class Jeu {
     //Gestion des deplacements
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
-    	for(int i=0;i<nbCases;i++){
+    	for(int i=1;i<=nbCases;i++){
 	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
 	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
 	  		}
@@ -56,11 +56,11 @@ public class Jeu {
     //Gestion de debut et fin de tour
     public void debutTour() {
     	System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
-		System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
     	String s = joueurs[curseur].questionDes();
     	if (s=="go") {
     		int[] des = lancer_de_des();
     		deplace(joueurs[curseur].getPion(), des);
+			System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
     		achat_ou_vente(joueurs[curseur].getPion());
     		finTour();
     	}else debutTour();
