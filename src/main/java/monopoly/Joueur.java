@@ -49,6 +49,8 @@ public class Joueur{
 	public boolean aCarteLibPrison() { 	return carteLibPrison; }
 
 	//Setters
+	public void setNom (String nom) { this.nom=nom; }
+	
 	public void setArgent(int argent) { this.argent = argent; }
 	
 	public void setEnPrison(boolean enPrison) { this.enPrison = enPrison; }
@@ -56,7 +58,7 @@ public class Joueur{
 	public void setNbToursPrison(int nbToursPrison) { this.nbToursPrison = nbToursPrison; }
 	
 	public void setCarteLibPrison(boolean carteLibPrison) { this.carteLibPrison = carteLibPrison; }
-
+	
    
     //Gestion de lancement de des
     public void questionDes() {

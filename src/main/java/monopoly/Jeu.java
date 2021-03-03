@@ -9,7 +9,7 @@ public class Jeu {
     private int curseur;
 
     public Jeu() {
-        joueurs = new Joueur[4];
+        joueurs = new Joueur[6];
         joueurs[0] = new Joueur("1");
         joueurs[1] = new Joueur("2");
         joueurs[2] = new Joueur("3");

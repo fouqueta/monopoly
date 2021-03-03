@@ -12,7 +12,7 @@ public class Plateau {
     private Cartes[] cartesCommu;
     private Scanner scan;
 
-    Plateau(){
+    public Plateau(){
     	init_plateau();
     	init_cartes();
     }

@@ -3,10 +3,13 @@ package application;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -25,6 +28,9 @@ public class Vue {
 	private Scene scene_jeu;
 	private Jeu jeu;
 
+	//Accueil
+	private AnchorPane scene_accueil;
+	
 		//Plateau
 	private AnchorPane jeu_pane;
 	private Pane plateau_pane;
@@ -37,11 +43,15 @@ public class Vue {
 	
 		//Joueurs
 	private AnchorPane joueurs_pane;
-	private Label[] label_tab = new Label[4]; //TODO: Paramètres du nombre de joueurs.
+	private Label[] label_tab = new Label[6]; //TODO: Paramètres du nombre de joueurs.
 	
 		//Boutons
 	private AnchorPane achat_vente_pane;
 	private Button lancer;
+	private HBox boutons_box;
+	private Button regles_button;
+	private Button aide_button;
+	private Button quitter_button;
 	
 	//Controleur
 	private Controleur controleur;
@@ -54,11 +64,12 @@ public class Vue {
 		stage.setMaximized(true);
 		root = new AnchorPane();
 		
-		jeu = controleur.getJeu();
+		//jeu = controleur.getJeu();
 		//jeu = new Jeu();
 		
 		initilisation_scene_jeu();
-		initialisation_plateau();
+		accueil_jeu();
+		/*initialisation_plateau();
 		
 		affichage_joueurs();
 		boutons_achat_vente();
@@ -67,7 +78,7 @@ public class Vue {
 		affichage_pions_initial();
 		
 		bouton_lancer_de_des();
-		bouton_fin_de_tour();
+		bouton_fin_de_tour();*/
 		
 		//Tests :
 		//changement_position_pion(0, 0, 26);
@@ -83,6 +94,60 @@ public class Vue {
 		scene_jeu.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		stage.setScene(scene_jeu);	
 	}
+	
+	void accueil_jeu() {
+		scene_accueil = new AnchorPane();
+		scene_accueil.setPrefSize(tailleEcran.width,tailleEcran.height);
+		scene_accueil.setStyle("-fx-background-color: #BAEEB4");
+		
+		GridPane grid = new GridPane();
+		grid.setVgap(10);
+		grid.setPadding(new Insets(300, 700, 450, 700));
+		TextField tf0 = new TextField ();
+		tf0.setPromptText("Pseudo du joueur 1");
+		GridPane.setConstraints(tf0, 0, 0);
+		TextField tf1 = new TextField ();
+		tf1.setPromptText("Pseudo du joueur 2");
+		GridPane.setConstraints(tf1, 0, 1);
+		TextField tf2 = new TextField ();
+		tf2.setPromptText("Pseudo du joueur 3");
+		GridPane.setConstraints(tf2, 0, 2);
+		TextField tf3 = new TextField ();
+		tf3.setPromptText("Pseudo du joueur 4");
+		GridPane.setConstraints(tf3, 0, 3);
+		TextField tf4 = new TextField ();
+		tf4.setPromptText("Pseudo du joueur 5");
+		GridPane.setConstraints(tf4, 0, 4);
+		TextField tf5 = new TextField ();
+		tf5.setPromptText("Pseudo du joueur 5");
+		GridPane.setConstraints(tf5, 0, 5);
+		grid.getChildren().addAll(tf0,tf1,tf2,tf3,tf4,tf5);
+		
+		Button valider = new Button("Valider");
+		grid.add(valider,0,7);
+		valider.setOnAction(e->{
+			/*jeu.getJoueurs()[0].setNom(tf0.getText());
+			jeu.getJoueurs()[1].setNom(tf1.getText());
+			jeu.getJoueurs()[2].setNom(tf2.getText());
+			jeu.getJoueurs()[3].setNom(tf3.getText());
+			jeu.getJoueurs()[4].setNom(tf4.getText());
+			jeu.getJoueurs()[5].setNom(tf5.getText());*/
+			initialisation_plateau();
+			affichage_joueurs();
+			boutons_achat_vente();
+			bouton_fin_de_tour();
+			boutons_jeu();
+		
+			definition_label();
+			affichage_pions_initial();
+			
+			bouton_lancer_de_des();
+		});
+		
+		scene_accueil.getChildren().add(grid);
+		root.getChildren().add(scene_accueil);
+		
+}
 	
 	//Interface graphique : Plateau de jeu
 	void initialisation_plateau() {
@@ -173,6 +238,7 @@ public class Vue {
 			Pane joueur_case = new Pane();
 			joueur_case.setPrefSize(tailleEcran.width - 850, (int) ((tailleEcran.height-50)/nbr));
 			Label label = new Label("Joueur " + String.valueOf(i));
+			//Label label = new Label(jeu.getJoueurs()[i].getNom());
 			joueur_case.getChildren().add(label);
 			joueur_case.setStyle("-fx-background-color: pink; -fx-border-color: white");
 			joueurs_liste.getChildren().add(joueur_case);
@@ -264,5 +330,17 @@ public class Vue {
 			controleur.controleur_fin();
 			lancer.setDisable(false);
 		});
+	}
+	
+	void boutons_jeu() {
+		boutons_box = new HBox();
+		regles_button = new Button("Regles");
+		aide_button = new Button("Aide");
+		quitter_button = new Button("Quitter");
+		boutons_box.getChildren().addAll(regles_button,aide_button,quitter_button);
+		boutons_box.setLayoutX(300);
+		boutons_box.setLayoutY(700);
+		jeu_pane.getChildren().add(boutons_box);
+		
 	}
 }
