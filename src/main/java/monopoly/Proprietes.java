@@ -41,7 +41,7 @@ public class Proprietes extends Cases {
 		return("Prix d'achat: " + this.prixAchat + " , Loyer actuel: " + this.loyer + " , Couleur: " + this.couleur + " , Nom: " + this.nom);
 	}
 	
-	//V�rification
+	//Verification
 	public boolean est_Libre() {
 		if(this.proprietaire == null) { return true; }
 		return false;
