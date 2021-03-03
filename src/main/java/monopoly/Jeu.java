@@ -56,6 +56,7 @@ public class Jeu {
     //Gestion de debut et fin de tour
     public void debutTour() {
     	System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
+		System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
     	String s = joueurs[curseur].questionDes();
     	if (s=="go") {
     		int[] des = lancer_de_des();
@@ -84,23 +85,33 @@ public class Jeu {
     			pos_actuelle.toString();
     			if(joueurs[curseur].decision_achat()) {
     				int prix = pos_actuelle.getPrix();
-    				joueurs[curseur].achat_effectue(prix);
+    				joueurs[curseur].achat_effectue(prix,pos_actuelle);
     				pos_actuelle.setProprietaire(joueurs[curseur]);
+					System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
     			}
     		}
-    		else {
-    			//TODO: Loyer
-    			if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    		else if(pos_actuelle.getProprietaire()!=joueurs[curseur]){
+    			loyer(pos_actuelle);
+    			if(!(pos_actuelle.est_Libre()) && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
     				Joueur proprietaire = pos_actuelle.getProprietaire();
 			        if(joueurs[curseur].decision_vente(proprietaire)) {
 			            int prix = pos_actuelle.getPrix();
-			            joueurs[curseur].achat_effectue(prix);
-			            proprietaire.vente_effectuee(prix);
+			            joueurs[curseur].achat_effectue(prix,pos_actuelle);
+			            proprietaire.vente_effectuee(prix, pos_actuelle);
 			            pos_actuelle.setProprietaire(joueurs[curseur]);
+						System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
 			        }
     			}
     		}
     	}
     }
+
+
+    //Loyer
+    private void loyer(Proprietes p){
+    	int argent = joueurs[curseur].paye(p.getLoyer());
+    	p.getProprietaire().ajout(argent);
+		System.out.println("Vous avez payé " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
+	}
    
 }
