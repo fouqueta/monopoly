@@ -26,6 +26,7 @@ public class Joueur{
 	
 	//Setters
 	public void setArgent(int argent) { this.argent = argent; }
+	public void setNom (String nom) { this.nom=nom; }
    
     //Gestion de lancement de des
     public String questionDes() {

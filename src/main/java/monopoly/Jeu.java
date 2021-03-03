@@ -9,11 +9,13 @@ public class Jeu {
     private int curseur;
 
     public Jeu() {
-        joueurs = new Joueur[4];
+        joueurs = new Joueur[6];
         joueurs[0] = new Joueur("1");
         joueurs[1] = new Joueur("2");
         joueurs[2] = new Joueur("3");
         joueurs[3] = new Joueur("4");
+        joueurs[4] = new Joueur("5");
+        joueurs[5] = new Joueur("6");
         plateau = new Plateau("cases.csv");
         curseur = 0;
     }
