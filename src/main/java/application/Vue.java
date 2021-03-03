@@ -37,7 +37,7 @@ public class Vue {
 	
 		//Joueurs
 	private AnchorPane joueurs_pane;
-	private Label[] label_tab = new Label[4]; //TODO: Parametres du nombre de joueurs.
+	private Label[] label_tab = new Label[4]; //TODO: Paramètres du nombre de joueurs.
 	
 		//Boutons
 	private AnchorPane achat_vente_pane;
@@ -54,7 +54,8 @@ public class Vue {
 		stage.setMaximized(true);
 		root = new AnchorPane();
 		
-		jeu = new Jeu();
+		jeu = controleur.getJeu();
+		//jeu = new Jeu();
 		
 		initilisation_scene_jeu();
 		initialisation_plateau();
@@ -167,7 +168,7 @@ public class Vue {
 		
 		VBox joueurs_liste = new VBox();
 		joueurs_pane.getChildren().add(joueurs_liste);
-		int nbr = 6; //TODO: A remplacer par le parametre du nombre de joueurs.
+		int nbr = 6; //TODO: A remplacer par le paramètre du nombre de joueurs.
 		for(int i = 0; i<nbr; i++) { 
 			Pane joueur_case = new Pane();
 			joueur_case.setPrefSize(tailleEcran.width - 850, (int) ((tailleEcran.height-50)/nbr));
@@ -231,7 +232,7 @@ public class Vue {
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
 		Label label_des = new Label("0,0");
-		int curseur = jeu.getCurseur();
+		
 		
 		lancer.setLayoutX(250);
 		lancer.setLayoutY(250);
@@ -243,6 +244,7 @@ public class Vue {
 		plateau_pane.getChildren().add(label_des);
 		
 		lancer.setOnAction(actionEvent -> {
+			int curseur = jeu.getCurseur();
 			int[] des = jeu.lancer_de_des();
 			System.out.println(des[0] + " " + des[1]);
 			controleur.controleur_lancer(des, curseur);

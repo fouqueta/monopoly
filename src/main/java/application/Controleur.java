@@ -17,13 +17,16 @@ public class Controleur {
 	
 	void setJeu(Jeu jeu) { this.jeu = jeu; }
 	
+	//Getters
+	Jeu getJeu() { return this.jeu; }
+	
 	//Lancer de des
 	void controleur_lancer(int[] des, int curseur) {
 		System.out.println(curseur);
 		Pion p = jeu.getJoueurs()[curseur].getPion();
-		jeu.deplace_IG(p, des);
 		int depart = p.getPosition();
-		int arrivee = depart + des[0] + des[1];
+		jeu.deplace_IG(p, des);
+		int arrivee = p.getPosition();
 		vue.changement_position_pion(curseur, depart, arrivee);
 	}
 	
