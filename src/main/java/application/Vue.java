@@ -146,6 +146,7 @@ public class Vue {
 	void initialisation_plateau() {
 		jeu_pane = new AnchorPane();
 		jeu_pane.setPrefSize(750, tailleEcran.height);
+		//jeu_pane.setPrefSize((tailleEcran.width*70)/100, tailleEcran.height);
 		jeu_pane.setStyle("-fx-background-color: gray");
 		root.getChildren().add(jeu_pane);
 		
@@ -162,6 +163,7 @@ public class Vue {
 			tabCase_pane[i] = case_pane;
 			case_pane.setPrefSize(50, 50);
 			case_pane.setStyle("-fx-background-color: pink; -fx-border-color: white");
+			//case_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label label = new Label(String.valueOf(i));
 			case_pane.getChildren().add(label);
@@ -177,6 +179,7 @@ public class Vue {
 			tabCase_pane[i] = case_pane;
 			case_pane.setPrefSize(50, 50);
 			case_pane.setStyle("-fx-background-color: pink; -fx-border-color: white");
+			//case_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label label = new Label(String.valueOf(i));
 			case_pane.getChildren().add(label);
@@ -192,6 +195,7 @@ public class Vue {
 			tabCase_pane[i] = case_pane;
 			case_pane.setPrefSize(50, 50);
 			case_pane.setStyle("-fx-background-color: pink; -fx-border-color: white");
+			//case_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label label = new Label(String.valueOf(i));
 			case_pane.getChildren().add(label);
@@ -208,6 +212,7 @@ public class Vue {
 			tabCase_pane[i] = case_pane;
 			case_pane.setPrefSize(50, 50);
 			case_pane.setStyle("-fx-background-color: pink; -fx-border-color: white");
+			//case_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label label = new Label(String.valueOf(i));
 			case_pane.getChildren().add(label);
@@ -220,8 +225,10 @@ public class Vue {
 	void affichage_joueurs() {
 		joueurs_pane = new AnchorPane();
 		joueurs_pane.setPrefSize(tailleEcran.width - 750, tailleEcran.height);
+		//joueurs_pane.setPrefSize((tailleEcran.width*30)/100, tailleEcran.height);
 		joueurs_pane.setStyle("-fx-background-color: pink");
 		joueurs_pane.setLayoutX(850);
+		//joueurs_pane.setLayoutX((tailleEcran.width*70)/100);
 		root.getChildren().add(joueurs_pane);
 		
 		VBox joueurs_liste = new VBox();
@@ -230,9 +237,11 @@ public class Vue {
 		for(int i = 0; i<nbr; i++) { 
 			Pane joueur_case = new Pane();
 			joueur_case.setPrefSize(tailleEcran.width - 850, (int) ((tailleEcran.height-50)/nbr));
+			//joueur_case.setPrefSize((tailleEcran.width*20)/100, (int) ((tailleEcran.height-50)/nbr));
 			Label label = new Label("Joueur "+ String.valueOf(i+1)+": "+jeu.getJoueurs()[i].getNom());
 			joueur_case.getChildren().add(label);
 			joueur_case.setStyle("-fx-background-color: pink; -fx-border-color: white");
+			//joueur_case.setStyle("-fx-background-color: gray; -fx-border-color: black");
 			joueurs_liste.getChildren().add(joueur_case);
 		}
 	}
