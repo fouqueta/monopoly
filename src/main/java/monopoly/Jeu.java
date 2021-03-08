@@ -28,6 +28,10 @@ public class Jeu {
   	public int getCurseur() {
   		return curseur;
   	}
+  	
+  	public Plateau getPlateau() {
+  		return plateau;
+  	}
     
     //Affichage
     public void affiche(){
@@ -125,6 +129,19 @@ public class Jeu {
     		curseur=0;
     	}else {
     		curseur++;
+    	}
+    }
+    
+    public void achat_ou_vente_IG(Pion p) {
+    	Cases case_actuelle = plateau.getCases(p.getPosition());
+    	if(case_actuelle.getType().equals("Propriete")) {
+    		Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
+    		if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    			pos_actuelle.toString();
+    			int prix = pos_actuelle.getPrix();
+				joueurs[curseur].achat_effectue(prix);
+				pos_actuelle.setProprietaire(joueurs[curseur]);
+    		}
     	}
     }
 }
