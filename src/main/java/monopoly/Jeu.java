@@ -7,6 +7,7 @@ public class Jeu {
     private Joueur[] joueurs;
     private Plateau plateau;
     private int curseur;
+    private int nbJ;
 
     public Jeu() {
         joueurs = new Joueur[6];
@@ -18,6 +19,15 @@ public class Jeu {
         curseur = 0;
     }
     
+    public void initialisation_joueurs(String[] noms){
+		nbJ = noms.length;
+		joueurs = new Joueur[nbJ];
+		for(int i=0;i<nbJ;i++){
+			joueurs[i] = new Joueur(noms[i]);
+		}
+	}
+
+    
     //Getters
   	public Joueur[] getJoueurs() {
   		return joueurs;
@@ -25,6 +35,10 @@ public class Jeu {
   	
   	public int getCurseur() {
   		return curseur;
+  	}
+  	
+  	public Plateau getPlateau() {
+  		return plateau;
   	}
     
     //Affichage
@@ -243,10 +257,10 @@ public class Jeu {
     }
 
     
-    //Interface graphique
+  //Interface graphique
     public void deplace_IG(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
-    	for(int i=0;i<nbCases;i++){
+    	for(int i=1;i<=nbCases;i++){
 	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
 	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
 	  		}
@@ -255,11 +269,31 @@ public class Jeu {
     }
     
     public void finTour_IG() {
-    	if (curseur==3) {
-    		curseur=0;
-    	}else {
-    		curseur++;
+		curseur = (curseur + 1) % nbJ;
+    }
+    
+    public void achat_IG(Pion p) {
+    	Cases case_actuelle = plateau.getCases(p.getPosition());
+    	if(case_actuelle.getType().equals("Propriete")) {
+    		Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
+    		if(pos_actuelle.est_Libre()){
+    			pos_actuelle.toString();
+    			int prix = pos_actuelle.getPrix();
+    			joueurs[curseur].achat_effectue(prix,pos_actuelle);
+				pos_actuelle.setProprietaire(joueurs[curseur]);
+    		}
     	}
     }
     
+    public void vente_IG(Pion p ) {
+    	Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
+    	//if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+			Joueur proprietaire = pos_actuelle.getProprietaire();
+	            int prix = pos_actuelle.getPrix();
+	            joueurs[curseur].achat_effectue(prix,pos_actuelle);
+	            proprietaire.vente_effectuee(prix, pos_actuelle);
+	            pos_actuelle.setProprietaire(joueurs[curseur]);
+	       // }
+    }
+
 }

@@ -22,7 +22,7 @@ public class Controleur {
 	
 	//Lancer de des
 	void controleur_lancer(int[] des, int curseur) {
-		System.out.println(curseur);
+		System.out.println("Curseur: " + curseur);
 		Pion p = jeu.getJoueurs()[curseur].getPion();
 		int depart = p.getPosition();
 		jeu.deplace_IG(p, des);
@@ -32,5 +32,14 @@ public class Controleur {
 	
 	void controleur_fin() {
 		jeu.finTour_IG();
+	}
+	
+	//Gestion de l'achat/vente
+	void controleur_achat(int curseur) {
+		Pion p = jeu.getJoueurs()[curseur].getPion();
+		int position = p.getPosition();
+		jeu.achat_ou_vente_IG(p);
+		
+		vue.changement_couleur_case(curseur, position);
 	}
 }
