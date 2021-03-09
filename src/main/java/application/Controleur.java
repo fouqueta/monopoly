@@ -32,6 +32,7 @@ public class Controleur {
 	
 	void controleur_fin() {
 		jeu.finTour_IG();
+		vue.changement_joueur_actuel();
 	}
 	
 	//Gestion de l'achat/vente
