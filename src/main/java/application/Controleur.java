@@ -26,6 +26,7 @@ public class Controleur {
 		Pion p = jeu.getJoueurs()[curseur].getPion();
 		int depart = p.getPosition();
 		jeu.deplace_IG(p, des);
+		vue.changement_argent(curseur);
 		int arrivee = p.getPosition();
 		vue.changement_position_pion(curseur, depart, arrivee);
 	}

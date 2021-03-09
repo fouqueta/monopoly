@@ -116,7 +116,7 @@ public class Jeu {
     //Interface graphique
     public void deplace_IG(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
-    	for(int i=0;i<nbCases;i++){
+    	for(int i=1;i<=nbCases;i++){
 	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
 	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
 	  		}
@@ -136,7 +136,8 @@ public class Jeu {
     	Cases case_actuelle = plateau.getCases(p.getPosition());
     	if(case_actuelle.getType().equals("Propriete")) {
     		Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
-    		if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    		//if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    		if(pos_actuelle.est_Libre()){
     			pos_actuelle.toString();
     			int prix = pos_actuelle.getPrix();
 				joueurs[curseur].achat_effectue(prix);
