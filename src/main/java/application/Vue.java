@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import monopoly.*;
 
@@ -45,6 +46,7 @@ public class Vue {
 	private AnchorPane joueurs_pane;
 	private Label[] pseudo_tab = new Label[6]; //TODO: Parametres du nombre de joueurs.
 	private Pane[] joueursPane_tab = new Pane[6];
+	private Label joueur_actuel;
 	
 		//Boutons
 	private Button lancer;
@@ -187,6 +189,12 @@ public class Vue {
 			
 			ligne_bas.getChildren().add(tabCase_pane[i]);
 		}
+		
+		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
+		joueur_actuel.setLayoutX(300);
+		joueur_actuel.setLayoutY(630);
+		joueur_actuel.setFont(new Font("Arial", 30));
+		jeu_pane.getChildren().add(joueur_actuel);
 	}
 	
 	//Interface graphique : Informations des joueurs
@@ -289,6 +297,16 @@ public class Vue {
 		joueursPane_tab[curseur].getChildren().add(argent);
 	}
 	
+	public void changement_joueur_actuel() {
+		jeu_pane.getChildren().remove(joueur_actuel);
+		joueur_actuel = new Label("Au tour de J"+ String.valueOf(jeu.getCurseur()+1));
+		joueur_actuel.setLayoutX(300);
+		joueur_actuel.setLayoutY(630);
+		joueur_actuel.setFont(new Font("Arial", 30));
+
+		jeu_pane.getChildren().add(joueur_actuel);
+	}
+	
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
@@ -312,6 +330,7 @@ public class Vue {
 			
 			achat_tab[curseur].setDisable(false);
 			bouton_achat(curseur);
+			
 		});
 	}
 	
