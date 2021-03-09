@@ -306,6 +306,7 @@ public class Vue {
 
 		jeu_pane.getChildren().add(joueur_actuel);
 	}
+
 	
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
@@ -328,9 +329,7 @@ public class Vue {
 			controleur.controleur_lancer(des, curseur);
 			lancer.setDisable(true);
 			
-			achat_tab[curseur].setDisable(false);
 			bouton_achat(curseur);
-			
 		});
 	}
 	
@@ -398,13 +397,36 @@ public class Vue {
 	void bouton_achat(int curseur) {
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		
-		if(position != 0) { //TODO: Vérifier que le joueur a assez d'argent pour disable(false) le bouton
+		int argent_joueur = jeu.getJoueurs()[curseur].getArgent();
+		Cases case_curseur = jeu.getPlateau().getGrille()[position];
+		
+		boolean libre = false;
+		boolean argent_suffisant = false;
+		if(case_curseur.getType().equals("Propriete")) {
+			Proprietes prop_curseur = (Proprietes) jeu.getPlateau().getGrille()[position];
+			if(prop_curseur.est_Libre()) { 
+				libre = true; 
+			}
+			if(argent_joueur >= prop_curseur.getPrix()) {
+				argent_suffisant = true;
+			}
+		}
+		
+		int[] non_achetables = {0,2,4,7,10,17,20,22,30,33,36,38};
+		boolean position_valide = true;
+		for(int i = 0; i<non_achetables.length;i++) {
+			if(position == non_achetables[i]) {
+				position_valide = false;
+			}
+		}
+		
+		if(libre && argent_suffisant && position_valide) {
 			achat_tab[curseur].setDisable(false);
 			achat_tab[curseur].setOnAction(actionEvent ->{
 				controleur.controleur_achat(curseur);
 				achat_tab[curseur].setDisable(true);
 				changement_argent(curseur);
-			}); //TODO: Case départ qui donne de l'argent des le premier tour
+			});
 		}
 	}
 	
@@ -459,22 +481,6 @@ public class Vue {
 			boutons_jeu();
 			initialisation_boutons_achat_vente();
 
-		});
-		
-		Button passer = new Button("Passer (test)");
-		grid.add(passer,0,8);
-		passer.setOnAction(actionEvent->{
-			initialisation_plateau();
-			
-			affichage_joueurs();
-			
-			definition_label();
-			affichage_pions_initial();
-			
-			bouton_lancer_de_des();
-			bouton_fin_de_tour();
-			boutons_jeu();
-			initialisation_boutons_achat_vente();
 		});
 		
 		scene_accueil.getChildren().add(grid);
