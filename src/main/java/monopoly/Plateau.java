@@ -13,7 +13,7 @@ public class Plateau {
     Plateau(String fichier){
     	scan = null;
     	try {
-    		scan = new Scanner(new File(".../"+fichier), "UTF-8");
+    		scan = new Scanner(new File(fichier), "UTF-8");
     	}
     	catch(Exception e) {
     		System.out.println("Erreur lors d ouverture fichier:");

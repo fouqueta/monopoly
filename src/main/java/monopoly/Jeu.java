@@ -7,18 +7,21 @@ public class Jeu {
     private Joueur[] joueurs;
     private Plateau plateau;
     private int curseur;
+	private int nbJ;
 
     public Jeu() {
-        joueurs = new Joueur[6];
-        joueurs[0] = new Joueur("1");
-        joueurs[1] = new Joueur("2");
-        joueurs[2] = new Joueur("3");
-        joueurs[3] = new Joueur("4");
-        joueurs[4] = new Joueur("5");
-        joueurs[5] = new Joueur("6");
         plateau = new Plateau("cases.csv");
         curseur = 0;
     }
+
+	public void initialisation_joueurs(String[] noms){
+		nbJ = noms.length;
+		joueurs = new Joueur[nbJ];
+		for(int i=0;i<nbJ;i++){
+			joueurs[i] = new Joueur(noms[i]);
+		}
+
+	}
     
     //Getters
   	public Joueur[] getJoueurs() {
@@ -32,6 +35,10 @@ public class Jeu {
   	public Plateau getPlateau() {
   		return plateau;
   	}
+
+	public int getNbJ(){
+		return nbJ;
+	}
     
     //Affichage
     public void affiche(){
@@ -77,11 +84,7 @@ public class Jeu {
     }
     
     public void finTour() {
-    	if (curseur==5) {
-    		curseur=0;
-    	}else {
-    		curseur++;
-    	}
+		curseur = (curseur + 1) % nbJ;
     	debutTour();
     }
     
@@ -125,11 +128,7 @@ public class Jeu {
     }
     
     public void finTour_IG() {
-    	if (curseur==3) {
-    		curseur=0;
-    	}else {
-    		curseur++;
-    	}
+		curseur = (curseur + 1) % nbJ;
     }
     
     public void achat_ou_vente_IG(Pion p) {

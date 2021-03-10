@@ -13,7 +13,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("monopoly.Main")
+    mainClass.set("application.Main")
 }
 
 javafx {
