@@ -9,5 +9,8 @@ public class CasesSpeciales extends Cases {
 		this.transaction = transaction;		
 	}
 
+	//Getters
+	public int getTransaction() { return transaction; }
+
 
 }

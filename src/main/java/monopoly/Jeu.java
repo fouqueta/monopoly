@@ -34,11 +34,29 @@ public class Jeu {
     	int nbCases = des[0] + des[1];
     	for(int i=1;i<=nbCases;i++){
 	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
-	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
+	  			joueurs[curseur].ajout(2000);
 	  		}
 	  	} 
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
+    	surCaseSpeciale(pion.getPosition());
     	affiche();
+    }
+    
+    //Si le pion est sur une case speciale/commu/chance, effectue les actions speciales associees a cette case
+    public void surCaseSpeciale(int position) {
+    	Cases caseC = plateau.getCases(position);
+    	if (caseC instanceof Proprietes) { return; }
+    	if (caseC instanceof CasesSpeciales) {
+    		switch (caseC.getNom()) {
+				case "Impots revenu" :
+				case "Taxe de luxe" :
+					joueurs[curseur].ajout( ((CasesSpeciales)caseC).getTransaction() );
+					System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
+					break;
+				//case "Aller Prison" :
+    		}
+    	}
+    	
     }
 
 	//Gestion de lancement de des
