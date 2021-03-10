@@ -13,6 +13,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import monopoly.*;
@@ -198,6 +200,116 @@ public class Vue {
 		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 		jeu_pane.getChildren().add(joueur_actuel);
+		
+		initialisation_familles();
+	}
+	
+	void initialisation_familles() {
+		//Famille violette
+		for(int i = 1; i<4; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete")) {
+				Rectangle rec = bordure("violette");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille ciel
+		for(int i = 6; i<10; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete")) {
+				Rectangle rec = bordure("ciel");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille rose
+		for(int i = 11; i<15; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete") && i != 12) {
+				Rectangle rec = bordure("rose");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille orange
+		for(int i = 16; i<20; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete")) {
+				Rectangle rec = bordure("orange");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille rouge
+		for(int i = 21; i<25; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete")) {
+				Rectangle rec = bordure("rouge");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille jaune
+		for(int i = 26; i<30; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete") && i != 28) {
+				Rectangle rec = bordure("jaune");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille verte
+		for(int i = 31; i<35; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete")) {
+				Rectangle rec = bordure("verte");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+		
+		//Famille bleue
+		for(int i = 37; i<40; i++) {
+			Cases case_curseur = jeu.getPlateau().getGrille()[i];
+			if(case_curseur.getType().equals("Propriete")) {
+				Rectangle rec = bordure("bleue");
+				tabCase_pane[i].getChildren().add(rec);
+			}
+		}
+	}
+	
+	Rectangle bordure(String couleur) {
+		Rectangle rec = new Rectangle();
+		rec.setWidth(5);
+		rec.setHeight(50);
+		rec.setLayoutX(45);
+		switch(couleur) {
+		case "violette":
+			rec.setFill(Color.rgb(125,122,188));
+			break;
+		case "ciel":
+			rec.setFill(Color.rgb(109,157,197));
+			break;
+		case "rose":
+			rec.setFill(Color.rgb(238,180,179));
+			break;
+		case "orange":
+			rec.setFill(Color.rgb(255,158,31));
+			break;
+		case "rouge":
+			rec.setFill(Color.rgb(163,0,33));
+			break;
+		case "jaune":
+			rec.setFill(Color.rgb(255,196,61));
+			break;
+		case "verte":
+			rec.setFill(Color.rgb(185,255,183));
+			break;
+		case "bleue":
+			rec.setFill(Color.rgb(16,37,66));
+			break;
+		}
+		return rec;
 	}
 	
 	//Interface graphique : Informations des joueurs
