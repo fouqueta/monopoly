@@ -441,6 +441,7 @@ public class Vue {
 		Label argent = new Label("Argent :" + jeu.getJoueurs()[curseur].getArgent());
 		
 		argent.setLayoutY(50);
+		argent.setLayoutX(10);
 		joueursPane_tab[curseur].getChildren().add(argent);
 	}
 	
@@ -482,6 +483,7 @@ public class Vue {
 	void bouton_fin_de_tour() {
 		Button fin = new Button("Fin");
 		
+		
 		fin.setLayoutX(250);
 		fin.setLayoutY(300);
 		
@@ -489,7 +491,9 @@ public class Vue {
 		
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
+			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 			achat_tab[curseur].setDisable(true);
+			vente_tab[proprietaires[position]].setDisable(true);
 			
 			controleur.controleur_fin();
 			lancer.setDisable(false);
@@ -576,28 +580,27 @@ public class Vue {
 			});
 		}else {
 			//avec proprietaire
-			if(!libre && argent_suffisant && position_valide) {
-				achat_tab[curseur].setDisable(false);
-				achat_tab[curseur].setOnAction(actionEvent ->{
-					vente_accepte(curseur,position);
-					
-					achat_tab[curseur].setDisable(true);
-					changement_argent(curseur);
-					changement_argent(proprietaires[position]);
-					proprietaires[position]=curseur;
-				});		
-			}	
+			if(!libre && argent_suffisant && position_valide && proprietaires[position]!=curseur) {
+				bouton_vente(curseur,position);
+			}
 		}
-		
 	}
-			
-	void vente_accepte(int curseur, int position) {
-		vente_tab[proprietaires[position]].setDisable(false);
-		vente_tab[proprietaires[position]].setOnAction(actionEvent ->{
-			controleur.controleur_vente(curseur);
-			vente_tab[proprietaires[position]].setDisable(true);
+	
+	void bouton_vente(int curseur, int position) {
+		achat_tab[curseur].setDisable(false);
+		
+		achat_tab[curseur].setOnAction(actionEvent ->{
+			achat_tab[curseur].setDisable(true);
+			vente_tab[proprietaires[position]].setDisable(false);			
 		});
-
+		
+		vente_tab[proprietaires[position]].setOnAction(actionEvent ->{
+			vente_tab[proprietaires[position]].setDisable(true);
+			controleur.controleur_vente(curseur);
+			changement_argent(curseur);
+			changement_argent(proprietaires[position]);
+			proprietaires[position]=curseur;
+		});
 	}
 	
 	//Interface graphique : Accueil
