@@ -32,19 +32,28 @@ public class Jeu {
     //Gestion des deplacements
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
-    	for(int i=1;i<=nbCases;i++){
-	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
-	  			joueurs[curseur].ajout(2000);
-	  		}
-	  	} 
-    	pion.setPosition((pion.getPosition() + nbCases) % 40);
-    	surCaseSpeciale(pion.getPosition());
-    	affiche();
+    	Joueur joueurJ = joueurs[curseur];
+    	if ( joueurJ.isEnPrison() && (des[0] == des[1] || joueurJ.getNbToursPrison() == 1) ) {
+    		System.out.println("Vous etes libere de prison !");
+    		joueurJ.setEnPrison(false);
+    	}
+    	if (!(joueurJ.isEnPrison())) { //Si le joueur n'est pas en prison
+    		for(int i=1;i<=nbCases;i++){
+    			if((joueurJ.getPion().getPosition()+i)%40==0) { joueurJ.ajout(2000); }
+    		}
+    		pion.setPosition((pion.getPosition() + nbCases) % 40);
+    		surCaseSpeciale(pion);
+        	affiche();
+        	return;
+    	} //Si le joueur est en prison
+    	joueurJ.setNbToursPrison(joueurJ.getNbToursPrison()-1);
+    	System.out.println("Vous etes en prison. Il faut faire un double ou attendre encore " + joueurJ.getNbToursPrison() 
+    			+ " tours pour etre libere.");
     }
     
     //Si le pion est sur une case speciale/commu/chance, effectue les actions speciales associees a cette case
-    public void surCaseSpeciale(int position) {
-    	Cases caseC = plateau.getCases(position);
+    public void surCaseSpeciale(Pion pion) {
+    	Cases caseC = plateau.getCases(pion.getPosition());
     	if (caseC instanceof Proprietes) { return; }
     	if (caseC instanceof CasesSpeciales) {
     		switch (caseC.getNom()) {
@@ -53,7 +62,12 @@ public class Jeu {
 					joueurs[curseur].ajout( ((CasesSpeciales)caseC).getTransaction() );
 					System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
 					break;
-				//case "Aller Prison" :
+				case "Aller prison" :
+					System.out.println("Vous etes en prison.");
+					joueurs[curseur].setEnPrison(true);
+					joueurs[curseur].setNbToursPrison(3);
+					pion.setPosition(10); //Correspond a la case Prison
+					break;
     		}
     	}
     	

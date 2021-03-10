@@ -1,5 +1,5 @@
 TYPE;NOM;COULEUR;PRIXACHAT;LOYER;TRANSACTION
-CasesSpeciales;Depart;;;;0
+CasesSpeciales;Depart;;;;2000
 Proprietes;Belleville;violet;600;20-40;
 CasesCommunaute;Communaute;;;;
 Proprietes;Lecourbe;violet;600;40-70;

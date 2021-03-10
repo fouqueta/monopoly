@@ -8,6 +8,8 @@ public class Joueur{
     private Pion pion;
     private int argent;
     private Proprietes[] proprietes; // Proprietes possedees par un joueur
+    private boolean enPrison;
+    private int nbToursPrison;
     Scanner reponse;
     
     public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
@@ -15,6 +17,7 @@ public class Joueur{
     	pion = new Pion(0);
     	argent = 10000;
     	proprietes = new Proprietes[0];
+    	enPrison = false;
     	this.reponse = new Scanner(System.in);
     }
     
@@ -36,9 +39,17 @@ public class Joueur{
 		}
     	return cpt;
 	}
+
+	public boolean isEnPrison() { return enPrison; }
+	
+	public int getNbToursPrison() { return nbToursPrison; }
 	
 	//Setters
 	public void setArgent(int argent) { this.argent = argent; }
+	
+	public void setEnPrison(boolean enPrison) { this.enPrison = enPrison; }
+	
+	public void setNbToursPrison(int nbToursPrison) { this.nbToursPrison = nbToursPrison; }
 
    
     //Gestion de lancement de des
