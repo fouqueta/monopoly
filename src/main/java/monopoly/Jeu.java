@@ -145,4 +145,16 @@ public class Jeu {
     		}
     	}
     }
+    
+    public void vente_IG(Pion p ) {
+    	Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
+    	//if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+			Joueur proprietaire = pos_actuelle.getProprietaire();
+	            int prix = pos_actuelle.getPrix();
+	            joueurs[curseur].achat_effectue(prix);
+	            proprietaire.vente_effectuee(prix);
+	          //  pos_actuelle.setProprietaire(joueurs[curseur]);
+	       // }
+		
+    }
 }

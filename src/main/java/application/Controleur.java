@@ -37,11 +37,22 @@ public class Controleur {
 	}
 	
 	//Gestion de l'achat/vente
-	void controleur_achat(int curseur) {
+	void controleur_achat_sans_prop(int curseur) {
 		Pion p = jeu.getJoueurs()[curseur].getPion();
 		int position = p.getPosition();
 		jeu.achat_ou_vente_IG(p);
-		
+		vue.changement_couleur_case(curseur, position);
+	}
+	
+	void controleur_achat_avec_prop(int curseur) {
+		Pion p = jeu.getJoueurs()[curseur].getPion();
+		jeu.achat_ou_vente_IG(p);
+	}
+	
+	void controleur_vente(int curseur) {
+		Pion p = jeu.getJoueurs()[curseur].getPion();
+		int position = p.getPosition();
+		jeu.vente_IG(p);
 		vue.changement_couleur_case(curseur, position);
 	}
 }

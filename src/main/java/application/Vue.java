@@ -42,6 +42,9 @@ public class Vue {
 	private HBox ligne_bas;
 	private HBox ligne_haut;
 	
+	//Proprietaires
+	private int[] proprietaires = new int [40];
+	
 		//Joueurs
 	private AnchorPane joueurs_pane;
 	private Label[] pseudo_tab = new Label[6]; //TODO: Parametres du nombre de joueurs.
@@ -419,15 +422,39 @@ public class Vue {
 				position_valide = false;
 			}
 		}
-		
+		//sans proprietaire
 		if(libre && argent_suffisant && position_valide) {
 			achat_tab[curseur].setDisable(false);
 			achat_tab[curseur].setOnAction(actionEvent ->{
-				controleur.controleur_achat(curseur);
+				proprietaires[position]=curseur;
+				controleur.controleur_achat_sans_prop(curseur);
 				achat_tab[curseur].setDisable(true);
 				changement_argent(curseur);
 			});
+		}else {
+			//avec proprietaire
+			if(!libre && argent_suffisant && position_valide) {
+				achat_tab[curseur].setDisable(false);
+				achat_tab[curseur].setOnAction(actionEvent ->{
+					vente_accepte(curseur,position);
+					
+					achat_tab[curseur].setDisable(true);
+					changement_argent(curseur);
+					changement_argent(proprietaires[position]);
+					proprietaires[position]=curseur;
+				});		
+			}	
 		}
+		
+	}
+			
+	void vente_accepte(int curseur, int position) {
+		vente_tab[proprietaires[position]].setDisable(false);
+		vente_tab[proprietaires[position]].setOnAction(actionEvent ->{
+			controleur.controleur_vente(curseur);
+			vente_tab[proprietaires[position]].setDisable(true);
+		});
+
 	}
 	
 	//Interface graphique : Accueil
