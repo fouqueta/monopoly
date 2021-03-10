@@ -195,7 +195,7 @@ public class Vue {
 		
 		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
 		joueur_actuel.setLayoutX(300);
-		joueur_actuel.setLayoutY(630);
+		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 		jeu_pane.getChildren().add(joueur_actuel);
 	}
@@ -222,11 +222,41 @@ public class Vue {
 			Label argent = new Label("Argent :" + jeu.getJoueurs()[i].getArgent());
 			
 			argent.setLayoutY(50);
+			argent.setLayoutX(10);
+			
+			pseudo.setLayoutX(10);
+			
 			joueursPane_tab[i].setStyle("-fx-background-color: mistyrose; -fx-border-color: white");
-
+			style_pane(i);
+			
 			joueursPane_tab[i].getChildren().add(pseudo);
 			joueursPane_tab[i].getChildren().add(argent);
 			joueurs_liste.getChildren().add(joueursPane_tab[i]);
+			
+			
+		}
+	}
+	
+	void style_pane(int i) {
+		switch(i){
+			case 0:
+				joueursPane_tab[0].setStyle("-fx-background-color: #C4E6E9; -fx-border-color: white");
+				break;
+			case 1:
+				joueursPane_tab[1].setStyle("-fx-background-color: #F6E8A2; -fx-border-color: white");
+				break;
+			case 2:
+				joueursPane_tab[2].setStyle("-fx-background-color: #DDBDBB; -fx-border-color: white");
+				break;
+			case 3:
+				joueursPane_tab[3].setStyle("-fx-background-color: #ADBAA1; -fx-border-color: white");
+				break;
+			case 4:
+				joueursPane_tab[4].setStyle("-fx-background-color: #B2A9C6; -fx-border-color: white");
+				break;
+			case 5:
+				joueursPane_tab[5].setStyle("-fx-background-color: #E6B589; -fx-border-color: white");
+				break;
 		}
 	}
 	
@@ -272,23 +302,25 @@ public class Vue {
 	}
 	
 	void changement_couleur_case(int curseur, int position) {
-		if(curseur == 0) {
-			tabCase_pane[position].setStyle("-fx-background-color: firebrick; -fx-border-color: black");
-		}
-		else if(curseur == 1) {
-			tabCase_pane[position].setStyle("-fx-background-color: plum; -fx-border-color: black");
-		}
-		else if(curseur == 2) {
-			tabCase_pane[position].setStyle("-fx-background-color: coral; -fx-border-color: black");
-		}
-		else if(curseur == 3) {
-			tabCase_pane[position].setStyle("-fx-background-color: cyan; -fx-border-color: black");
-		}
-		else if(curseur == 4) {
-			tabCase_pane[position].setStyle("-fx-background-color: powderblue; -fx-border-color: black");
-		}
-		else if(curseur == 5) {
-			tabCase_pane[position].setStyle("-fx-background-color: seagreen; -fx-border-color: black");
+		switch(curseur) {
+		case 0:
+			tabCase_pane[position].setStyle("-fx-background-color: #C4E6E9; -fx-border-color: white");
+			break;
+		case 1:
+			tabCase_pane[position].setStyle("-fx-background-color: #F6E8A2; -fx-border-color: white");
+			break;
+		case 2:
+			tabCase_pane[position].setStyle("-fx-background-color: #DDBDBB; -fx-border-color: white");
+			break;
+		case 3:
+			tabCase_pane[position].setStyle("-fx-background-color: #ADBAA1; -fx-border-color: white");
+			break;
+		case 4:
+			tabCase_pane[position].setStyle("-fx-background-color: #B2A9C6; -fx-border-color: white");
+			break;
+		case 5:
+			tabCase_pane[position].setStyle("-fx-background-color: #E6B589; -fx-border-color: white");
+			break;
 		}
 	}
 	
@@ -304,13 +336,12 @@ public class Vue {
 		jeu_pane.getChildren().remove(joueur_actuel);
 		joueur_actuel = new Label("Au tour de J"+ String.valueOf(jeu.getCurseur()+1));
 		joueur_actuel.setLayoutX(300);
-		joueur_actuel.setLayoutY(630);
+		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 
 		jeu_pane.getChildren().add(joueur_actuel);
 	}
-
-	
+		
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
