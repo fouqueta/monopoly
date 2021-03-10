@@ -83,7 +83,7 @@ public class Vue {
 	//Interface graphique : Initialisation
 	void initilisation_scene_jeu() {
 		scene_jeu = new Scene(root,900,600);
-		scene_jeu.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		scene_jeu.getStylesheets().add("application.css");
 		stage.setScene(scene_jeu);	
 	}
 
@@ -212,7 +212,7 @@ public class Vue {
 		
 		VBox joueurs_liste = new VBox();
 		joueurs_pane.getChildren().add(joueurs_liste);
-		int nbr = 6; //TODO: Parametres du nombre de joueurs.
+		int nbr = jeu.getNbJ();
 		for(int i = 0; i<nbr; i++) {
 			joueursPane_tab[i] = new Pane();
 			
@@ -231,7 +231,7 @@ public class Vue {
 	}
 	
 	void definition_label() {
-		for(int i = 0; i<4; i++) {
+		for(int i = 0; i< jeu.getNbJ(); i++) {
 			pseudo_tab[i] = new Label("J" + String.valueOf(i+1));
 			if(i == 0) {
 				pseudo_tab[i].setLayoutY(15); 
@@ -259,7 +259,7 @@ public class Vue {
 	}
 	
 	void affichage_pions_initial() {
-		for(int i = 0; i<4; i++) {
+		for(int i = 0; i< jeu.getNbJ(); i++) {
 			tabCase_pane[0].getChildren().add(pseudo_tab[i]);
 		}
 	}
@@ -372,8 +372,8 @@ public class Vue {
 		VBox AV_boutons = new VBox();
 		AV_boutons.setLayoutX((tailleEcran.width*20)/100);
 		joueurs_pane.getChildren().add(AV_boutons);
-		
-		int nbr = 6; //TODO: Parametres du nombre de joueurs.
+
+		int nbr = jeu.getNbJ();
 		for(int i = 0; i<nbr; i++) { 
 			Pane joueur_boutons = new Pane();
 			joueur_boutons.setPrefSize((tailleEcran.width*10)/100, (int) ((tailleEcran.height-50)/nbr));
@@ -466,51 +466,67 @@ public class Vue {
 		GridPane grid = new GridPane();
 		grid.setVgap(10);
 		grid.setPadding(new Insets(300, 700, 450, 700));
-		
-		TextField tf0 = new TextField ();
-		tf0.setPromptText("Pseudo du joueur 1");
-		GridPane.setConstraints(tf0, 0, 0);
-		TextField tf1 = new TextField ();
-		tf1.setPromptText("Pseudo du joueur 2");
-		GridPane.setConstraints(tf1, 0, 1);
-		TextField tf2 = new TextField ();
-		tf2.setPromptText("Pseudo du joueur 3");
-		GridPane.setConstraints(tf2, 0, 2);
-		TextField tf3 = new TextField ();
-		tf3.setPromptText("Pseudo du joueur 4");
-		GridPane.setConstraints(tf3, 0, 3);
-		TextField tf4 = new TextField ();
-		tf4.setPromptText("Pseudo du joueur 5");
-		GridPane.setConstraints(tf4, 0, 4);
-		TextField tf5 = new TextField ();
-		tf5.setPromptText("Pseudo du joueur 6");
-		GridPane.setConstraints(tf5, 0, 5);
-		grid.getChildren().addAll(tf0,tf1,tf2,tf3,tf4,tf5);
+
+		TextField[] tf = new TextField[6];
+		tf[0] = new TextField ();
+		tf[0].setPromptText("Pseudo du joueur 1");
+		GridPane.setConstraints(tf[0], 0, 0);
+		tf[1] = new TextField ();
+		tf[1].setPromptText("Pseudo du joueur 2");
+		GridPane.setConstraints(tf[1], 0, 1);
+		tf[2] = new TextField ();
+		tf[2].setPromptText("Pseudo du joueur 3");
+		GridPane.setConstraints(tf[2], 0, 2);
+		tf[3] = new TextField ();
+		tf[3].setPromptText("Pseudo du joueur 4");
+		GridPane.setConstraints(tf[3], 0, 3);
+		tf[4] = new TextField ();
+		tf[4].setPromptText("Pseudo du joueur 5");
+		GridPane.setConstraints(tf[4], 0, 4);
+		tf[5] = new TextField ();
+		tf[5].setPromptText("Pseudo du joueur 6");
+		GridPane.setConstraints(tf[5], 0, 5);
+		grid.getChildren().addAll(tf);
 		
 		Button valider = new Button("Valider");
 		grid.add(valider,0,7);
 		valider.setOnAction(actionEvent->{
-			jeu.getJoueurs()[0].setNom(tf0.getText());
-			jeu.getJoueurs()[1].setNom(tf1.getText());
-			jeu.getJoueurs()[2].setNom(tf2.getText());
-			jeu.getJoueurs()[3].setNom(tf3.getText());
-			jeu.getJoueurs()[4].setNom(tf4.getText());
-			jeu.getJoueurs()[5].setNom(tf5.getText());
-			initialisation_plateau();
-			
-			affichage_joueurs();
-			
-			definition_label();
-			affichage_pions_initial();
-			
-			bouton_lancer_de_des();
-			bouton_fin_de_tour();
-			boutons_jeu();
-			initialisation_boutons_achat_vente();
+			String[] noms = fieldToString(tf);
+			if(noms.length>1) {
+				jeu.initialisation_joueurs(noms);
+
+				initialisation_plateau();
+
+				affichage_joueurs();
+
+				definition_label();
+				affichage_pions_initial();
+
+				bouton_lancer_de_des();
+				bouton_fin_de_tour();
+				boutons_jeu();
+				initialisation_boutons_achat_vente();
+			}
 
 		});
 		
 		scene_accueil.getChildren().add(grid);
 		root.getChildren().add(scene_accueil);
+	}
+
+	private String[] fieldToString(TextField[] tf){
+		int cpt = 0;
+		for(TextField t: tf){
+			if(!t.getText().isEmpty()) cpt++;
+		}
+		String[] rep = new String[cpt];
+		int i=0;
+		for(TextField t: tf){
+			if(!t.getText().isEmpty()){
+				rep[i] = t.getText();
+				i++;
+			}
+		}
+		return rep;
 	}
 }

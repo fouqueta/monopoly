@@ -40,6 +40,10 @@ public class Jeu {
   	public Plateau getPlateau() {
   		return plateau;
   	}
+
+	public int getNbJ(){
+		return nbJ;
+	}
     
     //Affichage
     public void affiche(){
@@ -191,6 +195,7 @@ public class Jeu {
     		curseur++;
     	}
     }
+
     
     //Gestion de l'achat/vente de proprietes
     public void achat_ou_vente(Pion p) {
