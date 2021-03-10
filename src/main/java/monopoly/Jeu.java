@@ -153,7 +153,7 @@ public class Jeu {
 	            int prix = pos_actuelle.getPrix();
 	            joueurs[curseur].achat_effectue(prix);
 	            proprietaire.vente_effectuee(prix);
-	          //  pos_actuelle.setProprietaire(joueurs[curseur]);
+	            pos_actuelle.setProprietaire(joueurs[curseur]);
 	       // }
 		
     }
