@@ -427,7 +427,7 @@ public class Vue {
 			achat_tab[curseur].setDisable(false);
 			achat_tab[curseur].setOnAction(actionEvent ->{
 				proprietaires[position]=curseur;
-				controleur.controleur_achat_sans_prop(curseur);
+				controleur.controleur_achat(curseur);
 				achat_tab[curseur].setDisable(true);
 				changement_argent(curseur);
 			});

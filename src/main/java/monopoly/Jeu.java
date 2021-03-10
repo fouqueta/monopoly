@@ -295,5 +295,5 @@ public class Jeu {
 	            pos_actuelle.setProprietaire(joueurs[curseur]);
 	       // }
     }
-    
+
 }
