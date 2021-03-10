@@ -32,7 +32,7 @@ public class Jeu {
     //Gestion des deplacements
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
-    	for(int i=0;i<nbCases;i++){
+    	for(int i=1;i<=nbCases;i++){
 	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
 	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
 	  		}
@@ -55,24 +55,25 @@ public class Jeu {
     
     //Gestion de debut et fin de tour
     public void debutTour() {
-    	System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
-    	String s = joueurs[curseur].questionDes();
-    	if (s=="go") {
-    		int[] des = lancer_de_des();
-    		deplace(joueurs[curseur].getPion(), des);
-    		achat_ou_vente(joueurs[curseur].getPion());
-    		finTour();
-    	}else debutTour();
-    	
+    	while (!jeuFini()) {
+    		System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
+        	joueurs[curseur].questionDes();
+        	int[] des = lancer_de_des();
+        	deplace(joueurs[curseur].getPion(), des);
+    		System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
+        	achat_ou_vente(joueurs[curseur].getPion());
+        	faillite(joueurs[curseur]); //Verifie si le joueur est tombe en faillite apres avoir paye le loyer
+        	finTour();
+    	}
+    	System.out.println("Bravo " + joueurs[0].getNom() + ", vous avez gagne la partie !");
     }
     
     public void finTour() {
-    	if (curseur==3) {
+    	if (curseur>=joueurs.length-1) {
     		curseur=0;
     	}else {
     		curseur++;
     	}
-    	debutTour();
     }
     
     //Gestion de l'achat/vente de proprietes
@@ -84,23 +85,59 @@ public class Jeu {
     			pos_actuelle.toString();
     			if(joueurs[curseur].decision_achat()) {
     				int prix = pos_actuelle.getPrix();
-    				joueurs[curseur].achat_effectue(prix);
+    				joueurs[curseur].achat_effectue(prix,pos_actuelle);
     				pos_actuelle.setProprietaire(joueurs[curseur]);
+					System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
     			}
     		}
-    		else {
-    			//TODO: Loyer
-    			if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
+    		else if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() < pos_actuelle.getPrix()) {
+    			System.out.println("Vous n'avez pas assez d'argent pour acheter cette propriete.");
+    		}    		
+    		else if(pos_actuelle.getProprietaire()!=joueurs[curseur]){
+    			loyer(pos_actuelle);
+    			if(!(pos_actuelle.est_Libre()) && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
     				Joueur proprietaire = pos_actuelle.getProprietaire();
 			        if(joueurs[curseur].decision_vente(proprietaire)) {
 			            int prix = pos_actuelle.getPrix();
-			            joueurs[curseur].achat_effectue(prix);
-			            proprietaire.vente_effectuee(prix);
+			            joueurs[curseur].achat_effectue(prix,pos_actuelle);
+			            proprietaire.vente_effectuee(prix, pos_actuelle);
 			            pos_actuelle.setProprietaire(joueurs[curseur]);
+						System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
 			        }
     			}
     		}
     	}
+    }
+
+
+    //Loyer
+    private void loyer(Proprietes p){
+    	int argent = joueurs[curseur].paye(p.getLoyer());
+    	p.getProprietaire().ajout(argent);
+		System.out.println("Vous avez paye " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
+    }
+    
+    
+    //Faillite
+    public void faillite(Joueur joueurJ) { //joueurJ en faillite = joueurJ elimine du jeu (=du tableau de joueurs)
+    	if (joueurJ.getArgent() <= 0 && joueurJ.getProprietes().length == 0) {
+    		Joueur[] tmp = new Joueur[this.joueurs.length-1];
+    		int i = 0;
+    		for(Joueur j : joueurs){
+    			if(j != joueurJ){
+    				tmp[i] = j;
+    				i++;
+    			}
+    		}
+    		this.joueurs = tmp;
+    		System.out.println(joueurJ.getNom() + " a fait faillite.");
+    	}
+    }
+    
+    
+    //Condition jeu fini
+    public boolean jeuFini() { //Jeu fini quand tous les joueurs sauf un sont en faillite, le joueur restant a gagne
+    	return joueurs.length == 1;
     }
    
 }
