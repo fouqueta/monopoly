@@ -43,7 +43,7 @@ public class Plateau {
         	String[] attributs = casePlateau.split(";"); //tab de taille 6, voir cases.csv
             switch (attributs[0]) {
             	case "Proprietes": 
-            		grille[i] = new Proprietes(attributs[1], attributs[2], Integer.parseInt(attributs[3]), Integer.parseInt(attributs[4]));
+            		grille[i] = new Proprietes(attributs[1], attributs[2], Integer.parseInt(attributs[3]), attributs[4].split("-"));
             		break;
             	case "CasesSpeciales":
             		grille[i] = new CasesSpeciales(attributs[1], Integer.parseInt(attributs[5]));

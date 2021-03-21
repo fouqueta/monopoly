@@ -13,7 +13,7 @@ public class Joueur{
     	this.nom = nom;
     	pion = new Pion(0);
     	argent = 15000;
-    	proprietes = null;
+    	proprietes = new Cases[0];
     	this.reponse = new Scanner(System.in);
     }
     
@@ -24,6 +24,16 @@ public class Joueur{
 	
 	public int getArgent() { return argent; }
 	
+	public int getNbPropCouleur(String couleur){
+    	int cpt = 0;
+    	for(Cases c : proprietes){
+    		if(c.getType().equals("Propriete")){
+    			if(((Proprietes) c).getCouleur().equals(couleur)) cpt++;
+			}
+		}
+    	return cpt;
+	}
+
 	//Setters
 	public void setArgent(int argent) { this.argent = argent; }
 	public void setNom (String nom) { this.nom=nom; }
@@ -59,12 +69,27 @@ public class Joueur{
     	}
 	}
 	
-	public void achat_effectue(int prix) {
+	public void achat_effectue(int prix, Proprietes p) {
 		this.argent = this.argent - prix;
+		Cases[] tmp = new Cases[this.proprietes.length+1];
+		for(int i=0;i<this.proprietes.length;i++){
+			tmp[i] = this.proprietes[i];
+		}
+		tmp[this.proprietes.length] = p;
+		this.proprietes = tmp;
 	}
 	
-	public void vente_effectuee(int prix) {
+	public void vente_effectuee(int prix, Proprietes p) {
 		this.argent = this.argent + prix;
+		Cases[] tmp = new Cases[this.proprietes.length-1];
+		int i = 0;
+		for(Cases c: proprietes){
+			if(c!=p){
+				tmp[i] = c;
+				i++;
+			}
+		}
+		this.proprietes = tmp;
 	}
 	
 	public boolean decision_vente(Joueur proprietaire) {
@@ -84,5 +109,21 @@ public class Joueur{
     		return decision_vente(proprietaire);
     	}
 	}
+	
+	//Loyer
+	public int paye(int x){
+	    if(argent>=x){
+	    	argent = argent - x;
+	    	return x;
+		}
+	    x = argent;
+	    argent = 0;
+	    return x;
+	}
+
+	public void ajout(int x){
+	    argent = argent + x;
+	}
+
 
 }

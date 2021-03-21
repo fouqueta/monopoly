@@ -25,7 +25,6 @@ public class Vue {
 	private AnchorPane root;
 	private Stage stage;
 	private Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
-	//TODO : Gerer les redimensionnements d'ecran pour adapter la taille des composants.
 	
 	//Accueil
 		private AnchorPane scene_accueil;
@@ -49,7 +48,7 @@ public class Vue {
 	
 		//Joueurs
 	private AnchorPane joueurs_pane;
-	private Label[] pseudo_tab = new Label[6]; //TODO: Parametres du nombre de joueurs.
+	private Label[] pseudo_tab = new Label[6];
 	private Pane[] joueursPane_tab = new Pane[6];
 	private Label joueur_actuel;
 	
@@ -60,8 +59,8 @@ public class Vue {
 	private Button aide_button;
 	private Button quitter_button;
 	
-	private Button achat_tab[] = new Button[6]; //TODO: Parametres du nombre de joueurs.
-	private Button vente_tab[] = new Button[6]; //TODO: Parametres du nombre de joueurs.
+	private Button achat_tab[] = new Button[6];
+	private Button vente_tab[] = new Button[6];
 	
 	//Controleur
 	private Controleur controleur;
@@ -82,10 +81,12 @@ public class Vue {
 		stage.show();
 	}
 	
+	public int getTabProprietaires(int position) { return this.proprietaires[position]; }
+	
 	//Interface graphique : Initialisation
 	void initilisation_scene_jeu() {
 		scene_jeu = new Scene(root,900,600);
-		scene_jeu.getStylesheets().add("application.css");
+		//scene_jeu.getStylesheets().add("application.css");
 		stage.setScene(scene_jeu);	
 	}
 
@@ -119,9 +120,7 @@ public class Vue {
 				Label prix = new Label(String.valueOf(prix_prop));
 				prix.setLayoutX(15);
 				tabCase_pane[i].getChildren().add(prix);
-			}
-			
-			
+			}			
 			colonne_gauche.getChildren().add(tabCase_pane[i]);
 		}
 		
@@ -202,6 +201,60 @@ public class Vue {
 		jeu_pane.getChildren().add(joueur_actuel);
 		
 		initialisation_familles();
+		initialisation_casesSpeciales();
+	}
+	
+	void initialisation_casesSpeciales() {
+		Label com1 = new Label("Com.");
+		com1.setLayoutX(10);
+		com1.setStyle("-fx-font-size: 10");
+		tabCase_pane[2].getChildren().add(com1);
+		
+		Label com2 = new Label("Com.");
+		com2.setLayoutX(15);
+		com2.setStyle("-fx-font-size: 10");
+		tabCase_pane[17].getChildren().add(com2);
+		
+		Label com3 = new Label("Com.");
+		com3.setLayoutX(15);
+		com3.setStyle("-fx-font-size: 10");
+		tabCase_pane[33].getChildren().add(com3);
+		
+		Label ch1 = new Label("Chance");
+		ch1.setLayoutX(10);
+		ch1.setStyle("-fx-font-size: 10");
+		tabCase_pane[7].getChildren().add(ch1);
+		
+		Label ch2 = new Label("Chance");
+		ch2.setLayoutX(15);
+		ch2.setStyle("-fx-font-size: 10");
+		tabCase_pane[22].getChildren().add(ch2);
+		
+		Label ch3 = new Label("Chance");
+		ch3.setLayoutX(15);
+		ch3.setStyle("-fx-font-size: 10");
+		tabCase_pane[36].getChildren().add(ch3);
+		
+		Label imp1 = new Label("Impots");
+		imp1.setLayoutX(10);
+		tabCase_pane[4].getChildren().add(imp1);
+		
+		Label imp2 = new Label("Taxe");
+		imp2.setLayoutX(15);
+		tabCase_pane[38].getChildren().add(imp2);
+		
+		Label prison = new Label("Prison");
+		prison.setLayoutX(15);
+		tabCase_pane[10].getChildren().add(prison);
+		
+		Label allerPrison = new Label("Prison");
+		allerPrison.setLayoutX(15);
+		allerPrison.setStyle("-fx-font-size: 10");
+		tabCase_pane[30].getChildren().add(allerPrison);
+		
+		Label parc = new Label("Parc");
+		parc.setLayoutX(15);
+		tabCase_pane[20].getChildren().add(parc);
 	}
 	
 	void initialisation_familles() {

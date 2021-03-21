@@ -29,6 +29,18 @@ public class Controleur {
 		vue.changement_argent(curseur);
 		int arrivee = p.getPosition();
 		vue.changement_position_pion(curseur, depart, arrivee);
+		
+		Cases case_actuelle = jeu.getPlateau().getCases(arrivee);
+		if(case_actuelle.getType().equals("Propriete")) {
+			Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(arrivee);
+			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(arrivee) != curseur
+				&& propriete_actuelle.coloree()){
+			jeu.loyer(propriete_actuelle);
+			vue.changement_argent(curseur);
+			vue.changement_argent(vue.getTabProprietaires(arrivee));
+			System.out.println("Loyer payé.");
+			}
+		}
 	}
 	
 	void controleur_fin() {
@@ -40,7 +52,7 @@ public class Controleur {
 	void controleur_achat(int curseur) {
 		Pion p = jeu.getJoueurs()[curseur].getPion();
 		int position = p.getPosition();
-		jeu.achat_ou_vente_IG(p);
+		jeu.achat_IG(p);
 		vue.changement_couleur_case(curseur, position);
 	}
 	
