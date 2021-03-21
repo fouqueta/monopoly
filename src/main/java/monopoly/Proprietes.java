@@ -32,7 +32,10 @@ public class Proprietes extends Cases {
 
 	//Setters
 	public void setPrix(int prix) { this.prixAchat = prix; }
+<<<<<<< HEAD
 
+=======
+>>>>>>> a9dd8f4 (Implémentation du loyer dans l'interface graphique)
 	
 	public void setProprietaire(Joueur nouveau_proprietaire) { this.proprietaire = nouveau_proprietaire; }
 	
@@ -41,9 +44,18 @@ public class Proprietes extends Cases {
 		return("Prix d'achat: " + this.prixAchat + " , Loyer actuel: " + this.loyer + " , Couleur: " + this.couleur + " , Nom: " + this.nom);
 	}
 	
+<<<<<<< HEAD
 	//Verification
+=======
+	//Vérification
+>>>>>>> a9dd8f4 (Implémentation du loyer dans l'interface graphique)
 	public boolean est_Libre() {
 		if(this.proprietaire == null) { return true; }
 		return false;
+	}
+	
+	public boolean coloree() {
+		if(this.couleur.equals("compagnie")) { return false; }
+		return true;
 	}
 }

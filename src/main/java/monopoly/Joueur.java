@@ -131,6 +131,7 @@ public class Joueur{
     		return decision_vente(proprietaire);
     	}
 	}
+	
 
 	//Loyer
 	public int paye(int x){
