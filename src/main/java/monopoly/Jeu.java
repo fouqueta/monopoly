@@ -232,7 +232,7 @@ public class Jeu {
 
 
     //Loyer
-    private void loyer(Proprietes p){
+    public void loyer(Proprietes p){
     	int argent = joueurs[curseur].paye(p.getLoyer());
     	p.getProprietaire().ajout(argent);
 		System.out.println("Vous avez paye " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
