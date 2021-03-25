@@ -13,15 +13,14 @@ public class Jeu {
         plateau = new Plateau();
         curseur = 0;
     }
-    
-    public void initialisation_joueurs(String[] noms){
+
+	public void initialisation_joueurs(String[] noms){
 		nbJ = noms.length;
 		joueurs = new Joueur[nbJ];
 		for(int i=0;i<nbJ;i++){
 			joueurs[i] = new Joueur(noms[i]);
 		}
 	}
-
     
     //Getters
   	public Joueur[] getJoueurs() {
@@ -195,7 +194,7 @@ public class Jeu {
     //Gestion de l'achat/vente de proprietes
     public void achat_ou_vente(Pion p) {
     	Cases case_actuelle = plateau.getCases(p.getPosition());
-    	if(case_actuelle.getType() == "Propriete") {
+    	if(case_actuelle.getType().equals("Propriete")) {
     		Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
     		if(pos_actuelle.est_Libre() && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
     			pos_actuelle.toString();
@@ -224,7 +223,6 @@ public class Jeu {
     		}
     	}
     }
-
 
     //Loyer
     public void loyer(Proprietes p){
@@ -255,7 +253,6 @@ public class Jeu {
     public boolean jeuFini() { //Jeu fini quand tous les joueurs sauf un sont en faillite, le joueur restant a gagne
     	return joueurs.length == 1;
     }
-
 
     //Interface graphique
     public void deplace_IG(Pion pion, int[] des) {
