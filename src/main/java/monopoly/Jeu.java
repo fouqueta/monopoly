@@ -10,11 +10,6 @@ public class Jeu {
     private int nbJ;
 
     public Jeu() {
-        joueurs = new Joueur[6];
-        joueurs[0] = new Joueur("1");
-        joueurs[1] = new Joueur("2");
-        joueurs[2] = new Joueur("3");
-        joueurs[3] = new Joueur("4");
         plateau = new Plateau();
         curseur = 0;
     }
