@@ -10,6 +10,7 @@ public class Joueur{
     private Proprietes[] proprietes; // Proprietes possedees par un joueur
     private boolean enPrison;
     private int nbToursPrison;
+    private boolean carteLibPrison;
     Scanner reponse;
     
     public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
@@ -18,6 +19,7 @@ public class Joueur{
     	argent = 10000;
     	proprietes = new Proprietes[0];
     	enPrison = false;
+    	carteLibPrison = false;
     	this.reponse = new Scanner(System.in);
     }
     
@@ -44,12 +46,16 @@ public class Joueur{
 	
 	public int getNbToursPrison() { return nbToursPrison; }
 	
+	public boolean aCarteLibPrison() { 	return carteLibPrison; }
+
 	//Setters
 	public void setArgent(int argent) { this.argent = argent; }
 	
 	public void setEnPrison(boolean enPrison) { this.enPrison = enPrison; }
 	
 	public void setNbToursPrison(int nbToursPrison) { this.nbToursPrison = nbToursPrison; }
+	
+	public void setCarteLibPrison(boolean carteLibPrison) { this.carteLibPrison = carteLibPrison; }
 
    
     //Gestion de lancement de des
@@ -157,9 +163,32 @@ public class Joueur{
 	    System.out.println("Entree invalide, recommencez.");
     	vendreSesProprietes();
     }
+	
+	public boolean utiliserCarteLibPrison() {
+		String s = reponse.next();
+		if (s.equals("oui")) {
+			System.out.println("Vous etes libere de prison !");
+    		enPrison = false;
+    		carteLibPrison = false;
+    		return true;
+		}
+		else if (s.equals("non")) {
+			return false;
+		}
+		else {
+			System.out.println("Entree invalide, recommencez.");
+			return utiliserCarteLibPrison();
+		}
+	}
 
 	public void ajout(int x){
     	argent = argent + x;
+	}
+	
+	public void transaction(int montant, Joueur payeur) {
+		payeur.ajout(-100);
+		ajout(montant);
+		System.out.println(payeur.getNom() + " vous a donne " + montant + "e. " + payeur.getNom() + " a maintenant " + payeur.getArgent() + "e." );
 	}
 
 }

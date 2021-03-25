@@ -14,7 +14,7 @@ public class Jeu {
         joueurs[1] = new Joueur("2");
         joueurs[2] = new Joueur("3");
         joueurs[3] = new Joueur("4");
-        plateau = new Plateau("cases.csv");
+        plateau = new Plateau();
         curseur = 0;
     }
     
@@ -38,39 +38,106 @@ public class Jeu {
     		joueurJ.setEnPrison(false);
     	}
     	if (!(joueurJ.isEnPrison())) { //Si le joueur n'est pas en prison
-    		for(int i=1;i<=nbCases;i++){
-    			if((joueurJ.getPion().getPosition()+i)%40==0) { joueurJ.ajout(2000); }
-    		}
+    		passeParDepart((pion.getPosition() + nbCases) % 40);
     		pion.setPosition((pion.getPosition() + nbCases) % 40);
-    		surCaseSpeciale(pion);
-        	affiche();
+    		affiche();
+    		surCaseParticuliere(pion);
         	return;
     	} //Si le joueur est en prison
+    	quandEnPrison(pion, joueurJ, nbCases);
+    }
+    
+    public void quandEnPrison(Pion pion, Joueur joueurJ, int nbCases) {
+    	if(joueurJ.aCarteLibPrison()) {
+    		System.out.println("Vous possedez une carte \"libere de prison\". L'utiliser maintenant ? Tapez \"oui\" ou \"non\".");
+    		if (joueurJ.utiliserCarteLibPrison()) { 
+    			passeParDepart((pion.getPosition() + nbCases) % 40);
+        		pion.setPosition((pion.getPosition() + nbCases) % 40);
+        		affiche();
+        		surCaseParticuliere(pion);
+    			return; 
+    		}
+    	}
     	joueurJ.setNbToursPrison(joueurJ.getNbToursPrison()-1);
     	System.out.println("Vous etes en prison. Il faut faire un double ou attendre encore " + joueurJ.getNbToursPrison() 
     			+ " tours pour etre libere.");
     }
     
-    //Si le pion est sur une case speciale/commu/chance, effectue les actions speciales associees a cette case
-    public void surCaseSpeciale(Pion pion) {
+    //Si le pion est sur une case speciale/commu/chance, effectue les actions speciales associees a cette case (appelle les fonctions auxi)
+    public void surCaseParticuliere(Pion pion) {
     	Cases caseC = plateau.getCases(pion.getPosition());
     	if (caseC instanceof Proprietes) { return; }
-    	if (caseC instanceof CasesSpeciales) {
-    		switch (caseC.getNom()) {
-				case "Impots revenu" :
-				case "Taxe de luxe" :
-					joueurs[curseur].ajout( ((CasesSpeciales)caseC).getTransaction() );
-					System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
-					break;
-				case "Aller prison" :
-					System.out.println("Vous etes en prison.");
-					joueurs[curseur].setEnPrison(true);
-					joueurs[curseur].setNbToursPrison(3);
-					pion.setPosition(10); //Correspond a la case Prison
-					break;
-    		}
+    	else if (caseC instanceof CasesChance || caseC instanceof CasesCommunaute) {
+    		surCaseChanceCommu(pion, caseC);
     	}
-    	
+    	else if (caseC instanceof CasesSpeciales) {
+    		surCaseSpeciale(pion, caseC);
+    	}
+    }
+    
+    //Si on tombe sur une case speciale, effectue l'action associee
+    public void surCaseSpeciale(Pion pion, Cases caseC) {
+    	switch (caseC.getNom()) {
+			case "Impots revenu" :
+			case "Taxe de luxe" :
+				joueurs[curseur].ajout( ((CasesSpeciales)caseC).getTransaction() );
+				System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
+				break;
+			case "Aller prison" :
+				System.out.println("Vous etes en prison.");
+				joueurs[curseur].setEnPrison(true);
+				joueurs[curseur].setNbToursPrison(3);
+				pion.setPosition(10); //Correspond a la case Prison
+				affiche();
+				break;
+    	}
+    }
+    
+    //Si on tombe sur une case chance ou communaute, tire une carte au hasard et effectue l'action associee
+    public void surCaseChanceCommu(Pion pion, Cases caseC) {
+    	Random rand = new Random();
+		int alea = rand.nextInt(16);
+		Cartes carte = (caseC instanceof CasesChance) ? plateau.getCartesChance()[alea] : plateau.getCartesCommu()[alea];
+		System.out.println(carte.getContenu());
+		switch (carte.getTypeAction()) {
+			case "prelevement" :
+				joueurs[curseur].ajout(carte.getParametres());
+				break;
+			case "recette" :
+				joueurs[curseur].ajout(carte.getParametres());
+				break;
+			case "immo" :
+				//TODO : cas immo quand il y aura les maisons et hotels (ne pas oublier de modifier cartes.csv pour mettre plusieurs parametres de prix)
+				break;
+			case "trajet" : //Demander pour le cas prison : direct en prison (donc rajouter un cas if) ou passer par aller en prison (moins de code)
+				if ( carte.getParametres() != 30 ) { //Seul moyen de savoir si on va en case prison ou pas
+					passeParDepart(carte.getParametres()); 
+				}
+				pion.setPosition(carte.getParametres());
+				affiche();
+				surCaseParticuliere(pion);
+				break;
+			case "trajet spe" :
+				pion.setPosition(pion.getPosition() - carte.getParametres());
+				affiche();
+				surCaseParticuliere(pion);
+				break;
+			case "bonus" : //Faire la possibilite de vendre sa carte
+				joueurs[curseur].setCarteLibPrison(true);
+				break;
+			case "cadeau" : //Faire le cas si apres avoir donner le cadeau un joueur est en faillite ou non
+				for(Joueur j : joueurs) {
+	    			if(j != joueurs[curseur]) { joueurs[curseur].transaction(carte.getParametres(), j); }
+				}
+				break;
+		}
+    }
+    
+    //Verifie si lors du deplacement on passe par la case depart
+    public void passeParDepart(int posFinale) {
+    	if (joueurs[curseur].getPion().getPosition() > posFinale) { //Comme 0 <= position <= 39, si posInit > posFinale, alors cela veut dire qu'on passe par la case depart, sinon non
+    		joueurs[curseur].ajout(2000); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart / on est en case 10, on va en case 5 -> on passe par depart
+    	}
     }
 
 	//Gestion de lancement de des
@@ -81,14 +148,13 @@ public class Jeu {
 			int intervalle = 1 + aleatoire.nextInt(7-1);
 			des[i] = intervalle;
 		}
-		//TODO: Prison
 		return des;
 	}
     
     //Gestion de debut et fin de tour
     public void debutTour() {
     	while (!jeuFini()) {
-    		System.out.println("Joueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
+    		System.out.println("\nJoueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
         	joueurs[curseur].questionDes();
         	int[] des = lancer_de_des();
         	deplace(joueurs[curseur].getPion(), des);
