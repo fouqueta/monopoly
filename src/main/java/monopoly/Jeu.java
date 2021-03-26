@@ -265,10 +265,9 @@ public class Jeu {
     }
     
     public void finTour_IG() {
-    	//TODO: quand le dernier joueur de la liste joueur est en faillite, il y a l'erreur outOfBounds
     	curseur = (curseur + 1) % nbJ;
     	while(joueurs[curseur].getFaillite()==true) {
-			curseur+= + 1 % nbJ;
+			curseur= + (curseur + 1) % nbJ;
 		}
     }
     
