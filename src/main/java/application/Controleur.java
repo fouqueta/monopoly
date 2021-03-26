@@ -44,8 +44,17 @@ public class Controleur {
 	}
 	
 	void controleur_fin() {
-		jeu.finTour_IG();
-		vue.changement_joueur_actuel();
+		if (jeu.jeuFini_IG()) {
+			vue.fin_partie();
+		}else {
+			jeu.finTour_IG();
+			vue.changement_joueur_actuel();
+		}
+	}
+	
+	void controleur_faillite(int curseur) {
+		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
+		jeu.faillite_IG(joueur_actuel);
 	}
 	
 	//Gestion de l'achat/vente

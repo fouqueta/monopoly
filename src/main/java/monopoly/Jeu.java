@@ -189,8 +189,7 @@ public class Jeu {
     		curseur++;
     	}
     }
-
-    
+ 
     //Gestion de l'achat/vente de proprietes
     public void achat_ou_vente(Pion p) {
     	Cases case_actuelle = plateau.getCases(p.getPosition());
@@ -266,7 +265,11 @@ public class Jeu {
     }
     
     public void finTour_IG() {
-		curseur = (curseur + 1) % nbJ;
+    	//TODO: quand le dernier joueur de la liste joueur est en faillite, il y a l'erreur outOfBounds
+    	curseur = (curseur + 1) % nbJ;
+    	while(joueurs[curseur].getFaillite()==true) {
+			curseur+= + 1 % nbJ;
+		}
     }
     
     public void achat_IG(Pion p) {
@@ -284,13 +287,31 @@ public class Jeu {
     
     public void vente_IG(Pion p ) {
     	Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
-    	//if(!(pos_actuelle.est_Libre()) && pos_actuelle.getProprietaire()!=joueurs[curseur] && joueurs[curseur].getArgent() >= pos_actuelle.getPrix()) {
 			Joueur proprietaire = pos_actuelle.getProprietaire();
 	            int prix = pos_actuelle.getPrix();
 	            joueurs[curseur].achat_effectue(prix,pos_actuelle);
 	            proprietaire.vente_effectuee(prix, pos_actuelle);
 	            pos_actuelle.setProprietaire(joueurs[curseur]);
-	       // }
+    }
+    
+    public void faillite_IG(Joueur j) {
+    	if (j.getArgent()<=0){
+    		j.setFaillite(true);
+    	}
+    }
+    
+    public boolean jeuFini_IG() {
+    	int nbFaillite = 0;
+    	for (Joueur j : joueurs) {
+    		if (j.getFaillite()==true) {
+    			nbFaillite++;
+    		}
+    	}
+    	if (nbFaillite==joueurs.length-1) {
+    		return true;
+    	}else {
+    		return false;
+    	}
     }
 
 }

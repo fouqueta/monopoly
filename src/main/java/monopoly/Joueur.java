@@ -12,6 +12,7 @@ public class Joueur{
     private int nbToursPrison;
     private boolean carteLibPrison;
     Scanner reponse;
+    private boolean faillite;
     
     public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
     	this.nom = nom;
@@ -21,6 +22,7 @@ public class Joueur{
     	enPrison = false;
     	carteLibPrison = false;
     	this.reponse = new Scanner(System.in);
+    	faillite = false;
     }
     
     //Getters
@@ -31,6 +33,8 @@ public class Joueur{
 	public int getArgent() { return argent; }
 	
 	public Proprietes[] getProprietes() { return proprietes; }
+	
+	public boolean getFaillite() { return faillite; }
 
 	public int getNbPropCouleur(String couleur){
     	int cpt = 0;
@@ -59,6 +63,7 @@ public class Joueur{
 	
 	public void setCarteLibPrison(boolean carteLibPrison) { this.carteLibPrison = carteLibPrison; }
 	
+	public void setFaillite(boolean faillite) { this.faillite = faillite; }
    
     //Gestion de lancement de des
     public void questionDes() {

@@ -54,6 +54,9 @@ public class Vue {
 	
 		//Boutons
 	private Button lancer;
+	private Button fin;
+	private Button achat;
+	private Button vente;
 	private HBox boutons_box;
 	private Button regles_button;
 	private Button aide_button;
@@ -507,6 +510,7 @@ public class Vue {
 
 		jeu_pane.getChildren().add(joueur_actuel);
 	}
+	
 		
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
@@ -534,7 +538,7 @@ public class Vue {
 	}
 	
 	void bouton_fin_de_tour() {
-		Button fin = new Button("Fin");
+		fin = new Button("Fin");
 		
 		
 		fin.setLayoutX(250);
@@ -543,13 +547,14 @@ public class Vue {
 		plateau_pane.getChildren().add(fin);
 		
 		fin.setOnAction(actionEvent -> {
-			int curseur = jeu.getCurseur();
+			int curseur = jeu.getCurseur();	
 			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 			achat_tab[curseur].setDisable(true);
 			vente_tab[proprietaires[position]].setDisable(true);
-			
-			controleur.controleur_fin();
 			lancer.setDisable(false);
+			controleur.controleur_faillite(curseur);
+			controleur.controleur_fin();
+			
 		});
 	}
 	
@@ -579,8 +584,8 @@ public class Vue {
 			joueur_boutons.setPrefSize((tailleEcran.width*10)/100, (int) ((tailleEcran.height-50)/nbr));
 			joueur_boutons.setStyle("-fx-background-color: peachpuff; -fx-border-color: white");
 			
-			Button achat = new Button("Achat");
-			Button vente = new Button("Vente");
+			achat = new Button("Achat");
+			vente = new Button("Vente");
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;
 			
@@ -727,5 +732,13 @@ public class Vue {
 			}
 		}
 		return rep;
+	}
+	
+	//Interface graphique: fin de la partie
+	void fin_partie() {
+		lancer.setDisable(true);
+		fin.setDisable(true);
+		achat.setDisable(true);
+		vente.setDisable(true);
 	}
 }
