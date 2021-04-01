@@ -5,7 +5,8 @@ public class Main {
     public static void main(String[] args){
         Jeu j = new Jeu();
         String[] s = {"s","d"};
-        j.initialisation_joueurs(s);
+        boolean[] b = {false, false};
+        j.initialisation_joueurs(s, b);
         j.deroulerPartie();
         //j.affiche();
         //j.deplace(j.getJoueurs()[0].getPion(), 6);

@@ -13,6 +13,7 @@ public class Joueur{
     private boolean carteLibPrison;
     Scanner reponse;
     private boolean faillite;
+	private boolean robot = false;
     
     public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
     	this.nom = nom;
@@ -47,7 +48,12 @@ public class Joueur{
 	}
 
 	public boolean isEnPrison() { return enPrison; }
-	
+
+	public boolean isRobot(){
+		return robot;
+	}
+
+
 	public int getNbToursPrison() { return nbToursPrison; }
 	
 	public boolean aCarteLibPrison() { 	return carteLibPrison; }
@@ -64,8 +70,13 @@ public class Joueur{
 	public void setCarteLibPrison(boolean carteLibPrison) { this.carteLibPrison = carteLibPrison; }
 	
 	public void setFaillite(boolean faillite) { this.faillite = faillite; }
-   
-    //Gestion de lancement de des
+
+	public void setRobot(){
+		robot = true;
+	}
+
+
+	//Gestion de lancement de des
     public void questionDes() {
     	System.out.println("Tapez \"go\" pour lancer les des");
     	String s = reponse.next();

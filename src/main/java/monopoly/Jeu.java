@@ -14,11 +14,12 @@ public class Jeu {
         curseur = 0;
     }
 
-	public void initialisation_joueurs(String[] noms){
+	public void initialisation_joueurs(String[] noms, boolean[] flags){
 		nbJ = noms.length;
 		joueurs = new Joueur[nbJ];
 		for(int i=0;i<nbJ;i++){
 			joueurs[i] = new Joueur(noms[i]);
+			if(flags[i]) joueurs[i].setRobot();
 		}
 	}
     
@@ -145,7 +146,9 @@ public class Jeu {
 				break;
 			case "cadeau" : //Faire le cas si apres avoir donner le cadeau un joueur est en faillite ou non
 				for(Joueur j : joueurs) {
-	    			if(j != joueurs[curseur]) { joueurs[curseur].transaction(carte.getParametres(), j); }
+					if(j != joueurs[curseur] && !j.getFaillite()) {
+						joueurs[curseur].transaction(carte.getParametres(), j);
+					}
 				}
 				break;
 		}
@@ -332,5 +335,15 @@ public class Jeu {
         p.getProprietaire().ajout(argent);
         System.out.println("Vous avez paye " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
     }
+
+	public boolean onlyRobot(){
+		for(int i=0;i< joueurs.length;i++){
+			if(!(joueurs[i].isRobot())){
+				return false;
+			}
+		}
+		return true;
+	}
+
 
 }

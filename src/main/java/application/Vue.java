@@ -3,6 +3,7 @@ package application;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+import javafx.animation.PauseTransition;
 import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import monopoly.*;
 
 public class Vue {
@@ -545,7 +547,7 @@ public class Vue {
 			nom_proprietes_button[i].setLayoutX(75);
 			revente_pane.getChildren().add(nom_proprietes_button[i]);
 			int n = i;
-			
+
 			nom_proprietes_button[n].setOnAction(actionEvent->{
 				int ancienne_position= controleur.controleur_vendreSesProprietes(curseur,n);
 				changement_couleur_case_blanche(ancienne_position);
@@ -562,10 +564,21 @@ public class Vue {
 				}
 			});	
 		}
+
+
 		
 		jeu_pane.getChildren().remove(revente_pane);
 		jeu_pane.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
+
+		if(jeu.getJoueurs()[curseur].isRobot()){
+			nom_proprietes_button[0].fire();
+
+		}
+
+		if(jeu.getJoueurs()[curseur].isRobot()){
+
+		}
 	}
 	
 		
@@ -582,7 +595,7 @@ public class Vue {
 		
 		plateau_pane.getChildren().add(lancer);
 		plateau_pane.getChildren().add(label_des);
-		
+		if(jeu.onlyRobot()) lancer.setVisible(false);
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
 			int[] des = jeu.lancer_de_des();
@@ -601,7 +614,7 @@ public class Vue {
 		fin.setLayoutY(300);
 		
 		plateau_pane.getChildren().add(fin);
-		
+		if(jeu.onlyRobot()) fin.setVisible(false);
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
 			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
@@ -609,8 +622,11 @@ public class Vue {
 			vente_tab[proprietaires[position]].setDisable(true);
 			lancer.setDisable(false);
 			controleur.controleur_faillite(curseur);
-			controleur.controleur_fin();
-			
+			if(!jeu.onlyRobot()) {
+				controleur.controleur_fin();
+			}
+
+
 		});
 	}
 	
@@ -684,7 +700,17 @@ public class Vue {
 		   
 		plateau_pane.getChildren().add(carte_pane);
 		  
-		bouton_fermer.setOnAction(actionEvent -> plateau_pane.getChildren().remove(carte_pane));  	    
+		bouton_fermer.setOnAction(actionEvent -> plateau_pane.getChildren().remove(carte_pane));
+		if(jeu.getJoueurs()[curseur].isRobot()){
+			PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
+
+			wait.setOnFinished((e) -> {
+				bouton_fermer.fire();
+			});
+
+			wait.play();
+
+		}
 	}
 	
 	void bouton_achat(int curseur) {
@@ -721,10 +747,20 @@ public class Vue {
 				achat_tab[curseur].setDisable(true);
 				changement_argent(curseur);
 			});
+			if(jeu.getJoueurs()[curseur].isRobot()){
+				achat_tab[curseur].fire();
+				fin.fire();
+			}
 		}else {
 			//avec proprietaire
 			if(!libre && argent_suffisant && position_valide && proprietaires[position]!=curseur) {
 				bouton_vente(curseur,position);
+				if(jeu.getJoueurs()[curseur].isRobot()){
+					achat_tab[curseur].fire();
+				}
+			}else if(jeu.getJoueurs()[curseur].isRobot()){
+				fin.fire();
+
 			}
 		}
 	}
@@ -734,7 +770,10 @@ public class Vue {
 		
 		achat_tab[curseur].setOnAction(actionEvent ->{
 			achat_tab[curseur].setDisable(true);
-			vente_tab[proprietaires[position]].setDisable(false);			
+			vente_tab[proprietaires[position]].setDisable(false);
+			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
+				vente_tab[proprietaires[position]].fire();
+			}
 		});
 		
 		vente_tab[proprietaires[position]].setOnAction(actionEvent ->{
@@ -743,6 +782,9 @@ public class Vue {
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
 			proprietaires[position]=curseur;
+			if(jeu.getJoueurs()[curseur].isRobot()){
+				fin.fire();
+			}
 		});
 	}
 	
@@ -757,32 +799,33 @@ public class Vue {
 		grid.setPadding(new Insets(300, 700, 450, 700));
 
 		TextField[] tf = new TextField[6];
-		tf[0] = new TextField ();
-		tf[0].setPromptText("Pseudo du joueur 1");
-		GridPane.setConstraints(tf[0], 0, 0);
-		tf[1] = new TextField ();
-		tf[1].setPromptText("Pseudo du joueur 2");
-		GridPane.setConstraints(tf[1], 0, 1);
-		tf[2] = new TextField ();
-		tf[2].setPromptText("Pseudo du joueur 3");
-		GridPane.setConstraints(tf[2], 0, 2);
-		tf[3] = new TextField ();
-		tf[3].setPromptText("Pseudo du joueur 4");
-		GridPane.setConstraints(tf[3], 0, 3);
-		tf[4] = new TextField ();
-		tf[4].setPromptText("Pseudo du joueur 5");
-		GridPane.setConstraints(tf[4], 0, 4);
-		tf[5] = new TextField ();
-		tf[5].setPromptText("Pseudo du joueur 6");
-		GridPane.setConstraints(tf[5], 0, 5);
+
+		Button[] bt = new Button[6];
+		boolean[] flags = new boolean[6];
+		for(int i=0;i<6;i++){
+			tf[i] = new TextField ();
+			tf[i].setPromptText("Pseudo du joueur " + (i+1));
+			GridPane.setConstraints(tf[i], 0, i);
+
+			bt[i] = new Button("Mode robot pour joueur " + (i+1));
+			GridPane.setConstraints(bt[i], 1, i);
+			int finalI = i;
+			bt[i].setOnAction(actionEvent->{
+				flags[finalI] = !flags[finalI];
+			});
+
+		}
+
 		grid.getChildren().addAll(tf);
-		
+		grid.getChildren().addAll(bt);
+
+
 		Button valider = new Button("Valider");
 		grid.add(valider,0,7);
 		valider.setOnAction(actionEvent->{
 			String[] noms = fieldToString(tf);
 			if(noms.length>1) {
-				jeu.initialisation_joueurs(noms);
+				jeu.initialisation_joueurs(noms, flags);
 
 				initialisation_plateau();
 
@@ -795,6 +838,11 @@ public class Vue {
 				bouton_fin_de_tour();
 				boutons_jeu();
 				initialisation_boutons_achat_vente();
+				if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
+					lancerRobot();
+					if(jeu.onlyRobot()) controleur.controleur_fin();
+				}
+
 			}
 		});
 		scene_accueil.getChildren().add(grid);
@@ -824,4 +872,10 @@ public class Vue {
 		achat.setDisable(true);
 		vente.setDisable(true);
 	}
+
+	void lancerRobot(){
+		lancer.fire();
+
+	}
+
 }

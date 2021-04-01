@@ -1,5 +1,7 @@
 package application;
 
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 import monopoly.*;
 
 public class Controleur {
@@ -83,17 +85,44 @@ public class Controleur {
 			}
 		}
 	}
-	
-	
+
+	private void fin_only_robot(){
+		PauseTransition wait = new PauseTransition(Duration.seconds(3));
+		wait.setOnFinished((e) -> {
+			if (jeu.jeuFini_IG()) {
+				vue.fin_partie();
+			} else {
+				jeu.finTour_IG();
+				vue.changement_joueur_actuel();
+				System.out.println("Curseur :" + jeu.getCurseur());
+				vue.lancerRobot();
+
+
+			}
+			wait.playFromStart();
+		});
+		wait.play();
+	}
+
+
+
+
 	void controleur_fin() {
-		if (jeu.jeuFini_IG()) {
+		if(jeu.onlyRobot()) {
+			fin_only_robot();
+		}
+		else if (jeu.jeuFini_IG()) {
 			vue.fin_partie();
 		}else {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
+			if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
+				vue.lancerRobot();
+			}
 		}
 	}
-	
+
+
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
 		jeu.faillite_IG(joueur_actuel);
