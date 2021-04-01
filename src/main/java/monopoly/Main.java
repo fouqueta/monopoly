@@ -6,7 +6,7 @@ public class Main {
         Jeu j = new Jeu();
         String[] s = {"s","d"};
         j.initialisation_joueurs(s);
-        j.debutTour();
+        j.deroulerPartie();
         //j.affiche();
         //j.deplace(j.getJoueurs()[0].getPion(), 6);
         //j.affiche();

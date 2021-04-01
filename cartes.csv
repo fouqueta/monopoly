@@ -28,6 +28,6 @@ commu;Payez votre Police d'Assurance\n       s'elevant a 500e.\n;prelevement;-50
 commu;Payez a l'Hopital 1.000e.\n;prelevement;-1000;
 commu;Payez une amende de 100e.\n;prelevement;-100;
 commu;Placez-vous sur la case Depart.\n;trajet;0;
-commu;Retournez a Belleville.\n;trajet;1;  
+commu;Retournez a Belleville.\n;reculer;1;  
 commu;        Allez en prison.\n  Avancez tout droit en prison.\nNe passez pas par la case Depart.\n      Ne recevez pas 2.000e.\n;trajet;30;
 commu;  Vous etes libere de prison.\nCette carte peut etre conservee\njusqu'a ce qu'elle soit utilisee\n          ou vendue.\n;bonus;1;

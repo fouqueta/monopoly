@@ -5,10 +5,12 @@ import java.awt.Toolkit;
 
 import javafx.scene.control.Button;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -540,7 +542,6 @@ public class Vue {
 	void bouton_fin_de_tour() {
 		fin = new Button("Fin");
 		
-		
 		fin.setLayoutX(250);
 		fin.setLayoutY(300);
 		
@@ -600,6 +601,35 @@ public class Vue {
 			
 			AV_boutons.getChildren().add(joueur_boutons);
 		}
+	}
+	
+	void caseChanceCommu(int curseur, Cartes carteTiree) {
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+			
+		BorderPane carte_pane = new BorderPane();
+		Label type_carte = (carteTiree.getType().equals("chance")) ? new Label("CHANCE") : new Label("COMMUNAUTE");
+		Label contenu_carte = new Label(carteTiree.getContenu());
+		Button bouton_fermer = new Button("Fermer");
+		
+		type_carte.setFont(new Font("Arial", 17));
+		contenu_carte.setFont(new Font("Arial", 15));
+		
+		carte_pane.setPrefSize(plateau_pane.getWidth()/1.5, plateau_pane.getHeight()/2.5);
+		carte_pane.setStyle("-fx-background-color: white");
+		carte_pane.setLayoutX(plateau_pane.getWidth()*17/100);
+		carte_pane.setLayoutY(plateau_pane.getHeight()*30/100);
+		  
+		carte_pane.setTop(type_carte);
+		carte_pane.setCenter(contenu_carte);
+		carte_pane.setBottom(bouton_fermer);
+		type_carte.setPadding(new Insets(15,0,0,0));
+		BorderPane.setAlignment(type_carte, Pos.TOP_CENTER);
+		BorderPane.setAlignment(contenu_carte, Pos.CENTER);
+		BorderPane.setAlignment(bouton_fermer, Pos.BOTTOM_CENTER);
+		   
+		plateau_pane.getChildren().add(carte_pane);
+		  
+		bouton_fermer.setOnAction(actionEvent -> plateau_pane.getChildren().remove(carte_pane));  	    
 	}
 	
 	void bouton_achat(int curseur) {
@@ -711,9 +741,7 @@ public class Vue {
 				boutons_jeu();
 				initialisation_boutons_achat_vente();
 			}
-
 		});
-		
 		scene_accueil.getChildren().add(grid);
 		root.getChildren().add(scene_accueil);
 	}

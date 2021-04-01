@@ -49,26 +49,27 @@ public class Jeu {
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
     	Joueur joueurJ = joueurs[curseur];
-    	if ( joueurJ.isEnPrison() && (des[0] == des[1] || joueurJ.getNbToursPrison() == 1) ) {
-    		System.out.println("Vous etes libere de prison !");
-    		joueurJ.setEnPrison(false);
-    	}
     	if (!(joueurJ.isEnPrison())) { //Si le joueur n'est pas en prison
     		passeParDepart((pion.getPosition() + nbCases) % 40);
     		pion.setPosition((pion.getPosition() + nbCases) % 40);
     		affiche();
     		surCaseParticuliere(pion);
-        	return;
-    	} //Si le joueur est en prison
-    	quandEnPrison(pion, joueurJ, nbCases);
+    	}
+    	else if ( joueurJ.isEnPrison() && (des[0] == des[1] || joueurJ.getNbToursPrison() == 1) ) {
+    		System.out.println("Vous etes libere de prison !");
+    		joueurJ.setEnPrison(false);
+    	}
+    	else { //Si le joueur est en prison
+    		quandEnPrison(pion, joueurJ, nbCases);
+    	}
     }
     
     public void quandEnPrison(Pion pion, Joueur joueurJ, int nbCases) {
     	if(joueurJ.aCarteLibPrison()) {
     		System.out.println("Vous possedez une carte \"libere de prison\". L'utiliser maintenant ? Tapez \"oui\" ou \"non\".");
     		if (joueurJ.utiliserCarteLibPrison()) { 
-    			passeParDepart((pion.getPosition() + nbCases) % 40);
-        		pion.setPosition((pion.getPosition() + nbCases) % 40);
+    			//passeParDepart((pion.getPosition() + nbCases) % 40); //Pas necessaire si on considere que nbCases depasse pas 12
+        		//pion.setPosition((pion.getPosition() + nbCases) % 40);
         		affiche();
         		surCaseParticuliere(pion);
     			return; 
@@ -84,7 +85,8 @@ public class Jeu {
     	Cases caseC = plateau.getCases(pion.getPosition());
     	if (caseC instanceof Proprietes) { return; }
     	else if (caseC instanceof CasesChance || caseC instanceof CasesCommunaute) {
-    		surCaseChanceCommu(pion, caseC);
+    		Cartes carte = tireCarteChanceCommu(caseC);
+    		surCaseChanceCommu(pion, carte);
     	}
     	else if (caseC instanceof CasesSpeciales) {
     		surCaseSpeciale(pion, caseC);
@@ -110,15 +112,10 @@ public class Jeu {
     }
     
     //Si on tombe sur une case chance ou communaute, tire une carte au hasard et effectue l'action associee
-    public void surCaseChanceCommu(Pion pion, Cases caseC) {
-    	Random rand = new Random();
-		int alea = rand.nextInt(16);
-		Cartes carte = (caseC instanceof CasesChance) ? plateau.getCartesChance()[alea] : plateau.getCartesCommu()[alea];
+    public void surCaseChanceCommu(Pion pion, Cartes carte) {
 		System.out.println(carte.getContenu());
 		switch (carte.getTypeAction()) {
 			case "prelevement" :
-				joueurs[curseur].ajout(carte.getParametres());
-				break;
 			case "recette" :
 				joueurs[curseur].ajout(carte.getParametres());
 				break;
@@ -129,6 +126,11 @@ public class Jeu {
 				if ( carte.getParametres() != 30 ) { //Seul moyen de savoir si on va en case prison ou pas
 					passeParDepart(carte.getParametres()); 
 				}
+				pion.setPosition(carte.getParametres());
+				affiche();
+				surCaseParticuliere(pion);
+				break;
+			case "reculer" :
 				pion.setPosition(carte.getParametres());
 				affiche();
 				surCaseParticuliere(pion);
@@ -149,10 +151,25 @@ public class Jeu {
 		}
     }
     
+    //Tirer au sort une carte chance ou communaute
+    public Cartes tireCarteChanceCommu(Cases caseC) {
+    	Random rand = new Random();
+		int alea = rand.nextInt(16);
+		Cartes carte = null;
+		if (caseC instanceof CasesChance) {
+			carte = plateau.getCartesChance()[alea];
+		}
+		else if (caseC instanceof CasesCommunaute) {
+			carte = plateau.getCartesCommu()[alea];
+		}
+		return carte;
+    }
+    
     //Verifie si lors du deplacement on passe par la case depart
     public void passeParDepart(int posFinale) {
+    	Cases caseDepart = plateau.getCases(0);
     	if (joueurs[curseur].getPion().getPosition() > posFinale) { //Comme 0 <= position <= 39, si posInit > posFinale, alors cela veut dire qu'on passe par la case depart, sinon non
-    		joueurs[curseur].ajout(2000); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart / on est en case 10, on va en case 5 -> on passe par depart
+    		joueurs[curseur].ajout( ((CasesSpeciales) caseDepart).getTransaction() ); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart / on est en case 10, on va en case 5 -> on passe par depart
     	}
     }
 
@@ -168,7 +185,7 @@ public class Jeu {
 	}
     
     //Gestion de debut et fin de tour
-    public void debutTour() {
+    public void deroulerPartie() {
     	while (!jeuFini()) {
     		System.out.println("\nJoueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
         	joueurs[curseur].questionDes();
@@ -255,12 +272,8 @@ public class Jeu {
 
     //Interface graphique
     public void deplace_IG(Pion pion, int[] des) {
-    	int nbCases = des[0] + des[1];
-    	for(int i=1;i<=nbCases;i++){
-	  		if((joueurs[curseur].getPion().getPosition()+i)%40==0) {
-	  			joueurs[curseur].setArgent(joueurs[curseur].getArgent()+2000);
-	  		}
-	  	} 
+    	int nbCases = des[0] + des[1]; 
+    	passeParDepart((pion.getPosition() + nbCases) % 40);
     	pion.setPosition((pion.getPosition() + nbCases) % 40);
     }
     
@@ -284,7 +297,7 @@ public class Jeu {
     	}
     }
     
-    public void vente_IG(Pion p ) {
+    public void vente_IG(Pion p) {
     	Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
 			Joueur proprietaire = pos_actuelle.getProprietaire();
 	            int prix = pos_actuelle.getPrix();
@@ -292,6 +305,7 @@ public class Jeu {
 	            proprietaire.vente_effectuee(prix, pos_actuelle);
 	            pos_actuelle.setProprietaire(joueurs[curseur]);
     }
+    
     
     public void faillite_IG(Joueur j) {
     	if (j.getArgent()<=0){
