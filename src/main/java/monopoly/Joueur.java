@@ -198,5 +198,24 @@ public class Joueur{
 		ajout(montant);
 		System.out.println(payeur.getNom() + " vous a donne " + montant + "e. " + payeur.getNom() + " a maintenant " + payeur.getArgent() + "e." );
 	}
+	
+	//Interface graphique
+		public int paye_IG(int x) {
+			if(argent>=x){
+	    		argent = argent - x;
+	    		return x;
+			}
+	    	//Si le joueur n'a pas assez d'argent et pas/plus de propriete a vendre
+	    	x = argent;
+		    argent = 0;
+		    return x;	
+		}
+
+		public int vendreSesProprietes_IG(int n) {
+			int position_ancienne_propriete = proprietes[n].getPosition();
+			proprietes[n].setProprietaire(null);
+			vente_effectuee(proprietes[n].getPrix(), proprietes[n]);
+			return position_ancienne_propriete;
+	    }
 
 }

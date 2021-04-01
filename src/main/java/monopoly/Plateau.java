@@ -35,7 +35,7 @@ public class Plateau {
 	}
 
 	//Initilisation du plateau
-    public void init_plateau() {
+	public void init_plateau() {
     	new_scan("cases.csv");
     	grille = new Cases[40];
         posJoueurs = new String[40];
@@ -44,18 +44,18 @@ public class Plateau {
         while (scan.hasNextLine()) {
         	String casePlateau = scan.nextLine();
         	String[] attributs = casePlateau.split(";"); //tab de taille 6, voir cases.csv
-            switch (attributs[0]) {
+            switch (attributs[1]) {
             	case "Proprietes": 
-            		grille[i] = new Proprietes(attributs[1], attributs[2], Integer.parseInt(attributs[3]), attributs[4].split("-"));
+            		grille[i] = new Proprietes(Integer.parseInt(attributs[0]), attributs[2], attributs[3], Integer.parseInt(attributs[4]), attributs[5].split("-"));
             		break;
             	case "CasesSpeciales":
-            		grille[i] = new CasesSpeciales(attributs[1], Integer.parseInt(attributs[5]));
+            		grille[i] = new CasesSpeciales(Integer.parseInt(attributs[0]), attributs[2], Integer.parseInt(attributs[6]));
             		break;
             	case "CasesCommunaute":
-            		grille[i] = new CasesCommunaute(attributs[1]);
+            		grille[i] = new CasesCommunaute(Integer.parseInt(attributs[0]), attributs[2]);
             		break;
             	case "CasesChance":
-            		grille[i] = new CasesChance(attributs[1]);
+            		grille[i] = new CasesChance(Integer.parseInt(attributs[0]), attributs[2]);
             		break;
             }
             posJoueurs[i] = "";

@@ -72,10 +72,14 @@ public class Controleur {
 			Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
 				&& propriete_actuelle.coloree()){
-			jeu.loyer(propriete_actuelle);
-			vue.changement_argent(curseur);
-			vue.changement_argent(vue.getTabProprietaires(position));
-			System.out.println("Loyer paye.");
+				if (jeu.getJoueurs()[curseur].getArgent()<propriete_actuelle.getLoyer() && jeu.getJoueurs()[curseur].getProprietes().length!=0) {
+					vue.affichage_revente_proprietes(curseur);
+				}else {
+					jeu.loyer_IG(propriete_actuelle);
+					vue.changement_argent(curseur);
+					vue.changement_argent(vue.getTabProprietaires(position));
+					System.out.println("Loyer paye.");
+				}
 			}
 		}
 	}
@@ -123,5 +127,13 @@ public class Controleur {
     			if(curseur != i) { vue.changement_argent(i); }
 			}
 		}
+	}
+	
+	int controleur_vendreSesProprietes(int curseur, int n) {
+		return jeu.getJoueurs()[curseur].vendreSesProprietes_IG(n);
+	}
+	
+	void controleur_loyerIG(Proprietes propriete_actuelle) {
+		jeu.loyer_IG(propriete_actuelle);
 	}
 }

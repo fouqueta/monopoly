@@ -7,13 +7,14 @@ public class Proprietes extends Cases {
 	private String couleur;
 	private Joueur proprietaire;
 	
-	public Proprietes(String nom, String couleur, int prixAchat, String[] loyer) {
-		super("Propriete", nom);
+	public Proprietes(int position, String nom, String couleur, int prixAchat, String[] loyer) {
+		super(position, "Propriete", nom);
 		this.couleur = couleur;
 		this.prixAchat = prixAchat;
 		this.loyer = loyer;
 		this.proprietaire = null;
 	}
+	
 	
 	//Getters
 	public int getPrix() { return this.prixAchat; }

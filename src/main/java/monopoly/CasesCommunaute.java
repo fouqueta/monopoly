@@ -2,8 +2,9 @@ package monopoly;
 
 public class CasesCommunaute extends Cases {
 
-	public CasesCommunaute(String nom) {
-		super("Communaute", nom);
+	public CasesCommunaute(int position, String nom) {
+		super(position, "Communaute", nom);
 	}
 
 }
+

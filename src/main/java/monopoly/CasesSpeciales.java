@@ -4,8 +4,8 @@ public class CasesSpeciales extends Cases {
 	
 	private int transaction;
 	
-	public CasesSpeciales(String nom, int transaction) {
-		super("Speciale", nom);
+	public CasesSpeciales(int position, String nom, int transaction) {
+		super(position, "Speciale", nom);
 		this.transaction = transaction;		
 	}
 
@@ -14,3 +14,4 @@ public class CasesSpeciales extends Cases {
 
 
 }
+

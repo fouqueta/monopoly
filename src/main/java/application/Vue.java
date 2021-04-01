@@ -38,6 +38,7 @@ public class Vue {
 		//Plateau
 	private AnchorPane jeu_pane;
 	private Pane plateau_pane;
+	private Pane revente_pane;
 	
 	private Pane[] tabCase_pane = new Pane[40];
 	private VBox colonne_gauche;
@@ -66,6 +67,7 @@ public class Vue {
 	
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
+	private Button nom_proprietes_button[];
 	
 	//Controleur
 	private Controleur controleur;
@@ -494,6 +496,10 @@ public class Vue {
 		}
 	}
 	
+	void changement_couleur_case_blanche(int position) {
+		tabCase_pane[position].setStyle("-fx-background-color: #FFFFFF; -fx-border-color: black");
+	}
+	
 	void changement_argent(int curseur) {
 		joueursPane_tab[curseur].getChildren().remove(1);
 		Label argent = new Label("Argent :" + jeu.getJoueurs()[curseur].getArgent());
@@ -511,6 +517,55 @@ public class Vue {
 		joueur_actuel.setFont(new Font("Arial", 30));
 
 		jeu_pane.getChildren().add(joueur_actuel);
+	}
+	
+	public void affichage_revente_proprietes(int curseur) {
+		//FIXME: desactiver bouton achat a partir du moment ou on a pas assez d'argent pour payer le loyer
+		achat_tab[curseur].setDisable(true);
+		revente_pane = new Pane();
+		revente_pane.setPrefSize(430, 430);
+		revente_pane.setStyle("-fx-background-color: white");
+		revente_pane.setLayoutX(plateau_pane.getWidth()*30/100);
+		revente_pane.setLayoutY(plateau_pane.getWidth()*20/100);
+		
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer le loyer \n s'elevant a " +propriete_actuelle.getLoyer() +".\n Vendez une/des propriete(s):");
+		revente_pane.getChildren().add(texte);
+		
+		int taille =60;
+		Proprietes [] proprietes_joueur_actuel= jeu.getJoueurs()[curseur].getProprietes();
+		
+		nom_proprietes_button = new Button [proprietes_joueur_actuel.length];
+		//initialiser les boutons
+		for (int i=0; i<proprietes_joueur_actuel.length; i++) {
+			nom_proprietes_button[i] = new Button (proprietes_joueur_actuel[i].getNom()+" - Prix de vente: "+proprietes_joueur_actuel[i].getPrix());
+			nom_proprietes_button[i].setLayoutY(taille);
+			taille+=30;
+			nom_proprietes_button[i].setLayoutX(75);
+			revente_pane.getChildren().add(nom_proprietes_button[i]);
+			int n = i;
+			
+			nom_proprietes_button[n].setOnAction(actionEvent->{
+				int ancienne_position= controleur.controleur_vendreSesProprietes(curseur,n);
+				changement_couleur_case_blanche(ancienne_position);
+				changement_argent(curseur);
+				revente_pane.setVisible(false);
+				if (jeu.getJoueurs()[curseur].getArgent()<propriete_actuelle.getLoyer() && proprietes_joueur_actuel.length>1) {
+					affichage_revente_proprietes(curseur);
+				}else {
+					jeu_pane.getChildren().remove(revente_pane);
+					controleur.controleur_loyerIG(propriete_actuelle);
+					//FIXME: update l'argent de l'ancien proprio une fois que le joueur a assez d'argent pour payer le loyer
+					changement_argent(proprietaires[position]);
+					changement_argent(curseur);
+				}
+			});	
+		}
+		
+		jeu_pane.getChildren().remove(revente_pane);
+		jeu_pane.getChildren().add(revente_pane);
+		revente_pane.setVisible(true);
 	}
 	
 		
