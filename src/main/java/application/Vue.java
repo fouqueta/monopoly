@@ -48,7 +48,7 @@ public class Vue {
 	private HBox ligne_bas;
 	private HBox ligne_haut;
 	
-	//Proprietaires
+		//Proprietaires
 	private int[] proprietaires = new int [40];
 	
 		//Joueurs
@@ -73,6 +73,8 @@ public class Vue {
 	
 	//Controleur
 	private Controleur controleur;
+	
+	private Label des_label = new Label();
 	
 	Vue(Controleur controleur){
 		this.controleur = controleur;
@@ -211,6 +213,7 @@ public class Vue {
 		
 		initialisation_familles();
 		initialisation_casesSpeciales();
+		initialisation_labelDes();
 	}
 	
 	void initialisation_casesSpeciales() {
@@ -581,20 +584,14 @@ public class Vue {
 		}
 	}
 	
-		
+
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
-		Label label_des = new Label("0,0");
-		
 		lancer.setLayoutX(250);
 		lancer.setLayoutY(250);
-		
-		label_des.setLayoutX(250);
-		label_des.setLayoutY(280);
-		
 		plateau_pane.getChildren().add(lancer);
-		plateau_pane.getChildren().add(label_des);
+		
 		if(jeu.onlyRobot()) lancer.setVisible(false);
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
@@ -605,6 +602,25 @@ public class Vue {
 			
 			bouton_achat(curseur);
 		});
+	}
+	
+	void initialisation_labelDes() {
+		des_label = new Label("0 - 0");
+		
+		des_label.setLayoutX(250);
+		des_label.setLayoutY(280);
+		
+		plateau_pane.getChildren().add(des_label);
+	}
+	
+	void changement_labelDes(int des[]) {
+		plateau_pane.getChildren().remove(des_label);
+		
+		des_label = new Label(des[0] + " - " + des[1]);
+		des_label.setLayoutX(250);
+		des_label.setLayoutY(280);
+		
+		plateau_pane.getChildren().add(des_label);
 	}
 	
 	void bouton_fin_de_tour() {
