@@ -80,6 +80,8 @@ public class Vue {
 	//Controleur
 	private Controleur controleur;
 	
+	private Label des_label = new Label();
+	
 	Vue(Controleur controleur){
 		this.controleur = controleur;
 		
@@ -582,7 +584,7 @@ public class Vue {
 		lancer.setLayoutX(250);
 		lancer.setLayoutY(250);
 		grillePlateau.getChildren().add(lancer);
-		
+
 		if(jeu.onlyRobot()) lancer.setVisible(false);
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
