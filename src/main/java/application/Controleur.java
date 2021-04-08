@@ -24,6 +24,7 @@ public class Controleur {
 	
 	//Apres lancer de des	
 	void controleur_lancer(int[] des, int curseur) {
+		vue.changement_labelDes(des);
 		controleur_deplacement(des, curseur);
 		controleur_loyer(des, curseur);
 		vue.changement_argent(curseur);
