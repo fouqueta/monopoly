@@ -26,11 +26,18 @@ public class Controleur {
 	void controleur_lancer(int[] des, int curseur) {
 		controleur_deplacement(des, curseur);
 		controleur_loyer(des, curseur);
+		vue.changement_argent(curseur);
+		//System.out.println("JE SUIS LA");
 	}
 	
 	//Gere les deplacements (sur quel type de case on tombe etc)
 	void controleur_deplacement(int[] des, int curseur) {
-		if(!(jeu.getJoueurs()[curseur].isEnPrison())){
+		if(jeu.getJoueurs()[curseur].isEnPrison() && 
+			(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
+			System.out.println("Vous etes libre.");
+			jeu.getJoueurs()[curseur].setEnPrison(false);
+		}
+		if( !(jeu.getJoueurs()[curseur].isEnPrison()) ){
 			Pion p = jeu.getJoueurs()[curseur].getPion();
 			int depart = p.getPosition();
 			jeu.deplace_IG(p, des);
@@ -39,13 +46,7 @@ public class Controleur {
 			int arrivee = p.getPosition();
 			
 			//controleur_chance_commu(curseur, jeu.getPlateau().getCases(p.getPosition())); //a rappeler qlqpart pour le cas ou on recule sur une case chance ou commu
-			vue.changement_argent(curseur);
 			if (depart!=arrivee) { vue.changement_position_pion(curseur, depart, arrivee); }
-		}
-		else if(jeu.getJoueurs()[curseur].isEnPrison() && 
-				(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
-				System.out.println("Vous etes libre.");
-				jeu.getJoueurs()[curseur].setEnPrison(false);
 		}	
 		else {
 			int tour_restant = jeu.getJoueurs()[curseur].getNbToursPrison();
@@ -62,10 +63,50 @@ public class Controleur {
 			controleur_chance_commu(curseur, case_actuelle);
     	}
     	else if (case_actuelle instanceof CasesSpeciales) {
-    		jeu.surCaseSpeciale(pion, case_actuelle);
+    		controleur_case_speciale(curseur, case_actuelle);
     	}
 	}
 
+	
+	//S'occupe du cas quand on tombe sur une case chace ou communaute
+	public void controleur_chance_commu(int curseur, Cases case_actuelle) {
+		Cartes carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
+		Joueur joueurJ = jeu.getJoueurs()[curseur];
+		
+		vue.caseChanceCommu(curseur, carteTiree);
+		jeu.surCaseChanceCommu_IG(joueurJ.getPion(), carteTiree);
+		
+		switch (carteTiree.getTypeAction()) {
+			case "prelevement" :
+			case "immo" :
+				verifPuisPaiement(curseur, -carteTiree.getParametres(), carteTiree);
+				break;
+			case "trajet" : 
+			case "reculer" :
+			case "trajet spe" :
+				controleur_surCaseParticuliere(joueurJ.getPion(), curseur);
+				break;
+			case "cadeau" :
+				for(int i = 0; i < jeu.getNbJ() ;i++) {
+					if(i != curseur && !jeu.getJoueurs()[i].getFaillite()) {
+						verifPuisPaiement(i, carteTiree.getParametres(), carteTiree); 
+						vue.changement_argent(i);
+					}
+				}
+				break;
+		}
+	}
+		
+	//S'occupe du cas quand on tombe sur une case speciale
+	public void controleur_case_speciale(int curseur, Cases case_actuelle) {
+		Joueur joueurJ = jeu.getJoueurs()[curseur];
+		jeu.surCaseSpeciale_IG(joueurJ.getPion(), case_actuelle);
+		if (case_actuelle.getNom().equals("Impots revenu") || case_actuelle.getNom().equals("Taxe de luxe")) {
+			verifPuisPaiement(curseur, -((CasesSpeciales)case_actuelle).getTransaction(), null );
+		}
+	}
+	
+	
 	//Paie le loyer si besoin
 	void controleur_loyer(int[] des, int curseur) {
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
@@ -74,14 +115,9 @@ public class Controleur {
 			Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
 				&& propriete_actuelle.coloree()){
-				if (jeu.getJoueurs()[curseur].getArgent()<propriete_actuelle.getLoyer() && jeu.getJoueurs()[curseur].getProprietes().length!=0) {
-					vue.affichage_revente_proprietes(curseur);
-				}else {
-					jeu.loyer_IG(propriete_actuelle);
-					vue.changement_argent(curseur);
-					vue.changement_argent(vue.getTabProprietaires(position));
-					System.out.println("Loyer paye.");
-				}
+				verifPuisPaiement(curseur, propriete_actuelle.getLoyer(), null);
+				vue.changement_argent(vue.getTabProprietaires(position));
+				System.out.println("Loyer paye.");
 			}
 		}
 	}
@@ -96,16 +132,12 @@ public class Controleur {
 				vue.changement_joueur_actuel();
 				System.out.println("Curseur :" + jeu.getCurseur());
 				vue.lancerRobot();
-
-
 			}
 			wait.playFromStart();
 		});
 		wait.play();
 	}
-
-
-
+	
 
 	void controleur_fin() {
 		if(jeu.onlyRobot()) {
@@ -142,25 +174,46 @@ public class Controleur {
 		jeu.vente_IG(p);
 		vue.changement_couleur_case(curseur, position);
 	}
+
 	
-	//S'occupe du cas quand on tombe sur une case chace ou communaute
-	void controleur_chance_commu(int curseur, Cases case_actuelle) {
-		Cartes carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
-		Pion p = jeu.getJoueurs()[curseur].getPion();
-		
-		vue.caseChanceCommu(curseur, carteTiree);
-		jeu.surCaseChanceCommu(p, carteTiree);
-		
-		if (carteTiree.getTypeAction().equals("cadeau")) {
-			for(int i = 0; i < jeu.getNbJ() ;i++) {
-    			if(curseur != i) { vue.changement_argent(i); }
-			}
+	//Verifie si on doit revendre ses proprietes avant de payer, puis passe au paiement
+	public void verifPuisPaiement(int curseur, int sommeApayer, Cartes carteTiree) {
+		//System.out.println("Je rentre dans le controleur_revente");
+		if (jeu.getJoueurs()[curseur].getArgent() < sommeApayer && jeu.getJoueurs()[curseur].getProprietes().length!=0) {
+			//System.out.println("Je rentre dans le IF du controleur_revente");
+			vue.affichage_revente_proprietes(curseur, sommeApayer, carteTiree);
+		}
+		else {
+			//System.out.println("Je rentre dans le ELSE du controleur_revente");
+			transactionSelonType(curseur, carteTiree);
 		}
 	}
 	
-	int controleur_vendreSesProprietes(int curseur, int n) {
-		return jeu.getJoueurs()[curseur].vendreSesProprietes_IG(n);
+	public void transactionSelonType(int curseur, Cartes carteTiree) {
+		//System.out.println("Je rentre dans transactionSelonType");
+		Joueur joueurJ = jeu.getJoueurs()[curseur];
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+		Cases caseC = jeu.getPlateau().getCases(position);
+		
+		if (caseC instanceof Proprietes) {
+			//System.out.println("Je rentre dedans si c'est une propriete");
+			jeu.loyer_IG((Proprietes) caseC);
+		}
+		else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
+			//System.out.println("Je rentre dedans si c'est la case impots ou taxe");
+			joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
+		}
+		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
+				(carteTiree.getTypeAction().equals("prelevement") || carteTiree.getTypeAction().equals("immo")) ) {
+			joueurJ.transaction(carteTiree.getParametres());
+		}
+		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) && (carteTiree.getTypeAction().equals("cadeau")) ) {
+			jeu.getJoueurs()[jeu.getCurseur()].thisRecoitDe(jeu.getJoueurs()[curseur], carteTiree.getParametres());
+		}
+		vue.changement_argent(curseur);
+		vue.changement_argent(vue.getTabProprietaires(position));
 	}
+
 	
 	void controleur_loyerIG(Proprietes propriete_actuelle) {
 		jeu.loyer_IG(propriete_actuelle);

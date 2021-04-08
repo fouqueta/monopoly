@@ -50,15 +50,15 @@ public class Jeu {
     public void deplace(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1];
     	Joueur joueurJ = joueurs[curseur];
+    	if ( joueurJ.isEnPrison() && (des[0] == des[1] || joueurJ.getNbToursPrison() == 1) ) {
+    		System.out.println("Vous etes libere de prison !");
+    		joueurJ.setEnPrison(false);
+    	}
     	if (!(joueurJ.isEnPrison())) { //Si le joueur n'est pas en prison
     		passeParDepart((pion.getPosition() + nbCases) % 40);
     		pion.setPosition((pion.getPosition() + nbCases) % 40);
     		affiche();
     		surCaseParticuliere(pion);
-    	}
-    	else if ( joueurJ.isEnPrison() && (des[0] == des[1] || joueurJ.getNbToursPrison() == 1) ) {
-    		System.out.println("Vous etes libere de prison !");
-    		joueurJ.setEnPrison(false);
     	}
     	else { //Si le joueur est en prison
     		quandEnPrison(pion, joueurJ, nbCases);
@@ -70,7 +70,7 @@ public class Jeu {
     		System.out.println("Vous possedez une carte \"libere de prison\". L'utiliser maintenant ? Tapez \"oui\" ou \"non\".");
     		if (joueurJ.utiliserCarteLibPrison()) { 
     			//passeParDepart((pion.getPosition() + nbCases) % 40); //Pas necessaire si on considere que nbCases depasse pas 12
-        		//pion.setPosition((pion.getPosition() + nbCases) % 40);
+        		pion.setPosition((pion.getPosition() + nbCases) % 40);
         		affiche();
         		surCaseParticuliere(pion);
     			return; 
@@ -99,7 +99,7 @@ public class Jeu {
     	switch (caseC.getNom()) {
 			case "Impots revenu" :
 			case "Taxe de luxe" :
-				joueurs[curseur].ajout( ((CasesSpeciales)caseC).getTransaction() );
+				joueurs[curseur].transaction( ((CasesSpeciales)caseC).getTransaction() );
 				System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
 				break;
 			case "Aller prison" :
@@ -118,7 +118,7 @@ public class Jeu {
 		switch (carte.getTypeAction()) {
 			case "prelevement" :
 			case "recette" :
-				joueurs[curseur].ajout(carte.getParametres());
+				joueurs[curseur].transaction(carte.getParametres());
 				break;
 			case "immo" :
 				//TODO : cas immo quand il y aura les maisons et hotels (ne pas oublier de modifier cartes.csv pour mettre plusieurs parametres de prix)
@@ -147,7 +147,7 @@ public class Jeu {
 			case "cadeau" : //Faire le cas si apres avoir donner le cadeau un joueur est en faillite ou non
 				for(Joueur j : joueurs) {
 					if(j != joueurs[curseur] && !j.getFaillite()) {
-						joueurs[curseur].transaction(carte.getParametres(), j);
+						joueurs[curseur].thisRecoitDe(j, carte.getParametres());
 					}
 				}
 				break;
@@ -160,7 +160,7 @@ public class Jeu {
 		int alea = rand.nextInt(16);
 		Cartes carte = null;
 		if (caseC instanceof CasesChance) {
-			carte = plateau.getCartesChance()[alea];
+			carte = plateau.getCartesChance()[4];
 		}
 		else if (caseC instanceof CasesCommunaute) {
 			carte = plateau.getCartesCommu()[alea];
@@ -172,7 +172,7 @@ public class Jeu {
     public void passeParDepart(int posFinale) {
     	Cases caseDepart = plateau.getCases(0);
     	if (joueurs[curseur].getPion().getPosition() > posFinale) { //Comme 0 <= position <= 39, si posInit > posFinale, alors cela veut dire qu'on passe par la case depart, sinon non
-    		joueurs[curseur].ajout( ((CasesSpeciales) caseDepart).getTransaction() ); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart / on est en case 10, on va en case 5 -> on passe par depart
+    		joueurs[curseur].transaction( ((CasesSpeciales) caseDepart).getTransaction() ); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart / on est en case 10, on va en case 5 -> on passe par depart
     	}
     }
 
@@ -245,8 +245,8 @@ public class Jeu {
 
     //Loyer
     public void loyer(Proprietes p){
-    	int argent = joueurs[curseur].paye(p.getLoyer());
-    	p.getProprietaire().ajout(argent);
+    	int argent = joueurs[curseur].paye_loyer(p.getLoyer());
+    	p.getProprietaire().transaction(argent);
 		System.out.println("Vous avez paye " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
     }
     
@@ -266,18 +266,49 @@ public class Jeu {
     		System.out.println(joueurJ.getNom() + " a fait faillite.");
     	}
     }
-
     
     //Condition jeu fini
     public boolean jeuFini() { //Jeu fini quand tous les joueurs sauf un sont en faillite, le joueur restant a gagne
     	return joueurs.length == 1;
     }
 
+    
     //Interface graphique
     public void deplace_IG(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1]; 
     	passeParDepart((pion.getPosition() + nbCases) % 40);
-    	pion.setPosition((pion.getPosition() + nbCases) % 40);
+    	pion.setPosition((pion.getPosition() + 1) % 40);
+    }
+    
+    public void surCaseChanceCommu_IG(Pion pion, Cartes carte) {
+    	switch (carte.getTypeAction()) {
+			case "recette" :
+				joueurs[curseur].transaction(carte.getParametres());
+				break;
+			case "trajet" : //Demander pour le cas prison : direct en prison (donc rajouter un cas if) ou passer par aller en prison (moins de code)
+				if ( carte.getParametres() != 30 ) {
+					passeParDepart(carte.getParametres()); 
+				}
+				pion.setPosition(carte.getParametres());
+				break;
+			case "reculer" :
+				pion.setPosition(carte.getParametres());
+				break;
+			case "trajet spe" :
+				pion.setPosition(pion.getPosition() - carte.getParametres());
+				break;
+			case "bonus" : //Faire la possibilite de vendre sa carte
+				joueurs[curseur].setCarteLibPrison(true);
+				break;
+		}
+    }
+    
+    public void surCaseSpeciale_IG(Pion pion, Cases caseC) {
+    	if (caseC.getNom().equals("Aller prison")) {
+    		joueurs[curseur].setEnPrison(true);
+			joueurs[curseur].setNbToursPrison(3);
+			pion.setPosition(10);
+    	}
     }
     
     public void finTour_IG() {
@@ -311,7 +342,7 @@ public class Jeu {
     
     
     public void faillite_IG(Joueur j) {
-    	if (j.getArgent()<=0){
+    	if (j.getArgent()<=0 && j.getProprietes().length == 0){
     		j.setFaillite(true);
     	}
     }
@@ -323,17 +354,11 @@ public class Jeu {
     			nbFaillite++;
     		}
     	}
-    	if (nbFaillite==joueurs.length-1) {
-    		return true;
-    	}else {
-    		return false;
-    	}
+    	return nbFaillite==joueurs.length-1;
     }
     
     public void loyer_IG(Proprietes p) {
-        int argent = joueurs[curseur].paye_IG(p.getLoyer());
-        p.getProprietaire().ajout(argent);
-        System.out.println("Vous avez paye " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
+    	joueurs[curseur].thisPayeA(p.getProprietaire(), p.getLoyer());
     }
 
 	public boolean onlyRobot(){
