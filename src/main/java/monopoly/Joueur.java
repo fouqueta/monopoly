@@ -205,7 +205,7 @@ public class Joueur{
 	}
 	
 	public void transaction(int montant, Joueur payeur) {
-		payeur.ajout(-100);
+		payeur.ajout(-montant);
 		ajout(montant);
 		System.out.println(payeur.getNom() + " vous a donne " + montant + "e. " + payeur.getNom() + " a maintenant " + payeur.getArgent() + "e." );
 	}

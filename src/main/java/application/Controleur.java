@@ -24,6 +24,7 @@ public class Controleur {
 	
 	//Apres lancer de des	
 	void controleur_lancer(int[] des, int curseur) {
+		vue.changement_labelDes(des);
 		controleur_deplacement(des, curseur);
 		controleur_loyer(des, curseur);
 	}
@@ -104,9 +105,6 @@ public class Controleur {
 		wait.play();
 	}
 
-
-
-
 	void controleur_fin() {
 		if(jeu.onlyRobot()) {
 			fin_only_robot();
@@ -121,7 +119,6 @@ public class Controleur {
 			}
 		}
 	}
-
 
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
@@ -143,7 +140,7 @@ public class Controleur {
 		vue.changement_couleur_case(curseur, position);
 	}
 	
-	//S'occupe du cas quand on tombe sur une case chace ou communaute
+	//Gestion des cases chances/communautés
 	void controleur_chance_commu(int curseur, Cases case_actuelle) {
 		Cartes carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
 		Pion p = jeu.getJoueurs()[curseur].getPion();
@@ -164,5 +161,33 @@ public class Controleur {
 	
 	void controleur_loyerIG(Proprietes propriete_actuelle) {
 		jeu.loyer_IG(propriete_actuelle);
+	}
+	
+	//Systeme de defis
+	void controleur_defis(int curseur) {
+		int desJoueur[] = jeu.lancer_de_des();
+		int desProprio[] = jeu.lancer_de_des();
+		int sommeJoueur = desJoueur[0] + desJoueur[1];
+		int sommeProprio = desProprio[0] + desProprio[1];
+		System.out.println("Joueur: " + sommeJoueur + ", Proprio: " + sommeProprio);
+		
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+		int loyerEnJeu = propriete_actuelle.getLoyer();
+		Joueur joueur = jeu.getJoueurs()[curseur];
+		Joueur proprio = propriete_actuelle.getProprietaire();
+		
+		if(sommeJoueur > sommeProprio) { //Rembourse le loyer au joueur gagnant.
+			joueur.transaction(loyerEnJeu, proprio);
+		}
+		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+			proprio.transaction(loyerEnJeu, joueur);
+		}
+		else {
+			System.out.println("Egalite");
+		}
+		
+		vue.changement_argent(curseur);
+		vue.changement_argent(vue.getTabProprietaires(position));
 	}
 }
