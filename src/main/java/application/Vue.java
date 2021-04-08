@@ -510,7 +510,6 @@ public class Vue {
 	void changement_argent(int curseur) {
 		infoJoueurs[curseur].getChildren().remove(1);
 		Label argent = new Label("Argent :" + jeu.getJoueurs()[curseur].getArgent());
-		
 		argent.setLayoutY(20);
 		argent.setLayoutX(10);
 		infoJoueurs[curseur].getChildren().add(argent);
@@ -526,8 +525,7 @@ public class Vue {
 		panePlateau.getChildren().add(joueur_actuel);
 	}
 	
-	public void affichage_revente_proprietes(int curseur) {
-		//FIXME: desactiver bouton achat a partir du moment ou on a pas assez d'argent pour payer le loyer
+	public void affichage_revente_proprietes(int curseur, int montant, Cartes carteTiree) {
 		achat_tab[curseur].setDisable(true);
 		revente_pane = new Pane();
 		revente_pane.setPrefSize(430, 430);
@@ -535,55 +533,46 @@ public class Vue {
 		revente_pane.setLayoutX(grillePlateau.getWidth()*30/100);
 		revente_pane.setLayoutY(grillePlateau.getWidth()*20/100);
 		
-		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
-		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer le loyer \n s'elevant a " +propriete_actuelle.getLoyer() +".\n Vendez une/des propriete(s):");
+		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due \n s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
 		revente_pane.getChildren().add(texte);
 		
-		int taille =60;
+		int taille = 60;
 		Proprietes [] proprietes_joueur_actuel= jeu.getJoueurs()[curseur].getProprietes();
 		
 		nom_proprietes_button = new Button [proprietes_joueur_actuel.length];
-		//initialiser les boutons
+		
+		//initialiser les boutons	
 		for (int i=0; i<proprietes_joueur_actuel.length; i++) {
+			System.out.println("Je suis rentrée dans le for " + i + " fois !");
+			
 			nom_proprietes_button[i] = new Button (proprietes_joueur_actuel[i].getNom()+" - Prix de vente: "+proprietes_joueur_actuel[i].getPrix());
 			nom_proprietes_button[i].setLayoutY(taille);
 			taille+=30;
 			nom_proprietes_button[i].setLayoutX(75);
 			revente_pane.getChildren().add(nom_proprietes_button[i]);
 			int n = i;
-
+			
 			nom_proprietes_button[n].setOnAction(actionEvent->{
-				int ancienne_position= controleur.controleur_vendreSesProprietes(curseur,n);
+				int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
 				changement_couleur_case_blanche(ancienne_position);
-				changement_argent(curseur);
-				revente_pane.setVisible(false);
-				if (jeu.getJoueurs()[curseur].getArgent()<propriete_actuelle.getLoyer() && proprietes_joueur_actuel.length>1) {
-					affichage_revente_proprietes(curseur);
-				}else {
-					panePlateau.getChildren().remove(revente_pane);
-					controleur.controleur_loyerIG(propriete_actuelle);
-					//FIXME: update l'argent de l'ancien proprio une fois que le joueur a assez d'argent pour payer le loyer
-					changement_argent(proprietaires[position]);
+				nom_proprietes_button[n].setVisible(false);
+				if (jeu.getJoueurs()[curseur].getArgent() < montant && proprietes_joueur_actuel.length>1) {
 					changement_argent(curseur);
+					revente_pane.setVisible(false);
+					affichage_revente_proprietes(curseur, montant, carteTiree);
 				}
-			});	
+				else { 
+					panePlateau.getChildren().remove(revente_pane);
+					controleur.transactionSelonType(curseur, carteTiree);
+			 	}
+			});
 		}
-
-
-		
-		panePlateau.getChildren().remove(revente_pane);
 		panePlateau.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
-
+		
 		if(jeu.getJoueurs()[curseur].isRobot()){
 			nom_proprietes_button[0].fire();
-
-		}
-
-		if(jeu.getJoueurs()[curseur].isRobot()){
-
-		}
+		}		
 	}
 	
 
@@ -731,8 +720,6 @@ public class Vue {
 	}
 	
 	void caseChanceCommu(int curseur, Cartes carteTiree) {
-		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-			
 		BorderPane carte_pane = new BorderPane();
 		Label type_carte = (carteTiree.getType().equals("chance")) ? new Label("CHANCE") : new Label("COMMUNAUTE");
 		Label contenu_carte = new Label(carteTiree.getContenu());
@@ -758,14 +745,11 @@ public class Vue {
 		  
 		bouton_fermer.setOnAction(actionEvent -> grillePlateau.getChildren().remove(carte_pane));
 		if(jeu.getJoueurs()[curseur].isRobot()){
-			PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
-
+			PauseTransition wait = new PauseTransition(Duration.seconds(1));
 			wait.setOnFinished((e) -> {
 				bouton_fermer.fire();
 			});
-
 			wait.play();
-
 		}
 	}
 	
@@ -956,7 +940,6 @@ public class Vue {
 
 	void lancerRobot(){
 		lancer.fire();
-
 	}
 
 }

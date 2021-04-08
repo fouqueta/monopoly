@@ -2,7 +2,7 @@ TYPE;CONTENU;TYPEACTION;PARAMETRES;
 chance;Votre immeuble et votre pret rapportent.\n     Vous devez toucher 1.500e.\n;recette;1500;
 chance;La Banque vous verse un dividende de 500e.\n;recette;500;
 chance;Vous avez gagne le prix de mots croises.\n	    Recevez 1.000e.\n;recette;1000;
-chance;Vous etes impose pour les reparations\n       de voirie à raison de :\n	 400e par maison et\n	 1.150e par hotel.\n;immo;400;
+chance;Vous etes impose pour les reparations\n       de voirie à raison de :\n	 400e par maison et\n	 1.150e par hotel.\n;immo;-400;
 chance;Payez pour frais de scolarite :\n	   1.500e\n;prelevement;-1500;
 chance;Amende pour exces de vitesse :\n	    150e\n;prelevement;-150;
 chance;Amende pour ivresse :\n       200e\n;prelevement;-200;

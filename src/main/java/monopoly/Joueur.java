@@ -2,7 +2,7 @@ package monopoly;
 
 import java.util.Scanner;
 
-public class Joueur{
+public class Joueur{ 
 
     private String nom;
     private Pion pion;
@@ -150,7 +150,7 @@ public class Joueur{
 	
 
 	//Loyer
-	public int paye(int x){
+	public int paye_loyer(int x){
     	//TODO: modifier le while pour la vente aux encheres ou les hypotheques
     	while (argent < x && proprietes.length != 0) { //Tant que le joueur n'a pas assez d'argent mais qu'il lui reste des proprietes a vendre
     		System.out.println("Vous n'avez pas assez d'argent pour payer le loyer. Quelle propriete souhaitez-vous vendre ?");
@@ -200,33 +200,38 @@ public class Joueur{
 		}
 	}
 
-	public void ajout(int x){
+	public void transaction(int x){
     	argent = argent + x;
+    	if (argent < 0) { argent = 0; }
 	}
 	
-	public void transaction(int montant, Joueur payeur) {
-		payeur.ajout(-montant);
-		ajout(montant);
-		System.out.println(payeur.getNom() + " vous a donne " + montant + "e. " + payeur.getNom() + " a maintenant " + payeur.getArgent() + "e." );
+	public void thisPayeA(Joueur receveur, int montant) {
+		if(argent < montant){
+			montant = argent;
+		}
+		receveur.transaction(montant);
+		transaction(-montant);
+		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + "." +
+				receveur.getNom() + " a maintenant " + receveur.getArgent() + "e." );
 	}
+	
+	public void thisRecoitDe(Joueur payeur, int montant) {
+		if(payeur.argent < montant){
+			montant = payeur.argent;
+		}
+		payeur.transaction(-montant);
+		transaction(montant);
+		System.out.println(payeur.getNom() + " vous a donne " + montant + "e. " +
+				payeur.getNom() + " a maintenant " + payeur.getArgent() + "e." );
+	}
+	
 	
 	//Interface graphique
-		public int paye_IG(int x) {
-			if(argent>=x){
-	    		argent = argent - x;
-	    		return x;
-			}
-	    	//Si le joueur n'a pas assez d'argent et pas/plus de propriete a vendre
-	    	x = argent;
-		    argent = 0;
-		    return x;	
-		}
-
-		public int vendreSesProprietes_IG(int n) {
-			int position_ancienne_propriete = proprietes[n].getPosition();
-			proprietes[n].setProprietaire(null);
-			vente_effectuee(proprietes[n].getPrix(), proprietes[n]);
-			return position_ancienne_propriete;
-	    }
+	public int vendreLaPropriete_IG(int n) {
+		int position_ancienne_propriete = proprietes[n].getPosition();
+		proprietes[n].setProprietaire(null);
+		vente_effectuee(proprietes[n].getPrix(), proprietes[n]);
+		return position_ancienne_propriete;
+	}
 
 }
