@@ -69,8 +69,7 @@ public class Jeu {
     	if(joueurJ.aCarteLibPrison()) {
     		System.out.println("Vous possedez une carte \"libere de prison\". L'utiliser maintenant ? Tapez \"oui\" ou \"non\".");
     		if (joueurJ.utiliserCarteLibPrison()) { 
-    			//passeParDepart((pion.getPosition() + nbCases) % 40); //Pas necessaire si on considere que nbCases depasse pas 12
-        		pion.setPosition((pion.getPosition() + nbCases) % 40);
+    			pion.setPosition((pion.getPosition() + nbCases) % 40);
         		affiche();
         		surCaseParticuliere(pion);
     			return; 
@@ -160,7 +159,7 @@ public class Jeu {
 		int alea = rand.nextInt(16);
 		Cartes carte = null;
 		if (caseC instanceof CasesChance) {
-			carte = plateau.getCartesChance()[4];
+			carte = plateau.getCartesChance()[alea];
 		}
 		else if (caseC instanceof CasesCommunaute) {
 			carte = plateau.getCartesCommu()[alea];
@@ -277,7 +276,7 @@ public class Jeu {
     public void deplace_IG(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1]; 
     	passeParDepart((pion.getPosition() + nbCases) % 40);
-    	pion.setPosition((pion.getPosition() + 1) % 40);
+    	pion.setPosition((pion.getPosition() + nbCases) % 40);
     }
     
     public void surCaseChanceCommu_IG(Pion pion, Cartes carte) {
