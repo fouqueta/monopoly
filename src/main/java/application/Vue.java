@@ -522,6 +522,16 @@ public class Vue {
 		joueur_actuel.setFont(new Font("Arial", 30));
 
 		jeu_pane.getChildren().add(joueur_actuel);
+
+		if(!(jeu.j == jeu.getJoueurs()[jeu.getCurseur()])){
+			lancer.setDisable(true);
+			fin.setDisable(true);
+		}
+		else{
+			lancer.setDisable(false);
+			fin.setDisable(false);
+		}
+
 	}
 	
 	public void affichage_revente_proprietes(int curseur) {
@@ -591,7 +601,9 @@ public class Vue {
 		lancer.setLayoutX(250);
 		lancer.setLayoutY(250);
 		plateau_pane.getChildren().add(lancer);
-		
+		if(!(jeu.j == jeu.getJoueurs()[jeu.getCurseur()])) lancer.setDisable(true);
+		else lancer.setDisable(false);
+
 		if(jeu.onlyRobot()) lancer.setVisible(false);
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
@@ -630,6 +642,9 @@ public class Vue {
 		fin.setLayoutY(300);
 		
 		plateau_pane.getChildren().add(fin);
+		if(!(jeu.j == jeu.getJoueurs()[jeu.getCurseur()])){
+			fin.setDisable(true);
+		}
 		if(jeu.onlyRobot()) fin.setVisible(false);
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
@@ -641,8 +656,6 @@ public class Vue {
 			if(!jeu.onlyRobot()) {
 				controleur.controleur_fin();
 			}
-
-
 		});
 	}
 	
@@ -786,7 +799,8 @@ public class Vue {
 		
 		achat_tab[curseur].setOnAction(actionEvent ->{
 			achat_tab[curseur].setDisable(true);
-			vente_tab[proprietaires[position]].setDisable(false);
+			controleur.sendMsg("demande achat", "");
+			//vente_tab[proprietaires[position]].setDisable(false);
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
 				vente_tab[proprietaires[position]].fire();
 			}
@@ -803,6 +817,30 @@ public class Vue {
 			}
 		});
 	}
+
+	public void active_vente(int position, int curseur){
+		vente_tab[proprietaires[position]].setDisable(false);
+		vente_tab[proprietaires[position]].setOnAction(actionEvent ->{
+			vente_tab[proprietaires[position]].setDisable(true);
+			controleur.controleur_vente(curseur);
+			changement_argent(curseur);
+			changement_argent(proprietaires[position]);
+			proprietaires[position]=curseur;
+			controleur.sendMsg("vente à joueur", "");
+			if(jeu.getJoueurs()[curseur].isRobot()){
+				fin.fire();
+			}
+		});
+	}
+
+	public void updateVente(int position, int curseur){
+		controleur.controleur_vente(curseur);
+		changement_argent(curseur);
+		changement_argent(proprietaires[position]);
+		proprietaires[position]=curseur;
+	}
+
+
 	
 	//Interface graphique : Accueil
 	void accueil_jeu() {
@@ -814,11 +852,29 @@ public class Vue {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(300, 700, 450, 700));
 
-		TextField[] tf = new TextField[6];
-
+		/*TextField[] tf = new TextField[6];
 		Button[] bt = new Button[6];
 		boolean[] flags = new boolean[6];
 		for(int i=0;i<6;i++){
+			tf[i] = new TextField ();
+			tf[i].setPromptText("Pseudo du joueur " + (i+1));
+			GridPane.setConstraints(tf[i], 0, i);
+
+			bt[i] = new Button("Mode robot pour joueur " + (i+1));
+			GridPane.setConstraints(bt[i], 1, i);
+			int finalI = i;
+			bt[i].setOnAction(actionEvent->{
+				flags[finalI] = !flags[finalI];
+			});
+
+		}*/
+
+		//TODO: Faire un systeme pour switch netre mode en ligne et mode hors ligne. (Entre en haut et en bas de ce texte)
+
+		TextField[] tf = new TextField[1];
+		Button[] bt = new Button[1];
+		boolean[] flags = new boolean[1];
+		for(int i=0;i<1;i++){
 			tf[i] = new TextField ();
 			tf[i].setPromptText("Pseudo du joueur " + (i+1));
 			GridPane.setConstraints(tf[i], 0, i);
@@ -859,6 +915,11 @@ public class Vue {
 					if(jeu.onlyRobot()) controleur.controleur_fin();
 				}
 
+			}else {
+				if (!tf[0].equals("")) {
+					jeu.j = new Joueur(tf[0].getText());
+					controleur.start();
+				}
 			}
 		});
 		scene_accueil.getChildren().add(grid);

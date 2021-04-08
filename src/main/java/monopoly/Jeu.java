@@ -8,6 +8,7 @@ public class Jeu {
     private Plateau plateau;
     private int curseur;
     private int nbJ;
+    public Joueur j;
 
     public Jeu() {
         plateau = new Plateau();
@@ -19,7 +20,10 @@ public class Jeu {
 		joueurs = new Joueur[nbJ];
 		for(int i=0;i<nbJ;i++){
 			joueurs[i] = new Joueur(noms[i]);
-			if(flags[i]) joueurs[i].setRobot();
+			if(flags!=null && flags[i]) joueurs[i].setRobot();
+			if(noms[i].equals(j.getNom())){
+				j = joueurs[i];
+			}
 		}
 	}
     
@@ -159,6 +163,7 @@ public class Jeu {
     	Random rand = new Random();
 		int alea = rand.nextInt(16);
 		Cartes carte = null;
+		System.out.println(alea);
 		if (caseC instanceof CasesChance) {
 			carte = plateau.getCartesChance()[alea];
 		}
@@ -346,4 +351,32 @@ public class Jeu {
 	}
 
 
+	public String numCase(Cartes carteTiree) {
+    	Cartes[] t;
+		t = plateau.getCartesCommu();
+		for(int i=0;i<t.length;i++){
+			if(t[i] == carteTiree){
+				System.out.println(i);
+				return i + "-commu";
+			}
+		}
+		t = plateau.getCartesChance();
+		for(int i=0;i<t.length;i++){
+			if(t[i] == carteTiree){
+				System.out.println(i);
+				return i + "-chance";
+			}
+		}
+    	return "";
+	}
+
+	public Cartes carteParIndex(int i, String s){
+    	System.out.println(s);
+    	if(s.equals("chance")){
+    		return plateau.getCartesChance()[i];
+		}
+    	else {
+    		return plateau.getCartesCommu()[i];
+		}
+	}
 }
