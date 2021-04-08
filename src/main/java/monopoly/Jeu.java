@@ -69,8 +69,7 @@ public class Jeu {
     	if(joueurJ.aCarteLibPrison()) {
     		System.out.println("Vous possedez une carte \"libere de prison\". L'utiliser maintenant ? Tapez \"oui\" ou \"non\".");
     		if (joueurJ.utiliserCarteLibPrison()) { 
-    			//passeParDepart((pion.getPosition() + nbCases) % 40); //Pas necessaire si on considere que nbCases depasse pas 12
-        		pion.setPosition((pion.getPosition() + nbCases) % 40);
+    			pion.setPosition((pion.getPosition() + nbCases) % 40);
         		affiche();
         		surCaseParticuliere(pion);
     			return; 
