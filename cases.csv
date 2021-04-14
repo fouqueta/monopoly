@@ -1,41 +1,41 @@
-TYPE;NOM;COULEUR;PRIXACHAT;LOYER;TRANSACTION
-CasesSpeciales;Départ;;;;2000
-Proprietes;Belleville;violet;600;20-40;
-CasesCommunaute;Communauté;;;;
-Proprietes;Lecourbe;violet;600;40-70;
-CasesSpeciales;Impôts revenu;;;;-2000
-Proprietes;G Montparnasse;gare;2000;250-500-750-1000;
-Proprietes;Vaugirard;ciel;1000;60-80-110;
-CasesChance;Chance;;;;
-Proprietes;Courcelles;ciel;1000;60-85-115;
-Proprietes;République;ciel;1200;80-100-120;
-CasesSpeciales;Prison;;;;0
-Proprietes;La Villette;rose;1400;100-120-140;
-Proprietes;Electricité;compagnie;1500;40-120;
-Proprietes;Neuilly;rose;1400;100-125-150;
-Proprietes;Paradis;rose;1600;120-140-160;
-Proprietes;G. de Lyon;gare;2000;250-500-750-1000;
-Proprietes;Mozart;orange;1800;140-155-170;
-CasesCommunaute;Communauté;;;;
-Proprietes;Saint-Michel;orange;1800;140-160-180;
-Proprietes;Pigalle;orange;2000;160-180-205;
-CasesSpeciales;Parc gratuit;;;;0
-Proprietes;Matignon;rouge;2200;180-200-215;
-CasesChance;Chance;;;;
-Proprietes;Malesherbes;rouge;2200;180-205-220;
-Proprietes;Henri-Martin;rouge;2400;200-220-240;
-Proprietes;G. du Nord;gare;2000;250-500-750-1000;
-Proprietes;Saint-Honoré;jaune;2600;220-235-245;
-Proprietes;La Bourse;jaune;2600;220-240-255;
-Proprietes;Eaux;compagnie;1500;40-120;
-Proprietes;La Fayette;jaune;2800;240-260-280;
-CasesSpeciales;Aller prison;;;;0
-Proprietes;Breteuil;vert;3000;260-275-285;
-Proprietes;Foch;vert;3000;260-280-300;
-CasesCommunaute;Communauté;;;;
-Proprietes;Capucines;vert;3200;280-300-320;
-Proprietes;G. St-Lazare;gare;2000;250-500-750-1000;
-CasesChance;Chance;;;;
-Proprietes;Champs-Elysées;bleu;3500;350-500;
-CasesSpeciales;Taxe de luxe;;;;-1000
-Proprietes;Rue de la Paix;bleu;4000;500-750;
+POSITION;TYPE;NOM;COULEUR;PRIXACHAT;LOYER;TRANSACTION
+0;CasesSpeciales;Depart;;;;2000
+1;Proprietes;Belleville;violet;600;4000-5000;
+2;CasesCommunaute;Communaute;;;;
+3;Proprietes;Lecourbe;violet;600;3000-4000;
+4;CasesSpeciales;Impots revenu;;;;-2000
+5;Proprietes;G Montparnasse;gare;2000;3500-5000-7500-10000;
+6;Proprietes;Vaugirard;ciel;1000;3600-3800-4100;
+7;CasesChance;Chance;;;;
+8;Proprietes;Courcelles;ciel;1000;3000-3850-4500;
+9;Proprietes;Republique;ciel;1200;3000-4000-4500;
+10;CasesSpeciales;Prison;;;;0
+11;Proprietes;La Villette;rose;1400;3000-3120-3140;
+12;Proprietes;Electricite;compagnie;1500;3400-3420;
+13;Proprietes;Neuilly;rose;1400;3000-3125-3150;
+14;Proprietes;Paradis;rose;1600;3120-3140-3160;
+15;Proprietes;G. de Lyon;gare;2000;3250-3500-3750-4000;
+16;Proprietes;Mozart;orange;1800;3140-3155-3170;
+17;CasesCommunaute;Communaute;;;;
+18;Proprietes;Saint-Michel;orange;1800;3140-3160-3180;
+19;Proprietes;Pigalle;orange;2000;3160-3180-3205;
+20;CasesSpeciales;Parc gratuit;;;;0
+21;Proprietes;Matignon;rouge;2200;3180-3200-3215;
+22;CasesChance;Chance;;;;
+23;Proprietes;Malesherbes;rouge;2200;3180-3205-3220;
+24;Proprietes;Henri-Martin;rouge;2400;3200-3220-3240;
+25;Proprietes;G. du Nord;gare;2000;3250-3500-3750-4000;
+26;Proprietes;Saint-Honore;jaune;2600;3220-3235-3245;
+27;Proprietes;La Bourse;jaune;2600;3220-3240-3255;
+28;Proprietes;Eaux;compagnie;1500;3400-4120;
+29;Proprietes;La Fayette;jaune;2800;3240-3260-3280;
+30;CasesSpeciales;Aller prison;;;;0
+31;Proprietes;Breteuil;vert;3000;3260-3275-3285;
+32;Proprietes;Foch;vert;3000;3260-3280-3300;
+33;CasesCommunaute;Communaute;;;;
+34;Proprietes;Capucines;vert;3200;3280-3300-3320;
+35;Proprietes;G. St-Lazare;gare;2000;3250-3500-3750-4000;
+36;CasesChance;Chance;;;;
+37;Proprietes;Champs-Elysees;bleu;3500;3350-3500;
+38;CasesSpeciales;Taxe de luxe;;;;-1000
+39;Proprietes;Rue de la Paix;bleu;4000;4500-4750;

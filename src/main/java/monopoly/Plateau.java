@@ -8,19 +8,13 @@ public class Plateau {
     private Cases[] grille;
     private int banque;
     private String[] posJoueurs;
+    private Cartes[] cartesChance;
+    private Cartes[] cartesCommu;
     private Scanner scan;
 
-    Plateau(String fichier){
-    	scan = null;
-    	try {
-    		scan = new Scanner(new File(fichier), "UTF-8");
-    	}
-    	catch(Exception e) {
-    		System.out.println("Erreur lors d ouverture fichier:");
-    		e.printStackTrace();
-    		System.exit(1);
-    	}
+    public Plateau() {
     	init_plateau();
+    	init_cartes();
     }
     
     //Getters
@@ -32,8 +26,17 @@ public class Plateau {
   		return grille[position];
   	}
     
-    //Initilisation du plateau
-    public void init_plateau() {
+    public Cartes[] getCartesChance() {
+		return cartesChance;
+	}
+
+	public Cartes[] getCartesCommu() {
+		return cartesCommu;
+	}
+
+	//Initilisation du plateau
+	public void init_plateau() {
+    	new_scan("cases.csv");
     	grille = new Cases[40];
         posJoueurs = new String[40];
         int i = 0;
@@ -41,25 +44,60 @@ public class Plateau {
         while (scan.hasNextLine()) {
         	String casePlateau = scan.nextLine();
         	String[] attributs = casePlateau.split(";"); //tab de taille 6, voir cases.csv
-            switch (attributs[0]) {
+            switch (attributs[1]) {
             	case "Proprietes": 
-            		grille[i] = new Proprietes(attributs[1], attributs[2], Integer.parseInt(attributs[3]), attributs[4].split("-"));
+            		grille[i] = new Proprietes(Integer.parseInt(attributs[0]), attributs[2], attributs[3], Integer.parseInt(attributs[4]), attributs[5].split("-"));
             		break;
             	case "CasesSpeciales":
-            		grille[i] = new CasesSpeciales(attributs[1], Integer.parseInt(attributs[5]));
+            		grille[i] = new CasesSpeciales(Integer.parseInt(attributs[0]), attributs[2], Integer.parseInt(attributs[6]));
             		break;
             	case "CasesCommunaute":
-            		grille[i] = new CasesCommunaute(attributs[1]);
+            		grille[i] = new CasesCommunaute(Integer.parseInt(attributs[0]), attributs[2]);
             		break;
             	case "CasesChance":
-            		grille[i] = new CasesChance(attributs[1]);
+            		grille[i] = new CasesChance(Integer.parseInt(attributs[0]), attributs[2]);
             		break;
             }
             posJoueurs[i] = "";
         	i++;
         }
         posJoueurs[0] = "1,2,3,4";
-
+        scan.close();
+    }
+    
+    //Initialisation des cartes chance et communaute
+    public void init_cartes() {
+    	new_scan("cartes.csv");
+    	cartesChance = new Cartes[16];
+    	cartesCommu = new Cartes[16];
+    	int i = 0;
+        scan.nextLine(); //Pour sauter la ligne des titres des categories
+        while (scan.hasNextLine()) {
+        	String cartes = scan.nextLine();
+        	String[] attributs = cartes.split(";"); //tab de taille 4, voir cartes.csv
+        	attributs[1] = attributs[1].replace("\\n", "\n");
+            switch (attributs[0]) {
+            	case "chance":
+            		cartesChance[i] = new Cartes(attributs[0], attributs[1], attributs[2], Integer.parseInt(attributs[3]));
+            		break;
+            	case "commu":
+            		cartesCommu[i%16] = new Cartes(attributs[0], attributs[1], attributs[2], Integer.parseInt(attributs[3]));
+            		break;
+            }
+        	i++;
+        }
+    	scan.close();
+    }
+    
+    public void new_scan(String fichier) {
+    	try {
+    		scan = new Scanner(new File(fichier), "UTF-8");
+    	}
+    	catch(Exception e) {
+    		System.out.println("Erreur lors d ouverture fichier:");
+    		e.printStackTrace();
+    		System.exit(1);
+    	}
     }
     
     //Actualisation de la position des joueurs

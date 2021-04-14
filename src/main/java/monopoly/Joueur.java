@@ -2,20 +2,28 @@ package monopoly;
 
 import java.util.Scanner;
 
-public class Joueur{
+public class Joueur{ 
 
     private String nom;
     private Pion pion;
     private int argent;
     private Proprietes[] proprietes; // Proprietes possedees par un joueur
+    private boolean enPrison;
+    private int nbToursPrison;
+    private boolean carteLibPrison;
     Scanner reponse;
+    private boolean faillite;
+	private boolean robot = false;
     
     public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
     	this.nom = nom;
     	pion = new Pion(0);
     	argent = 10000;
     	proprietes = new Proprietes[0];
+    	enPrison = false;
+    	carteLibPrison = false;
     	this.reponse = new Scanner(System.in);
+    	faillite = false;
     }
     
     //Getters
@@ -26,6 +34,8 @@ public class Joueur{
 	public int getArgent() { return argent; }
 	
 	public Proprietes[] getProprietes() { return proprietes; }
+	
+	public boolean getFaillite() { return faillite; }
 
 	public int getNbPropCouleur(String couleur){
     	int cpt = 0;
@@ -36,12 +46,37 @@ public class Joueur{
 		}
     	return cpt;
 	}
-	
-	//Setters
-	public void setArgent(int argent) { this.argent = argent; }
 
-   
-    //Gestion de lancement de des
+	public boolean isEnPrison() { return enPrison; }
+
+	public boolean isRobot(){
+		return robot;
+	}
+
+
+	public int getNbToursPrison() { return nbToursPrison; }
+	
+	public boolean aCarteLibPrison() { 	return carteLibPrison; }
+
+	//Setters
+	public void setNom (String nom) { this.nom=nom; }
+	
+	public void setArgent(int argent) { this.argent = argent; }
+	
+	public void setEnPrison(boolean enPrison) { this.enPrison = enPrison; }
+	
+	public void setNbToursPrison(int nbToursPrison) { this.nbToursPrison = nbToursPrison; }
+	
+	public void setCarteLibPrison(boolean carteLibPrison) { this.carteLibPrison = carteLibPrison; }
+	
+	public void setFaillite(boolean faillite) { this.faillite = faillite; }
+
+	public void setRobot(){
+		robot = true;
+	}
+
+
+	//Gestion de lancement de des
     public void questionDes() {
     	System.out.println("Tapez \"go\" pour lancer les des");
     	String s = reponse.next();
@@ -112,9 +147,10 @@ public class Joueur{
     		return decision_vente(proprietaire);
     	}
 	}
+	
 
 	//Loyer
-	public int paye(int x){
+	public int paye_loyer(int x){
     	//TODO: modifier le while pour la vente aux encheres ou les hypotheques
     	while (argent < x && proprietes.length != 0) { //Tant que le joueur n'a pas assez d'argent mais qu'il lui reste des proprietes a vendre
     		System.out.println("Vous n'avez pas assez d'argent pour payer le loyer. Quelle propriete souhaitez-vous vendre ?");
@@ -146,9 +182,56 @@ public class Joueur{
 	    System.out.println("Entree invalide, recommencez.");
     	vendreSesProprietes();
     }
+	
+	public boolean utiliserCarteLibPrison() {
+		String s = reponse.next();
+		if (s.equals("oui")) {
+			System.out.println("Vous etes libere de prison !");
+    		enPrison = false;
+    		carteLibPrison = false;
+    		return true;
+		}
+		else if (s.equals("non")) {
+			return false;
+		}
+		else {
+			System.out.println("Entree invalide, recommencez.");
+			return utiliserCarteLibPrison();
+		}
+	}
 
-	public void ajout(int x){
+	public void transaction(int x){
     	argent = argent + x;
+    	if (argent < 0) { argent = 0; }
+	}
+	
+	public void thisPayeA(Joueur receveur, int montant) {
+		if(argent < montant){
+			montant = argent;
+		}
+		receveur.transaction(montant);
+		transaction(-montant);
+		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + "." +
+				receveur.getNom() + " a maintenant " + receveur.getArgent() + "e." );
+	}
+	
+	public void thisRecoitDe(Joueur payeur, int montant) {
+		if(payeur.argent < montant){
+			montant = payeur.argent;
+		}
+		payeur.transaction(-montant);
+		transaction(montant);
+		System.out.println(payeur.getNom() + " vous a donne " + montant + "e. " +
+				payeur.getNom() + " a maintenant " + payeur.getArgent() + "e." );
+	}
+	
+	
+	//Interface graphique
+	public int vendreLaPropriete_IG(int n) {
+		int position_ancienne_propriete = proprietes[n].getPosition();
+		proprietes[n].setProprietaire(null);
+		vente_effectuee(proprietes[n].getPrix(), proprietes[n]);
+		return position_ancienne_propriete;
 	}
 
 }

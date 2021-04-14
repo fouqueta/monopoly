@@ -2,8 +2,8 @@ package monopoly;
 
 public class CasesChance extends Cases {
 
-	public CasesChance(String nom) {
-		super("Chance", nom);
+	public CasesChance(int position,String nom) {
+		super(position, "Chance", nom);
 	}
 	
 }

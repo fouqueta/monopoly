@@ -7,13 +7,14 @@ public class Proprietes extends Cases {
 	private String couleur;
 	private Joueur proprietaire;
 	
-	public Proprietes(String nom, String couleur, int prixAchat, String[] loyer) {
-		super("Propriete", nom);
+	public Proprietes(int position, String nom, String couleur, int prixAchat, String[] loyer) {
+		super(position, "Propriete", nom);
 		this.couleur = couleur;
 		this.prixAchat = prixAchat;
 		this.loyer = loyer;
 		this.proprietaire = null;
 	}
+	
 	
 	//Getters
 	public int getPrix() { return this.prixAchat; }
@@ -32,7 +33,6 @@ public class Proprietes extends Cases {
 
 	//Setters
 	public void setPrix(int prix) { this.prixAchat = prix; }
-
 	
 	public void setProprietaire(Joueur nouveau_proprietaire) { this.proprietaire = nouveau_proprietaire; }
 	
@@ -40,10 +40,15 @@ public class Proprietes extends Cases {
 	public String toString() {
 		return("Prix d'achat: " + this.prixAchat + " , Loyer actuel: " + this.loyer + " , Couleur: " + this.couleur + " , Nom: " + this.nom);
 	}
-	
+
 	//Verification
 	public boolean est_Libre() {
 		if(this.proprietaire == null) { return true; }
 		return false;
+	}
+	
+	public boolean coloree() {
+		if(this.couleur.equals("compagnie")) { return false; }
+		return true;
 	}
 }
