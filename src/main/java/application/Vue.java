@@ -640,7 +640,7 @@ public class Vue {
 			vente_tab[proprietaires[position]].setDisable(true);
 			lancer.setDisable(false);
 			
-			defis.setDisable(true);
+			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
 			
 			controleur.controleur_faillite(curseur);
@@ -861,6 +861,10 @@ public class Vue {
 		defis_tab[proprietaires[position]].setOnAction(actionEvent ->{
 			controleur.controleur_defis(curseur);
 			defis_tab[proprietaires[position]].setDisable(true);
+			Proprietes prop_curseur = (Proprietes) jeu.getPlateau().getGrille()[position];
+			if(jeu.getJoueurs()[curseur].getArgent() < prop_curseur.getPrix()) {
+				achat_tab[curseur].setDisable(true);
+			}
 		});
 	}
 	
