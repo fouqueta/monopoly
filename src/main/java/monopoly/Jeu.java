@@ -355,14 +355,14 @@ public class Jeu {
     	}
     	return nbFaillite==joueurs.length-1;
     }
-    
+     
     public void loyer_IG(Proprietes p) {
     	joueurs[curseur].thisPayeA(p.getProprietaire(), p.getLoyer());
     }
 
 	public boolean onlyRobot(){
 		for(int i=0;i< joueurs.length;i++){
-			if(!(joueurs[i].isRobot())){
+			if( !(joueurs[i].isRobot())){
 				return false;
 			}
 		}

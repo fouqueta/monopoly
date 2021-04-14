@@ -28,7 +28,6 @@ public class Controleur {
 		controleur_deplacement(des, curseur);
 		controleur_loyer(des, curseur);
 		vue.changement_argent(curseur);
-		//System.out.println("JE SUIS LA");
 	}
 	
 	//Gere les deplacements (sur quel type de case on tombe etc)
@@ -46,7 +45,6 @@ public class Controleur {
 			controleur_surCaseParticuliere(p, curseur);
 			int arrivee = p.getPosition();
 			
-			//controleur_chance_commu(curseur, jeu.getPlateau().getCases(p.getPosition())); //a rappeler qlqpart pour le cas ou on recule sur une case chance ou commu
 			if (depart!=arrivee) { vue.changement_position_pion(curseur, depart, arrivee); }
 		}	
 		else {
@@ -69,7 +67,7 @@ public class Controleur {
 	}
 
 	
-	//S'occupe du cas quand on tombe sur une case chace ou communaute
+	//Gestion des cases chance/communaute
 	public void controleur_chance_commu(int curseur, Cases case_actuelle) {
 		Cartes carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
@@ -98,7 +96,7 @@ public class Controleur {
 		}
 	}
 		
-	//S'occupe du cas quand on tombe sur une case speciale
+	//Gestion des cases speciales
 	public void controleur_case_speciale(int curseur, Cases case_actuelle) {
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		jeu.surCaseSpeciale_IG(joueurJ.getPion(), case_actuelle);
@@ -124,7 +122,7 @@ public class Controleur {
 	}
 
 	private void fin_only_robot(){
-		PauseTransition wait = new PauseTransition(Duration.seconds(3));
+		PauseTransition wait = new PauseTransition(Duration.seconds(2));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
@@ -150,7 +148,11 @@ public class Controleur {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
 			if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
-				vue.lancerRobot();
+				PauseTransition wait = new PauseTransition(Duration.seconds(2));
+				wait.setOnFinished((e) -> {
+					vue.lancerRobot();
+				});
+				wait.play();
 			}
 		}
 	}
@@ -179,29 +181,23 @@ public class Controleur {
 	
 	//Verifie si on doit revendre ses proprietes avant de payer, puis passe au paiement
 	public void verifPuisPaiement(int curseur, int sommeApayer, Cartes carteTiree) {
-		//System.out.println("Je rentre dans le controleur_revente");
 		if (jeu.getJoueurs()[curseur].getArgent() < sommeApayer && jeu.getJoueurs()[curseur].getProprietes().length!=0) {
-			//System.out.println("Je rentre dans le IF du controleur_revente");
 			vue.affichage_revente_proprietes(curseur, sommeApayer, carteTiree);
 		}
 		else {
-			//System.out.println("Je rentre dans le ELSE du controleur_revente");
 			transactionSelonType(curseur, carteTiree);
 		}
 	}
 	
 	public void transactionSelonType(int curseur, Cartes carteTiree) {
-		//System.out.println("Je rentre dans transactionSelonType");
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Cases caseC = jeu.getPlateau().getCases(position);
 		
 		if (caseC instanceof Proprietes) {
-			//System.out.println("Je rentre dedans si c'est une propriete");
 			jeu.loyer_IG((Proprietes) caseC);
 		}
 		else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
-			//System.out.println("Je rentre dedans si c'est la case impots ou taxe");
 			joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
 		}
 		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
