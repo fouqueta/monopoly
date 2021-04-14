@@ -523,7 +523,7 @@ public class Vue {
 
 		jeu_pane.getChildren().add(joueur_actuel);
 
-		if(!(jeu.j == jeu.getJoueurs()[jeu.getCurseur()])){
+		if(jeu.isReseau() && !(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()])){
 			lancer.setDisable(true);
 			fin.setDisable(true);
 		}
@@ -601,7 +601,7 @@ public class Vue {
 		lancer.setLayoutX(250);
 		lancer.setLayoutY(250);
 		plateau_pane.getChildren().add(lancer);
-		if(!(jeu.j == jeu.getJoueurs()[jeu.getCurseur()])) lancer.setDisable(true);
+		if(jeu.isReseau() && !(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()])) lancer.setDisable(true);
 		else lancer.setDisable(false);
 
 		if(jeu.onlyRobot()) lancer.setVisible(false);
@@ -642,8 +642,10 @@ public class Vue {
 		fin.setLayoutY(300);
 		
 		plateau_pane.getChildren().add(fin);
-		if(!(jeu.j == jeu.getJoueurs()[jeu.getCurseur()])){
+		if(jeu.isReseau() && !(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()])) {
 			fin.setDisable(true);
+		}else{
+			fin.setDisable(false);
 		}
 		if(jeu.onlyRobot()) fin.setVisible(false);
 		fin.setOnAction(actionEvent -> {
@@ -799,7 +801,7 @@ public class Vue {
 		
 		achat_tab[curseur].setOnAction(actionEvent ->{
 			achat_tab[curseur].setDisable(true);
-			controleur.sendMsg("demande achat", "");
+			if(jeu.isReseau()) controleur.sendMsg("demande achat", "");
 			//vente_tab[proprietaires[position]].setDisable(false);
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
 				vente_tab[proprietaires[position]].fire();
@@ -852,29 +854,21 @@ public class Vue {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(300, 700, 450, 700));
 
-		/*TextField[] tf = new TextField[6];
-		Button[] bt = new Button[6];
-		boolean[] flags = new boolean[6];
-		for(int i=0;i<6;i++){
-			tf[i] = new TextField ();
-			tf[i].setPromptText("Pseudo du joueur " + (i+1));
-			GridPane.setConstraints(tf[i], 0, i);
+		TextField[] tf;
+		Button[] bt;
+		boolean[] flags;
 
-			bt[i] = new Button("Mode robot pour joueur " + (i+1));
-			GridPane.setConstraints(bt[i], 1, i);
-			int finalI = i;
-			bt[i].setOnAction(actionEvent->{
-				flags[finalI] = !flags[finalI];
-			});
+		if(!jeu.isReseau()){
+			tf = new TextField[6];
+			bt = new Button[6];
+			flags = new boolean[6];
+		}else{
+			tf = new TextField[1];
+			bt = new Button[1];
+			flags = new boolean[1];
+		}
 
-		}*/
-
-		//TODO: Faire un systeme pour switch netre mode en ligne et mode hors ligne. (Entre en haut et en bas de ce texte)
-
-		TextField[] tf = new TextField[1];
-		Button[] bt = new Button[1];
-		boolean[] flags = new boolean[1];
-		for(int i=0;i<1;i++){
+		for(int i=0;i<tf.length;i++){
 			tf[i] = new TextField ();
 			tf[i].setPromptText("Pseudo du joueur " + (i+1));
 			GridPane.setConstraints(tf[i], 0, i);
@@ -896,7 +890,12 @@ public class Vue {
 		grid.add(valider,0,7);
 		valider.setOnAction(actionEvent->{
 			String[] noms = fieldToString(tf);
-			if(noms.length>1) {
+			if(jeu.isReseau()){
+				if (!tf[0].equals("")) {
+					jeu.setJoueurReseau(new Joueur(tf[0].getText()));
+					controleur.start();
+				}
+			}else if(noms.length>1) {
 				jeu.initialisation_joueurs(noms, flags);
 
 				initialisation_plateau();
@@ -910,17 +909,25 @@ public class Vue {
 				bouton_fin_de_tour();
 				boutons_jeu();
 				initialisation_boutons_achat_vente();
-				if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
+				if (jeu.getJoueurs()[jeu.getCurseur()].isRobot()) {
 					lancerRobot();
-					if(jeu.onlyRobot()) controleur.controleur_fin();
-				}
-
-			}else {
-				if (!tf[0].equals("")) {
-					jeu.j = new Joueur(tf[0].getText());
-					controleur.start();
+					if (jeu.onlyRobot()) controleur.controleur_fin();
 				}
 			}
+		});
+
+		Button reseau;
+		if(jeu.isReseau()){
+			reseau = new Button("Mode hors-ligne");
+			reseau.setStyle("-fx-background-color: #FF0000");
+		}else{
+			reseau = new Button("Mode Reseau");
+			reseau.setStyle("-fx-background-color: #0000FF");
+		}
+		grid.add(reseau,0,8);
+		reseau.setOnAction(actionEvent->{
+			controleur.startSocket();
+			accueil_jeu();
 		});
 		scene_accueil.getChildren().add(grid);
 		root.getChildren().add(scene_accueil);

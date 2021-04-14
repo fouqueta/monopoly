@@ -21,11 +21,7 @@ public class Controleur extends Thread {
 
 	Controleur(Jeu jeu) {
 		this.jeu = jeu;
-		try {
-			socket = new Socket("176.144.217.163", 666);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 
 	}
 
@@ -38,6 +34,28 @@ public class Controleur extends Thread {
 		this.jeu = jeu;
 	}
 
+	public void startSocket(){
+		if(jeu.isReseau()){
+
+			try {
+				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+				sendMsg("close","");
+				pw.close();
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			jeu.setReseau(false);
+		}else{
+			try {
+				socket = new Socket("176.144.217.163", 666);
+				jeu.setReseau(true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	//Getters
 	Jeu getJeu() {
 		return this.jeu;
@@ -48,7 +66,7 @@ public class Controleur extends Thread {
 		vue.changement_labelDes(des);
 		controleur_deplacement(des, curseur);
 		controleur_loyer(des, curseur);
-		if(jeu.j == jeu.getJoueurs()[jeu.getCurseur()]){
+		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
 			sendMsg("deplace", des[0] + "," + des[1]);
 		}
 
@@ -137,7 +155,7 @@ public class Controleur extends Thread {
 		} else if (jeu.jeuFini_IG()) {
 			vue.fin_partie();
 		} else {
-			if(jeu.j == jeu.getJoueurs()[jeu.getCurseur()]){
+			if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
 				sendMsg("fin tour", "");
 			}
 			jeu.finTour_IG();
@@ -161,7 +179,7 @@ public class Controleur extends Thread {
 		int position = p.getPosition();
 		jeu.achat_IG(p);
 		vue.changement_couleur_case(curseur, position);
-		if(jeu.j == jeu.getJoueurs()[jeu.getCurseur()]) {
+		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 			sendMsg("achat", "");
 		}
 	}
@@ -171,7 +189,7 @@ public class Controleur extends Thread {
 		int position = p.getPosition();
 		jeu.vente_IG(p);
 		vue.changement_couleur_case(curseur, position);
-		if(jeu.j == jeu.getJoueurs()[jeu.getCurseur()]) {
+		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 			sendMsg("vente", "");
 		}
 	}
@@ -179,7 +197,7 @@ public class Controleur extends Thread {
 	//S'occupe du cas quand on tombe sur une case chace ou communaute
 	void controleur_chance_commu(int curseur, Cases case_actuelle) {
 		Cartes carteTiree;
-		if(jeu.j == jeu.getJoueurs()[jeu.getCurseur()]) {
+		if(!jeu.isReseau() || jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 			carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
 		}else{
 			carteTiree = carte;
@@ -197,7 +215,7 @@ public class Controleur extends Thread {
 			}
 		}
 
-		if(jeu.j == jeu.getJoueurs()[jeu.getCurseur()]) {
+		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 			sendMsg("carte", String.valueOf(jeu.numCase(carteTiree)));
 		}
 	}
@@ -215,8 +233,7 @@ public class Controleur extends Thread {
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-			pw.println(jeu.j.getNom());
-			sendMsg("start", "");
+			sendMsg("start", jeu.getJoueurReseau().getNom());
 			while (true) {
 				String action = br.readLine();
 				String info = br.readLine();
@@ -285,7 +302,7 @@ public class Controleur extends Thread {
 				Platform.runLater(() -> {
 					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-					if (jeu.j == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
+					if (jeu.getJoueurReseau() == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
 						vue.active_vente(position, curseur);
 					}
 				});
@@ -294,7 +311,7 @@ public class Controleur extends Thread {
 				Platform.runLater(() -> {
 					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-					if (jeu.j == jeu.getJoueurs()[curseur]) {
+					if (jeu.getJoueurReseau() == jeu.getJoueurs()[curseur]) {
 						vue.updateVente(position, curseur);
 					}
 				});

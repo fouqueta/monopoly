@@ -8,11 +8,14 @@ public class Jeu {
     private Plateau plateau;
     private int curseur;
     private int nbJ;
-    public Joueur j;
+    private Joueur joueurReseau;
+    private boolean reseau;
+
 
     public Jeu() {
         plateau = new Plateau();
         curseur = 0;
+        reseau = false;
     }
 
 	public void initialisation_joueurs(String[] noms, boolean[] flags){
@@ -21,8 +24,8 @@ public class Jeu {
 		for(int i=0;i<nbJ;i++){
 			joueurs[i] = new Joueur(noms[i]);
 			if(flags!=null && flags[i]) joueurs[i].setRobot();
-			if(noms[i].equals(j.getNom())){
-				j = joueurs[i];
+			if(isReseau() && noms[i].equals(joueurReseau.getNom())){
+				joueurReseau = joueurs[i];
 			}
 		}
 	}
@@ -42,6 +45,24 @@ public class Jeu {
 
 	public int getNbJ(){
 		return nbJ;
+	}
+
+	public Joueur getJoueurReseau(){
+    	return joueurReseau;
+	}
+
+	public boolean isReseau(){
+    	return reseau;
+	}
+
+	//Setter
+
+	public void setJoueurReseau(Joueur j){
+    	joueurReseau = j;
+	}
+
+	public void setReseau(boolean b){
+    	reseau = b;
 	}
     
     //Affichage
