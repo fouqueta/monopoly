@@ -118,7 +118,7 @@ public class Controleur {
 	}
 
 	private void fin_only_robot(){
-		PauseTransition wait = new PauseTransition(Duration.seconds(3));
+		PauseTransition wait = new PauseTransition(Duration.seconds(2));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
@@ -234,7 +234,6 @@ public class Controleur {
 		else {
 			System.out.println("Egalite");
 		}
-		
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}

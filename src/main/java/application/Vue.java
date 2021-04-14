@@ -11,7 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -512,6 +515,7 @@ public class Vue {
 	void changement_argent(int curseur) {
 		infoJoueurs[curseur].getChildren().remove(1);
 		Label argent = new Label("Argent :" + jeu.getJoueurs()[curseur].getArgent());
+		
 		argent.setLayoutY(20);
 		argent.setLayoutX(10);
 		infoJoueurs[curseur].getChildren().add(argent);
@@ -545,7 +549,6 @@ public class Vue {
 		
 		//initialiser les boutons	
 		for (int i=0; i<proprietes_joueur_actuel.length; i++) {
-			System.out.println("Je suis rentrée dans le for " + i + " fois !");
 			
 			nom_proprietes_button[i] = new Button (proprietes_joueur_actuel[i].getNom()+" - Prix de vente: "+proprietes_joueur_actuel[i].getPrix());
 			nom_proprietes_button[i].setLayoutY(taille);
@@ -585,7 +588,6 @@ public class Vue {
 		lancer.setLayoutY(250);
 		grillePlateau.getChildren().add(lancer);
 
-		if(jeu.onlyRobot()) lancer.setVisible(false);
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
 			int[] des = jeu.lancer_de_des();
@@ -618,12 +620,10 @@ public class Vue {
 	
 	void bouton_fin_de_tour() {
 		fin = new Button("Fin");
-		
 		fin.setLayoutX(250);
 		fin.setLayoutY(300);
-		
 		grillePlateau.getChildren().add(fin);
-		if(jeu.onlyRobot()) fin.setVisible(false);
+
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
 			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
@@ -635,9 +635,15 @@ public class Vue {
 			defis_tab[proprietaires[position]].setDisable(true);
 			
 			controleur.controleur_faillite(curseur);
-			if(!jeu.onlyRobot()) {
-				controleur.controleur_fin();
-			}
+			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[(curseur+1)% jeu.getNbJ()].isRobot())) {
+				 controleur.controleur_fin();
+	        }
+	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){ 
+	        	lancer.setVisible(false);
+	        	fin.setVisible(false); }
+	        else { 
+	        	lancer.setVisible(true);
+	        	fin.setVisible(true); }
 		});
 	}
 	
@@ -877,6 +883,9 @@ public class Vue {
 			GridPane.setConstraints(bt[i], 1, i);
 			int finalI = i;
 			bt[i].setOnAction(actionEvent->{
+				Color color = (Color)bt[finalI].getBackground().getFills().get(0).getFill();
+				if (color != Color.LIGHTSKYBLUE) { bt[finalI].setStyle("-fx-background-color: LIGHTSKYBLUE"); }
+				else { bt[finalI].setStyle(null); }
 				flags[finalI] = !flags[finalI];
 			});
 
