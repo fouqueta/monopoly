@@ -595,9 +595,9 @@ public class Vue {
 			int[] des = jeu.lancer_de_des();
 			controleur.controleur_lancer(des, curseur);
 			lancer.setDisable(true);
-			
-			bouton_achat(curseur);
+
 			bouton_defis(curseur);
+			bouton_achat(curseur);
 		});
 	}
 	
@@ -638,21 +638,22 @@ public class Vue {
 			
 			controleur.controleur_faillite(curseur);
 			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[(curseur+1)% jeu.getNbJ()].isRobot())) {
-				 controleur.controleur_fin();
-				 int curseurSuivant = jeu.getCurseur();
-					if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
-						bouton_prison(curseurSuivant);
-					}else {
-						prison_tab[curseur].setDisable(true);
-					}
-
+				controleur.controleur_fin();
+				int curseurSuivant = jeu.getCurseur();
+				if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
+					bouton_prison(curseurSuivant);
+				}else {
+					prison_tab[curseur].setDisable(true);
+				}
 	        }
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){ 
 	        	lancer.setVisible(false);
-	        	fin.setVisible(false); }
+	        	fin.setVisible(false); 
+	        }
 	        else { 
 	        	lancer.setVisible(true);
-	        	fin.setVisible(true); }
+	        	fin.setVisible(true); 
+	        }
 		});
 	}
 	
@@ -778,7 +779,6 @@ public class Vue {
 	
 	void bouton_achat(int curseur) {
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		
 		int argent_joueur = jeu.getJoueurs()[curseur].getArgent();
 		Cases case_curseur = jeu.getPlateau().getGrille()[position];
 		
@@ -823,7 +823,6 @@ public class Vue {
 				}
 			}else if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
-
 			}
 		}
 	}
@@ -837,10 +836,15 @@ public class Vue {
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
 				vente_tab[proprietaires[position]].fire();
 			}
+			if( !(jeu.getJoueurs()[proprietaires[position]].isRobot()) ){ 
+		      	fin.setVisible(true); 
+			}
 		});
 		
 		vente_tab[proprietaires[position]].setOnAction(actionEvent ->{
 			vente_tab[proprietaires[position]].setDisable(true);
+			defis_tab[curseur].setDisable(true);
+			defis_tab[proprietaires[position]].setDisable(true);
 			controleur.controleur_vente(curseur);
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
@@ -857,14 +861,18 @@ public class Vue {
 		
 		if(case_curseur.getType().equals("Propriete")) {
 			Proprietes prop_curseur = (Proprietes) jeu.getPlateau().getGrille()[position];
-			if(!(prop_curseur.est_Libre())){
+			if( !(prop_curseur.est_Libre()) && proprietaires[position]!=curseur ) {
 				defis_tab[curseur].setDisable(false);
-				defis_tab[curseur].setOnAction(actionEvent ->{
-					defis_tab[proprietaires[position]].setDisable(false);
-					defis_tab[curseur].setDisable(true);
-				});
 			}
-		}
+		}		
+		defis_tab[curseur].setOnAction(actionEvent ->{
+			defis_tab[curseur].setDisable(true);
+			defis_tab[proprietaires[position]].setDisable(false);
+			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
+				defis_tab[proprietaires[position]].fire();
+			}
+			
+		});
 		defis_tab[proprietaires[position]].setOnAction(actionEvent ->{
 			controleur.controleur_defis(curseur);
 			defis_tab[proprietaires[position]].setDisable(true);
@@ -873,6 +881,9 @@ public class Vue {
 				achat_tab[curseur].setDisable(true);
 			}
 		});
+		if(jeu.getJoueurs()[curseur].isRobot()){
+			defis_tab[curseur].fire();
+		}
 	}
 	
 	void bouton_prison(int curseur) {
