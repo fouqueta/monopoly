@@ -237,4 +237,9 @@ public class Controleur {
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}
+	
+	void controleur_libererPrison(int curseur) {
+		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
+	}
+
 }

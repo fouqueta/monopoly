@@ -233,5 +233,11 @@ public class Joueur{
 		vente_effectuee(proprietes[n].getPrix(), proprietes[n]);
 		return position_ancienne_propriete;
 	}
+	
+	public void utiliserCarteLibPrison_IG() {
+		enPrison = false;
+		carteLibPrison = false;
+}
+
 
 }

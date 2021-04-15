@@ -68,6 +68,7 @@ public class Vue {
 	private Button fin;
 	private Button achat;
 	private Button vente;
+	private Button prison;
 	private HBox boutons_box;
 	private Button regles_button;
 	private Button aide_button;
@@ -75,6 +76,7 @@ public class Vue {
 	
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
+	private Button prison_tab[] = new Button[6];
 	private Button nom_proprietes_button[];
 	
 	private Button defis;
@@ -637,6 +639,13 @@ public class Vue {
 			controleur.controleur_faillite(curseur);
 			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[(curseur+1)% jeu.getNbJ()].isRobot())) {
 				 controleur.controleur_fin();
+				 int curseurSuivant = jeu.getCurseur();
+					if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
+						bouton_prison(curseurSuivant);
+					}else {
+						prison_tab[curseur].setDisable(true);
+					}
+
 	        }
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){ 
 	        	lancer.setVisible(false);
@@ -675,24 +684,30 @@ public class Vue {
 			achat = new Button("Achat");
 			vente = new Button("Vente");
 			defis = new Button("Defis");
+			prison = new Button("Prison");
 			
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
+			prison_tab[i] = prison;
 			
 			achat.setDisable(true);
 			vente.setDisable(true);
 			defis.setDisable(true);
+			prison.setDisable(true);
 			
 			achat.setLayoutY(5);
 			vente.setLayoutY(35);
 			
 			defis.setLayoutY(5);
 			defis.setLayoutX(50);
+			prison.setLayoutX(50);
+			prison.setLayoutY(35);
 			
 			joueur_boutons.getChildren().add(achat);
 			joueur_boutons.getChildren().add(vente);
 			joueur_boutons.getChildren().add(defis);
+			joueur_boutons.getChildren().add(prison);
 			
 			boutonsJoueurs.getChildren().add(joueur_boutons);
 		}
@@ -859,6 +874,18 @@ public class Vue {
 			}
 		});
 	}
+	
+	void bouton_prison(int curseur) {
+		prison_tab[curseur].setDisable(false);
+		/*if(jeu.getJoueurs()[curseur].isRobot()){
+			prison_tab[curseur].fire();
+		}*/
+		prison_tab[curseur].setOnAction(actionEvent ->{
+			prison_tab[curseur].setDisable(true);
+			controleur.controleur_libererPrison(curseur);
+		});
+	}
+
 	
 	//Interface graphique : Accueil
 	void accueil_jeu() {
