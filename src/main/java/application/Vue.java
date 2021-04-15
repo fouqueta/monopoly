@@ -883,7 +883,7 @@ public class Vue {
 		}
 
 		grid.getChildren().addAll(tf);
-		grid.getChildren().addAll(bt);
+		if(!jeu.isReseau()) grid.getChildren().addAll(bt);
 
 
 		Button valider = new Button("Valider");
@@ -957,9 +957,43 @@ public class Vue {
 		vente.setDisable(true);
 	}
 
+	//lance tour robot
 	void lancerRobot(){
 		lancer.fire();
 
 	}
 
+	//Actualise l'IG à la fin du tour en mode reseau
+	void finDeTourReseau(){
+		int curseur = jeu.getCurseur();
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+		achat_tab[curseur].setDisable(true);
+		vente_tab[proprietaires[position]].setDisable(true);
+		lancer.setDisable(false);
+		controleur.controleur_faillite(curseur);
+	}
+
+	void achatReseau(){
+		int curseur = jeu.getCurseur();
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+
+		proprietaires[position]=curseur;
+		controleur.controleur_achat(curseur);
+		changement_argent(curseur);
+	}
+
+	//Vend la propriété en reseau
+	void vendPropReseau(int ancienne_position, int curseur){
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+
+		changement_couleur_case_blanche(ancienne_position);
+		changement_argent(curseur);
+		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
+			controleur.controleur_loyerIG(propriete_actuelle);
+			//FIXME: update l'argent de l'ancien proprio une fois que le joueur a assez d'argent pour payer le loyer
+			changement_argent(proprietaires[position]);
+			changement_argent(curseur);
+		}
+	}
 }

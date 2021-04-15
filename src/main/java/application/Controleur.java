@@ -74,6 +74,11 @@ public class Controleur extends Thread {
 
 	//Gere les deplacements (sur quel type de case on tombe etc)
 	void controleur_deplacement(int[] des, int curseur) {
+		if (jeu.getJoueurs()[curseur].isEnPrison() &&
+				(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
+			System.out.println("Vous etes libre.");
+			jeu.getJoueurs()[curseur].setEnPrison(false);
+		}
 		if (!(jeu.getJoueurs()[curseur].isEnPrison())) {
 			Pion p = jeu.getJoueurs()[curseur].getPion();
 			int depart = p.getPosition();
@@ -87,10 +92,6 @@ public class Controleur extends Thread {
 			if (depart != arrivee) {
 				vue.changement_position_pion(curseur, depart, arrivee);
 			}
-		} else if (jeu.getJoueurs()[curseur].isEnPrison() &&
-				(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
-			System.out.println("Vous etes libre.");
-			jeu.getJoueurs()[curseur].setEnPrison(false);
 		} else {
 			int tour_restant = jeu.getJoueurs()[curseur].getNbToursPrison();
 			System.out.println("Vous restez en prison pour encore " + tour_restant + " tours.");
@@ -116,11 +117,14 @@ public class Controleur extends Thread {
 		Cases case_actuelle = jeu.getPlateau().getCases(position);
 		if (case_actuelle instanceof Proprietes) {
 			Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+			System.out.println(vue.getTabProprietaires(position) + " " +  curseur);
 			if (!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
 					&& propriete_actuelle.coloree()) {
 				if (jeu.getJoueurs()[curseur].getArgent() < propriete_actuelle.getLoyer() && jeu.getJoueurs()[curseur].getProprietes().length != 0) {
-					vue.affichage_revente_proprietes(curseur);
-				} else {
+					if(!jeu.isReseau() || jeu.getJoueurReseau() == jeu.getJoueurs()[curseur]){
+						vue.affichage_revente_proprietes(curseur);
+					}
+				}else {
 					jeu.loyer_IG(propriete_actuelle);
 					vue.changement_argent(curseur);
 					vue.changement_argent(vue.getTabProprietaires(position));
@@ -189,9 +193,9 @@ public class Controleur extends Thread {
 		int position = p.getPosition();
 		jeu.vente_IG(p);
 		vue.changement_couleur_case(curseur, position);
-		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
+		/*if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 			sendMsg("vente", "");
-		}
+		}*/
 	}
 
 	//S'occupe du cas quand on tombe sur une case chace ou communaute
@@ -221,6 +225,9 @@ public class Controleur extends Thread {
 	}
 
 	int controleur_vendreSesProprietes(int curseur, int n) {
+		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
+			sendMsg("vendre", String.valueOf(n));
+		}
 		return jeu.getJoueurs()[curseur].vendreSesProprietes_IG(n);
 	}
 
@@ -260,13 +267,12 @@ public class Controleur extends Thread {
 				break;
 			case "achat":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
-					controleur_achat(curseur);
-					vue.changement_argent(curseur);
+					vue.achatReseau();
 				});
 				break;
 			case "fin tour":
 				Platform.runLater(() -> {
+					vue.finDeTourReseau();
 					controleur_fin();
 				});
 				break;
@@ -315,6 +321,14 @@ public class Controleur extends Thread {
 						vue.updateVente(position, curseur);
 					}
 				});
+				break;
+			case "vendre":
+				Platform.runLater(() -> {
+					int curseur = jeu.getCurseur();
+					int a = controleur_vendreSesProprietes(curseur, Integer.valueOf(info));
+					vue.vendPropReseau(a, curseur);
+				});
+
 				break;
 			default:
 				break;
