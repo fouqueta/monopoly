@@ -26,7 +26,7 @@ public class Controleur {
 	void controleur_lancer(int[] des, int curseur) {
 		vue.changement_labelDes(des);
 		controleur_deplacement(des, curseur);
-		controleur_loyer(des, curseur);
+		controleur_loyer(curseur);
 		vue.changement_argent(curseur);
 	}
 	
@@ -104,7 +104,7 @@ public class Controleur {
 	
 	
 	//Paie le loyer si besoin
-	void controleur_loyer(int[] des, int curseur) {
+	void controleur_loyer(int curseur) {
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Cases case_actuelle = jeu.getPlateau().getCases(position);
 		if(case_actuelle instanceof Proprietes) {

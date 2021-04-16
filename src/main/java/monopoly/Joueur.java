@@ -211,7 +211,7 @@ public class Joueur{
 		}
 		receveur.transaction(montant);
 		transaction(-montant);
-		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + "." +
+		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + ". " +
 				receveur.getNom() + " a maintenant " + receveur.getArgent() + "e." );
 	}
 	
