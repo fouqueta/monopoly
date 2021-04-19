@@ -12,119 +12,106 @@ import java.util.logging.Logger;
 
 class JoueurS extends Thread{
     
-    String nom;
-    public Socket socket;
-    PrintWriter pw;
-    ArrayList<JoueurS> list;
-    boolean pret = false;
+    private String nom;
+    private final Socket socket;
+    private PrintWriter pw;
+    private final ArrayList<JoueurS> list;
+    private boolean pret = false;
     static boolean lance = false;
-    boolean running = true;
+    private boolean running = true;
 
     JoueurS(Socket socket, ArrayList<JoueurS> list) {
         this.socket = socket;
         this.list = list;
     }
-
+    
+    //Getters
+    public String getNom(){
+        return nom;
+    }
+    
+    public boolean getPret(){
+        return pret;
+    }
+    
+    //Enleve un joueur de la liste de joueurs
+    public void removePlayer(JoueurS j){
+        list.remove(j);
+    }
+    
+    //Envoi un message
+    public void sendMsg(String action, String info){
+        pw.println(action);
+        pw.println(info);
+    }
+    
+    //Run thread
     @Override
     public void run(){
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             pw=new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-            //nom = br.readLine();
-            //System.out.println(nom);
-            while(running){
+            while(running){    
                 String action = br.readLine();
                 String info = br.readLine();
                 System.out.println(action);
-		System.out.println(info);
+                System.out.println(info);
                 build_message(action, info);
-                if(!lance){tousPret();}
-            }
-        }
-        catch(Exception e){
-            System.out.println(e);
-            e.printStackTrace();
-        }
-    }
-    
-    private void sendToAllClients(String action, String info){
-        System.out.println(action);
-	System.out.println(info);
-        for(JoueurS s: list){
-            s.pw.println(action);
-            s.pw.println(info);
-        }
-    }
-    
-    private void sendToAllClientsNotSender(String action, String info){
-        System.out.println(action);
-	System.out.println(info);
-        for(JoueurS s: list){
-            if(!s.getNom().equals(nom)){
-                s.pw.println(action);
-                s.pw.println(info);
-            }
-            
-        }
-    }
-    
-    /*private void sendToAClient(String action, String info, String name){
-        System.out.println(action);
-        System.out.println(info);
-        for(JoueurS s: list){
-            if(s.getNom().equals(name)){
-                s.pw.println(action);
-                s.pw.println(info);
-                return;
-            }
-            
-        }
-    }*/
-    
-    public String getNom(){
-        return nom;
-    }
-
-    private void build_message(String action, String info) {
-        String[] temp;
-        switch(action){
-            case "message":
-                info = nom + " : " + info; 
-                sendToAllClients(action, info);
-                break;
-            case "start":
-                pret = true;
-                nom = info;
-                break;
-            case "close":
-                try {
-                    socket.close();
-                    ServeurMonopoly.list.remove(this);
-                    list.forEach(j -> {
-                        j.list.remove(this);
-                    });
-                    running = false;
-                    this.interrupt();
-                } catch (IOException ex) {
-                    Logger.getLogger(JoueurS.class.getName()).log(Level.SEVERE, null, ex);
+                if(!lance){
+                    tousPret();
                 }
                 
-                break;
-            default:
-                sendToAllClientsNotSender(action, info);
-                break;
+            }
+        }
+        catch(IOException e){
+            if(lance) sendToAllClientsNotSender("deco", this.getNom());
+            this.closeClient();
+            System.out.println(e);
         }
     }
     
+    //Envoie le message à tout les clients
+    private void sendToAllClients(String action, String info){
+        list.forEach(s -> {
+            s.sendMsg(action, info);
+        });
+    }
+    
+    //Envoie le message à tout les clients sauf l'envoyeur 
+    private void sendToAllClientsNotSender(String action, String info){
+        list.forEach(s -> {
+            if(!s.getNom().equals(nom)){
+                s.sendMsg(action, info);
+            }
+        });
+    }
+    
+    
+    //Traite le message reçu
+    private void build_message(String action, String info) {
+        switch(action){
+            case "message" -> {
+                info = nom + " : " + info; 
+                sendToAllClientsNotSender(action, info);
+            }
+            case "start" -> {
+                pret = true;
+                nom = info;
+            }
+            case "close" -> closeClient();
+            default -> sendToAllClientsNotSender(action, info);
+        }
+    }
+    
+    //Verifie si tout les joueurs sont prêts et renvoie la liste des noms de joueurs
     private void tousPret(){
         boolean b = true;
         String noms = "" ;
         for(JoueurS s: list){
-            if(!s.pret){
+            if(!s.getPret()){
                 b = false;
                 
-            }
-            else{
+            }else{
                 if(!noms.equals("")){
                     noms = noms + "-" + s.getNom();
                 }else{
@@ -136,6 +123,21 @@ class JoueurS extends Thread{
         if(list.size()>=2 && b){
             sendToAllClients("start", noms);
             lance = true;
+        }
+    }
+    
+    //Ferme le client correctement
+    private void closeClient(){
+        try {
+            socket.close();
+            ServeurMonopoly.removePlayer(this);
+            list.forEach(j -> {
+                j.removePlayer(this);
+            });
+            running = false;
+            this.interrupt();
+        } catch (IOException ex) {
+            Logger.getLogger(JoueurS.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
