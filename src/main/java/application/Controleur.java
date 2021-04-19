@@ -241,5 +241,13 @@ public class Controleur {
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
 	}
+	
+	int controleur_curseurSuivant(int curseur) {
+		int curseurSuivant = (curseur+1)%jeu.getNbJ();
+    	while(jeu.getJoueurs()[curseurSuivant].getFaillite()==true) {
+			curseurSuivant= + (curseurSuivant + 1) % jeu.getNbJ();
+    	}
+    	return curseurSuivant;
+	}
 
 }

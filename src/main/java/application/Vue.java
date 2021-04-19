@@ -637,16 +637,29 @@ public class Vue {
 			defis_tab[proprietaires[position]].setDisable(true);
 			
 			controleur.controleur_faillite(curseur);
-			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[(curseur+1)% jeu.getNbJ()].isRobot())) {
+			/*int curseurSuivant = (curseur+1)%jeu.getNbJ();
+	    	while(jeu.getJoueurs()[curseurSuivant].getFaillite()==true) {
+				curseurSuivant= + (curseurSuivant + 1) % jeu.getNbJ();
+				}*/
+			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
+			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
 				controleur.controleur_fin();
-				int curseurSuivant = jeu.getCurseur();
 				if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
 					bouton_prison(curseurSuivant);
+					prison_tab[curseur].setDisable(true);
+					System.out.println();
 				}else {
 					prison_tab[curseur].setDisable(true);
 				}
 	        }
-	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){ 
+			if (jeu.onlyRobot()) {
+	        	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+	        	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
+					bouton_prison(curseurSuivant);
+					prison_tab[curseur].setDisable(true);
+	        	}
+	        }
+	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 	        	lancer.setVisible(false);
 	        	fin.setVisible(false); 
 	        }
@@ -656,6 +669,7 @@ public class Vue {
 	        }
 		});
 	}
+
 	
 	void boutons_jeu() {
 		boutons_box = new HBox();
@@ -888,13 +902,13 @@ public class Vue {
 	
 	void bouton_prison(int curseur) {
 		prison_tab[curseur].setDisable(false);
-		/*if(jeu.getJoueurs()[curseur].isRobot()){
-			prison_tab[curseur].fire();
-		}*/
 		prison_tab[curseur].setOnAction(actionEvent ->{
 			prison_tab[curseur].setDisable(true);
 			controleur.controleur_libererPrison(curseur);
 		});
+		if(jeu.getJoueurs()[curseur].isRobot()){
+			prison_tab[curseur].fire();
+		}
 	}
 
 	
