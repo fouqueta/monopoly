@@ -237,11 +237,12 @@ public class Controleur extends Thread {
 
 	@Override
 	public void run() {
+		boolean running = true;
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 			sendMsg("start", jeu.getJoueurReseau().getNom());
-			while (true) {
+			while (running) {
 				String action = br.readLine();
 				String info = br.readLine();
 				System.out.println(action);
@@ -249,6 +250,8 @@ public class Controleur extends Thread {
 				action(action, info);
 			}
 		} catch (Exception e) {
+			this.interrupt();
+			running = false;
 			System.out.println(e);
 			e.printStackTrace();
 		}
@@ -327,6 +330,8 @@ public class Controleur extends Thread {
 					vue.vendPropReseau(a, curseur);
 				});
 
+				break;
+			case "deco":
 				break;
 			default:
 				break;
