@@ -87,6 +87,13 @@ public class Vue {
 	
 	private Label des_label = new Label();
 	
+	//Historique(Local) - Tchat(Reseau)
+	private AnchorPane rootHisto;
+	private Stage stageHisto;
+	private Scene sceneHisto;
+	private Label historique_tab[];
+	private VBox historiqueVBox;
+	
 	Vue(Controleur controleur){
 		this.controleur = controleur;
 		
@@ -99,6 +106,8 @@ public class Vue {
 		
 		initilisation_scene_jeu();
 		accueil_jeu();
+		
+		creation_fenetreHistorique();
 		
 		stage.show();
 	}
@@ -989,6 +998,64 @@ public class Vue {
 
 	void lancerRobot(){
 		lancer.fire();
+	}
+	
+	
+	//Interface graphique: Historique des actions/Tchat
+	void creation_fenetreHistorique() { //Mode local
+		stageHisto = new Stage();
+		stageHisto.setTitle("Historique");
+		stageHisto.setResizable(false);
+		stageHisto.show();
+		
+		rootHisto = new AnchorPane();
+		rootHisto.setStyle("-fx-background-color: beige");
+		
+		sceneHisto = new Scene(rootHisto, 400, tailleEcran.height);
+		stageHisto.setScene(sceneHisto);
+		
+		historiqueVBox = new VBox(8);
+		historique_tab = new Label[5];
+		rootHisto.getChildren().add(historiqueVBox);
+		
+		remplissageTemporaire();
+		decalage("Nouveau message");
+		actualiser_historique();
+		decalage("Un autre message");
+		actualiser_historique();
+	}
+	
+	//TODO: Ajouter un bouton "tchat" dans la page principale, qui permet d'afficher/cacher l'historique et le tchat.
+	void creation_fenetreTchat() { //Mode réseau
+		//TODO: VBOX (separation du tchat et de l'historique)
+		
+	}
+	
+	void remplissageTemporaire() {
+		historique_tab[0] = new Label("1");
+		historique_tab[1] = new Label("2");
+		historique_tab[2] = new Label("3");
+		historique_tab[3] = new Label("4");
+		historique_tab[4] = new Label("Bienvenue dans Monopoly !");
+	}
+	
+	void actualiser_historique() {
+		historiqueVBox.getChildren().clear();
+		for(int i = 0; i<5; i++) {
+			historiqueVBox.getChildren().add(historique_tab[i]);
+		}
+	}
+	
+	void decalage(String msg) {
+		Label nouveau = new Label(msg); //TODO: Implementer ajouterEvenement()
+		for(int i = 0; i<4;i++) {
+			historique_tab[i] = historique_tab[i+1];
+		}
+		historique_tab[4] = nouveau;
+	}
+	
+	void ajouterEvenement() { //TODO: Creation d'un message d'evenement
+		
 	}
 
 }
