@@ -317,9 +317,7 @@ public class Controleur extends Thread {
 				Platform.runLater(() -> {
 					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-					if (jeu.getJoueurReseau() == jeu.getJoueurs()[curseur]) {
-						vue.updateVente(position, curseur);
-					}
+					vue.updateVenteReseau(position, curseur);
 				});
 				break;
 			case "vendre":

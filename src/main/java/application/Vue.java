@@ -835,13 +835,6 @@ public class Vue {
 		});
 	}
 
-	public void updateVente(int position, int curseur){
-		controleur.controleur_vente(curseur);
-		changement_argent(curseur);
-		changement_argent(proprietaires[position]);
-		proprietaires[position]=curseur;
-	}
-
 
 	
 	//Interface graphique : Accueil
@@ -995,5 +988,13 @@ public class Vue {
 			changement_argent(proprietaires[position]);
 			changement_argent(curseur);
 		}
+	}
+
+	//Vend la propriété a un autre joueur
+	public void updateVenteReseau(int position, int curseur){
+		controleur.controleur_vente(curseur);
+		changement_argent(curseur);
+		changement_argent(proprietaires[position]);
+		proprietaires[position]=curseur;
 	}
 }
