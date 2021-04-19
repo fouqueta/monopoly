@@ -637,10 +637,7 @@ public class Vue {
 			defis_tab[proprietaires[position]].setDisable(true);
 			
 			controleur.controleur_faillite(curseur);
-			/*int curseurSuivant = (curseur+1)%jeu.getNbJ();
-	    	while(jeu.getJoueurs()[curseurSuivant].getFaillite()==true) {
-				curseurSuivant= + (curseurSuivant + 1) % jeu.getNbJ();
-				}*/
+			
 			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
 			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
 				controleur.controleur_fin();
