@@ -107,7 +107,8 @@ public class Vue {
 		initilisation_scene_jeu();
 		accueil_jeu();
 		
-		creation_fenetreHistorique();
+		//TODO
+		//creation_fenetreHistorique();
 		
 		stage.show();
 	}
@@ -960,6 +961,9 @@ public class Vue {
 				bouton_fin_de_tour();
 				boutons_jeu();
 				initialisation_boutons();
+				
+				creation_fenetreHistorique();
+				
 				if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 					lancerRobot();
 					if(jeu.onlyRobot()) controleur.controleur_fin();
@@ -1015,13 +1019,10 @@ public class Vue {
 		stageHisto.setScene(sceneHisto);
 		
 		historiqueVBox = new VBox(8);
-		historique_tab = new Label[5];
+		historique_tab = new Label[20];
 		rootHisto.getChildren().add(historiqueVBox);
 		
-		remplissageTemporaire();
-		decalage("Nouveau message");
-		actualiser_historique();
-		decalage("Un autre message");
+		remplissage_temporaire();
 		actualiser_historique();
 	}
 	
@@ -1031,31 +1032,86 @@ public class Vue {
 		
 	}
 	
-	void remplissageTemporaire() {
-		historique_tab[0] = new Label("1");
-		historique_tab[1] = new Label("2");
-		historique_tab[2] = new Label("3");
-		historique_tab[3] = new Label("4");
-		historique_tab[4] = new Label("Bienvenue dans Monopoly !");
+	void remplissage_temporaire() {
+		for(int i = 0; i<19; i++) {
+			historique_tab[i] = new Label("");
+		}
+		historique_tab[19] = new Label("Bienvenue dans Monopoly !");
 	}
 	
 	void actualiser_historique() {
 		historiqueVBox.getChildren().clear();
-		for(int i = 0; i<5; i++) {
+		for(int i = 0; i<20; i++) {
 			historiqueVBox.getChildren().add(historique_tab[i]);
 		}
 	}
 	
-	void decalage(String msg) {
-		Label nouveau = new Label(msg); //TODO: Implementer ajouterEvenement()
-		for(int i = 0; i<4;i++) {
+	void ajouter_historique(Label nouveau) {
+		for(int i = 0; i<19;i++) {
 			historique_tab[i] = historique_tab[i+1];
 		}
-		historique_tab[4] = nouveau;
+		historique_tab[19] = nouveau;
 	}
 	
-	void ajouterEvenement() { //TODO: Creation d'un message d'evenement
-		
+	Label creer_evenement(String type, Joueur joueur, int des[], int position) { //TODO: Creation d'un message d'evenement
+		Label nouveau = new Label();
+		switch(type) {
+			case "lancer":
+				nouveau = new Label(
+					joueur.getNom() + " a fait " + Integer.toString(des[0]) + 
+					" et " + Integer.toString(des[1]) + " avec les des. Arrivée en case " +
+					Integer.toString(position) + ".");
+				break;
+			
+			case "enPrison":
+				if(des[0] == des[1]) {
+					nouveau = new Label(
+						joueur.getNom() + " a fait " + Integer.toString(des[0]) + 
+						" et " + Integer.toString(des[1]) + " avec les des. Liberation de prison.");
+				}
+				else {
+					nouveau = new Label(
+						joueur.getNom() + " a fait " + Integer.toString(des[0]) + 
+						" et " + Integer.toString(des[1]) + " avec les des.");
+				}
+				break;
+				
+			case "tirerUneCarte":
+				nouveau = new Label(
+					joueur.getNom() + " a tire une carte.");
+				break;
+				
+			case "carteLiberation":
+				nouveau = new Label(
+					joueur.getNom() + " a utilise une carte Liberation");
+		}
+		return nouveau;
+	}
+	
+	Label creer_evenementDeuxJoueurs(String type, Joueur joueur, Joueur proprietaire, int des[], int montant) {
+		Label nouveau = new Label();
+		switch(type) {
+			case "loyer": //TODO
+				nouveau = new Label(
+					joueur.getNom() + " a paye le loyer de la propriete de "
+					);
+				break;
+				
+			case "achat": //TODO
+				break;
+				
+			case "vente": //TODO
+				break;
+				
+			case "defis": //TODO
+				break;
+		}
+		return nouveau;
+	}
+	
+	void addEventHisto_controleur(Label nouveau) {
+		ajouter_historique(nouveau);
+		actualiser_historique();
 	}
 
 }

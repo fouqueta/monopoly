@@ -1,6 +1,7 @@
 package application;
 
 import javafx.animation.PauseTransition;
+import javafx.scene.control.Label;
 import javafx.util.Duration;
 import monopoly.*;
 
@@ -35,19 +36,24 @@ public class Controleur {
 		if(jeu.getJoueurs()[curseur].isEnPrison() && 
 			(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
 			jeu.getJoueurs()[curseur].setEnPrison(false);
+			vue.addEventHisto_controleur(vue.creer_evenement("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
 		}
 		if( !(jeu.getJoueurs()[curseur].isEnPrison()) ){
 			Pion p = jeu.getJoueurs()[curseur].getPion();
 			int depart = p.getPosition();
 			jeu.deplace_IG(p, des);
+			vue.addEventHisto_controleur(vue.creer_evenement("lancer", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
 			controleur_surCaseParticuliere(p, curseur);
 			int arrivee = p.getPosition();
 			
-			if (depart!=arrivee) { vue.changement_position_pion(curseur, depart, arrivee); }
+			if (depart!=arrivee) { 
+				vue.changement_position_pion(curseur, depart, arrivee); 
+			}
 		}	
 		else {
 			int tour_restant = jeu.getJoueurs()[curseur].getNbToursPrison();
 			jeu.getJoueurs()[curseur].setNbToursPrison(tour_restant-1);
+			vue.addEventHisto_controleur(vue.creer_evenement("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
 		}
 	}
 	
@@ -57,6 +63,7 @@ public class Controleur {
 		if (case_actuelle instanceof Proprietes) { return; }
 		else if (case_actuelle instanceof CasesChance || case_actuelle instanceof CasesCommunaute) {
 			controleur_chance_commu(curseur, case_actuelle);
+			vue.addEventHisto_controleur(vue.creer_evenement("tirerUneCarte", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
     	}
     	else if (case_actuelle instanceof CasesSpeciales) {
     		controleur_case_speciale(curseur, case_actuelle);
@@ -112,6 +119,8 @@ public class Controleur {
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
 				&& propriete_actuelle.coloree()){
 				verifPuisPaiement(curseur, propriete_actuelle.getLoyer(), null);
+				
+				//TODO: Historique
 				vue.changement_argent(vue.getTabProprietaires(position));
 			}
 		}
@@ -139,6 +148,7 @@ public class Controleur {
 		}
 		else if (jeu.jeuFini_IG()) {
 			vue.fin_partie();
+			vue.addEventHisto_controleur(new Label("La partie est terminee.")); //TODO
 		}else {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
@@ -240,6 +250,7 @@ public class Controleur {
 	
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
+		vue.addEventHisto_controleur(vue.creer_evenement("carteLiberation", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
 	}
 
 }
