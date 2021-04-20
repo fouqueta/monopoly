@@ -4,17 +4,16 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javafx.animation.PauseTransition;
-import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -24,7 +23,11 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import monopoly.*;
+import monopoly.Cartes;
+import monopoly.Cases;
+import monopoly.Jeu;
+import monopoly.Joueur;
+import monopoly.Proprietes;
 
 public class Vue {
 	
@@ -69,6 +72,12 @@ public class Vue {
 	private Button achat;
 	private Button vente;
 	private Button prison;
+	
+	private MenuItem maison_menuItem;
+	private MenuItem hotel_menuItem;
+	private MenuButton achatBatiments_menu;
+//	//achatBatiments_menu.setPopupSide(Side.LEFT);
+     
 	private HBox boutons_box;
 	private Button regles_button;
 	private Button aide_button;
@@ -77,6 +86,7 @@ public class Vue {
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
 	private Button prison_tab[] = new Button[6];
+	private MenuButton[] achatBatiments_menu_tab = new MenuButton[6];
 	private Button nom_proprietes_button[];
 	
 	private Button defis;
@@ -87,7 +97,7 @@ public class Vue {
 	
 	private Label des_label = new Label();
 	
-	Vue(Controleur controleur){
+	public Vue(Controleur controleur){
 		this.controleur = controleur;
 		
 		stage = new Stage();
@@ -629,33 +639,22 @@ public class Vue {
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
 			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+			
 			achat_tab[curseur].setDisable(true);
 			vente_tab[proprietaires[position]].setDisable(true);
 			lancer.setDisable(false);
-			
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
+			achatBatiments_menu_tab[curseur].setDisable(true);
+			//achatBatiments_menu_tab[curseur].setVisible(false);
 			
 			controleur.controleur_faillite(curseur);
 			
 			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
-			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
-				controleur.controleur_fin();
-				if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
-					bouton_prison(curseurSuivant);
-					prison_tab[curseur].setDisable(true);
-					System.out.println();
-				}else {
-					prison_tab[curseur].setDisable(true);
-				}
-	        }
-			if (jeu.onlyRobot()) {
-	        	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
-	        	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
-					bouton_prison(curseurSuivant);
-					prison_tab[curseur].setDisable(true);
-	        	}
-	        }
+			
+			actions_bouton_fin_tour(curseur, curseurSuivant);
+	        achatBatiments_bouton_fin_tour(curseurSuivant);
+	        
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 	        	lancer.setVisible(false);
 	        	fin.setVisible(false); 
@@ -665,6 +664,39 @@ public class Vue {
 	        	fin.setVisible(true); 
 	        }
 		});
+	}
+	
+	public void actions_bouton_fin_tour(int curseur, int curseurSuivant) {
+		if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
+			controleur.controleur_fin();
+			if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
+				bouton_prison(curseurSuivant);
+				prison_tab[curseur].setDisable(true);
+			}else {
+				prison_tab[curseur].setDisable(true);
+			}
+        }
+		if (jeu.onlyRobot()) {
+        	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+        	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
+				bouton_prison(curseurSuivant);
+				prison_tab[curseur].setDisable(true);
+        	}
+        }
+	}
+	
+	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
+		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+		for (Proprietes p : joueurSuivant.getProprietes()) {
+			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
+				System.out.println("je rentre dedans");
+				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+				//achatBatiments_menu_tab[curseurSuivant].setVisible(true);
+				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
+				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
+			}
+		}
 	}
 
 	
@@ -697,16 +729,24 @@ public class Vue {
 			vente = new Button("Vente");
 			defis = new Button("Defis");
 			prison = new Button("Prison");
+//			maison_menuItem = new MenuItem("Maison");
+//			hotel_menuItem = new MenuItem("Hotel");
+			//achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem, hotel_menuItem);
+			achatBatiments_menu = new MenuButton("Achats de tiplouf");
+			//achatBatiments_menu.getItems().addAll(maison_menuItem, hotel_menuItem);
 			
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
 			prison_tab[i] = prison;
+			achatBatiments_menu_tab[i] = achatBatiments_menu;
 			
 			achat.setDisable(true);
 			vente.setDisable(true);
 			defis.setDisable(true);
 			prison.setDisable(true);
+			achatBatiments_menu.setDisable(true);
+			//achatBatiments_menu.setVisible(false);
 			
 			achat.setLayoutY(5);
 			vente.setLayoutY(35);
@@ -715,11 +755,14 @@ public class Vue {
 			defis.setLayoutX(50);
 			prison.setLayoutX(50);
 			prison.setLayoutY(35);
+			achatBatiments_menu.setLayoutY(65);
 			
-			joueur_boutons.getChildren().add(achat);
-			joueur_boutons.getChildren().add(vente);
-			joueur_boutons.getChildren().add(defis);
-			joueur_boutons.getChildren().add(prison);
+			joueur_boutons.getChildren().addAll(achat, vente, defis, prison, achatBatiments_menu);
+//			joueur_boutons.getChildren().add(achat);
+//			joueur_boutons.getChildren().add(vente);
+//			joueur_boutons.getChildren().add(defis);
+//			joueur_boutons.getChildren().add(prison);
+//			joueur_boutons.getChildren().add(achatBatiments_menu);
 			
 			boutonsJoueurs.getChildren().add(joueur_boutons);
 		}
@@ -907,7 +950,7 @@ public class Vue {
 			prison_tab[curseur].fire();
 		}
 	}
-
+	
 	
 	//Interface graphique : Accueil
 	void accueil_jeu() {

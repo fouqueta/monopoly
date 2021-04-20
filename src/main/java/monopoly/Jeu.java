@@ -276,7 +276,7 @@ public class Jeu {
     public void deplace_IG(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1]; 
     	passeParDepart((pion.getPosition() + nbCases) % 40);
-    	pion.setPosition((pion.getPosition() + nbCases) % 40);
+    	pion.setPosition((pion.getPosition() + 1) % 40);
     }
     
     public void surCaseChanceCommu_IG(Pion pion, Cartes carte) {

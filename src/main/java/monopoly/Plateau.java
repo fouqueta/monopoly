@@ -33,6 +33,16 @@ public class Plateau {
 	public Cartes[] getCartesCommu() {
 		return cartesCommu;
 	}
+	
+	public int nbProprDansUneFamille(String couleur) { //renvoie le nombre de proprietes qu'il y a dans la famille couleur
+		int cpt = 0;
+		for (Cases c : grille) {
+			if ( c instanceof Proprietes && couleur.equals(((Proprietes) c).getCouleur()) ) {
+				cpt++;
+			}
+		}
+		return cpt;
+	}
 
 	//Initilisation du plateau
 	public void init_plateau() {
