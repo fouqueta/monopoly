@@ -36,13 +36,13 @@ public class Controleur {
 		if(jeu.getJoueurs()[curseur].isEnPrison() && 
 			(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
 			jeu.getJoueurs()[curseur].setEnPrison(false);
-			vue.addEventHisto_controleur(vue.creer_evenement("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
+			vue.gestion_historique(vue.unJoueur_historique("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition()));
 		}
 		if( !(jeu.getJoueurs()[curseur].isEnPrison()) ){
 			Pion p = jeu.getJoueurs()[curseur].getPion();
 			int depart = p.getPosition();
 			jeu.deplace_IG(p, des);
-			vue.addEventHisto_controleur(vue.creer_evenement("lancer", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
+			vue.gestion_historique(vue.unJoueur_historique("lancer", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition()));
 			controleur_surCaseParticuliere(p, curseur);
 			int arrivee = p.getPosition();
 			
@@ -53,7 +53,7 @@ public class Controleur {
 		else {
 			int tour_restant = jeu.getJoueurs()[curseur].getNbToursPrison();
 			jeu.getJoueurs()[curseur].setNbToursPrison(tour_restant-1);
-			vue.addEventHisto_controleur(vue.creer_evenement("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
+			vue.gestion_historique(vue.unJoueur_historique("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition()));
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class Controleur {
 		if (case_actuelle instanceof Proprietes) { return; }
 		else if (case_actuelle instanceof CasesChance || case_actuelle instanceof CasesCommunaute) {
 			controleur_chance_commu(curseur, case_actuelle);
-			vue.addEventHisto_controleur(vue.creer_evenement("tirerUneCarte", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
+			vue.gestion_historique(vue.unJoueur_historique("tirerUneCarte", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition()));
     	}
     	else if (case_actuelle instanceof CasesSpeciales) {
     		controleur_case_speciale(curseur, case_actuelle);
@@ -119,36 +119,36 @@ public class Controleur {
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
 				&& propriete_actuelle.coloree()){
 				verifPuisPaiement(curseur, propriete_actuelle.getLoyer(), null);
-				
-				//TODO: Historique
+				vue.gestion_historique(vue.deuxJoueurs_historique("loyer", jeu.getJoueurs()[curseur], propriete_actuelle.getProprietaire(), null, propriete_actuelle.getLoyer()));
 				vue.changement_argent(vue.getTabProprietaires(position));
 			}
 		}
 	}
 
+	//Gestion des robots
 	private void fin_only_robot(){
 		PauseTransition wait = new PauseTransition(Duration.seconds(2));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
+				vue.gestion_historique(new Label("La partie est terminee (onlyRobot)."));
 			} else {
 				jeu.finTour_IG();
 				vue.changement_joueur_actuel();
 				vue.lancerRobot();
+				wait.playFromStart();
 			}
-			wait.playFromStart();
 		});
 		wait.play();
 	}
 	
-
 	void controleur_fin() {
 		if(jeu.onlyRobot()) {
 			fin_only_robot();
 		}
 		else if (jeu.jeuFini_IG()) {
 			vue.fin_partie();
-			vue.addEventHisto_controleur(new Label("La partie est terminee.")); //TODO
+			vue.gestion_historique(new Label("La partie est terminee."));
 		}else {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
@@ -161,7 +161,6 @@ public class Controleur {
 			}
 		}
 	}
-
 
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
@@ -241,16 +240,16 @@ public class Controleur {
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
 			joueur.thisPayeA(proprio, loyerEnJeu);
 		}
-		else {
-			System.out.println("Egalite");
-		}
+		int tab_histo[] = {sommeJoueur, sommeProprio};
+		vue.gestion_historique(vue.deuxJoueurs_historique("accepterDefi", joueur, proprio, tab_histo, 0));
+		
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}
 	
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
-		vue.addEventHisto_controleur(vue.creer_evenement("carteLiberation", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition())); //TODO
+		vue.gestion_historique(vue.unJoueur_historique("carteLiberation", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition()));
 	}
 
 }

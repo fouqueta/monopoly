@@ -54,7 +54,7 @@ public class Vue {
 	private Label desLabel = new Label();
 	
 		//Proprietaires
-	private int[] proprietaires = new int [40];
+	private int[] proprietaires = new int[40];
 	
 		//Joueurs
 	private AnchorPane paneJoueurs; //joueurs_pane
@@ -71,8 +71,8 @@ public class Vue {
 	private Button prison;
 	private HBox boutons_box;
 	private Button regles_button;
-	private Button aide_button;
 	private Button quitter_button;
+	private Button historique_button;
 	
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
@@ -106,9 +106,6 @@ public class Vue {
 		
 		initilisation_scene_jeu();
 		accueil_jeu();
-		
-		//TODO
-		//creation_fenetreHistorique();
 		
 		stage.show();
 	}
@@ -670,16 +667,27 @@ public class Vue {
 	void boutons_jeu() {
 		boutons_box = new HBox();
 		regles_button = new Button("Regles");
-		aide_button = new Button("Aide");
 		quitter_button = new Button("Quitter");
-		boutons_box.getChildren().addAll(regles_button,aide_button,quitter_button);
+		historique_button = new Button("Historique");
+		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button);
 		boutons_box.setLayoutX(300);
-		boutons_box.setLayoutY(700);
+		boutons_box.setLayoutY(500); //700
+		//boutons_box.setLayoutX((tailleEcran.width*30)/100);
+		//boutons_box.setLayoutY((tailleEcran.height*60)/100);
 		panePlateau.getChildren().add(boutons_box);
 		quitter_button.setOnAction(actionEvent -> {
-			Stage stage = (Stage) quitter_button.getScene().getWindow();
 		    stage.close();
+		    stageHisto.close();
 		}); 
+		
+		historique_button.setOnAction(actionEvent-> {
+			if(stageHisto.isShowing()) {
+				stageHisto.hide();
+			}
+			else {
+				stageHisto.show();
+			}
+		});
 	}
 	
 	void initialisation_boutons() {
@@ -819,6 +827,7 @@ public class Vue {
 				controleur.controleur_achat(curseur);
 				achat_tab[curseur].setDisable(true);
 				changement_argent(curseur);
+				gestion_historique(unJoueur_historique("achat", jeu.getJoueurs()[curseur], null, position));
 			});
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				achat_tab[curseur].fire();
@@ -842,6 +851,7 @@ public class Vue {
 		
 		achat_tab[curseur].setOnAction(actionEvent ->{
 			achat_tab[curseur].setDisable(true);
+			gestion_historique(deuxJoueurs_historique("achat", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			vente_tab[proprietaires[position]].setDisable(false);
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
 				vente_tab[proprietaires[position]].fire();
@@ -858,6 +868,7 @@ public class Vue {
 			controleur.controleur_vente(curseur);
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
+			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			proprietaires[position]=curseur;
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
@@ -878,6 +889,7 @@ public class Vue {
 		defis_tab[curseur].setOnAction(actionEvent ->{
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(false);
+			gestion_historique(deuxJoueurs_historique("lancerDefi", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
 				defis_tab[proprietaires[position]].fire();
 			}
@@ -906,7 +918,6 @@ public class Vue {
 			controleur.controleur_libererPrison(curseur);
 		});
 	}
-
 	
 	//Interface graphique : Accueil
 	void accueil_jeu() {
@@ -1026,10 +1037,8 @@ public class Vue {
 		actualiser_historique();
 	}
 	
-	//TODO: Ajouter un bouton "tchat" dans la page principale, qui permet d'afficher/cacher l'historique et le tchat.
 	void creation_fenetreTchat() { //Mode réseau
 		//TODO: VBOX (separation du tchat et de l'historique)
-		
 	}
 	
 	void remplissage_temporaire() {
@@ -1053,14 +1062,20 @@ public class Vue {
 		historique_tab[19] = nouveau;
 	}
 	
-	Label creer_evenement(String type, Joueur joueur, int des[], int position) { //TODO: Creation d'un message d'evenement
+	//Creation d'un message d'evenement (action concernant un seul joueur)
+	Label unJoueur_historique(String type, Joueur joueur, int des[], int variable) { //TODO
 		Label nouveau = new Label();
 		switch(type) {
 			case "lancer":
 				nouveau = new Label(
 					joueur.getNom() + " a fait " + Integer.toString(des[0]) + 
-					" et " + Integer.toString(des[1]) + " avec les des. Arrivée en case " +
-					Integer.toString(position) + ".");
+					" et " + Integer.toString(des[1]) + " avec les des. Arrivee en case " +
+					Integer.toString(variable) + ".");
+				break;
+			
+			case "achat":
+				nouveau = new Label(
+					joueur.getNom() + " a achete la propriete a la position " + variable + ".");
 				break;
 			
 			case "enPrison":
@@ -1083,33 +1098,68 @@ public class Vue {
 				
 			case "carteLiberation":
 				nouveau = new Label(
-					joueur.getNom() + " a utilise une carte Liberation");
+					joueur.getNom() + " a utilise une carte de liberation.");
+				break;
+				
+			case "amelioration": //TODO
+				nouveau = new Label(
+					joueur.getNom() + " a ameliore sa propriete pour " + variable + " euros.");
+				break;
+				
+			case "faillite": //TODO
+				break;
+				
+			//Case fin de jeu: Controleur
 		}
 		return nouveau;
 	}
 	
-	Label creer_evenementDeuxJoueurs(String type, Joueur joueur, Joueur proprietaire, int des[], int montant) {
+	//Creation d'un message d'evenement (action concernant deux joueurs)
+	Label deuxJoueurs_historique(String type, Joueur joueur, Joueur proprietaire, int des[], int variable) {
 		Label nouveau = new Label();
 		switch(type) {
-			case "loyer": //TODO
+			case "loyer":
 				nouveau = new Label(
-					joueur.getNom() + " a paye le loyer de la propriete de "
-					);
+					joueur.getNom() + " a paye " + variable + " euros de loyer a " + proprietaire.getNom() + ".");
 				break;
 				
-			case "achat": //TODO
+			case "achat":
+				nouveau = new Label(
+					joueur.getNom() + " a fait une proposition d'achat a " + proprietaire.getNom() + 
+					" pour sa propriete position " + variable + ".");
 				break;
 				
-			case "vente": //TODO
+			case "vente":
+				nouveau = new Label(
+					proprietaire.getNom() + " a accepte la proposition d'achat de " + joueur.getNom() + ".");
 				break;
 				
-			case "defis": //TODO
+			case "lancerDefi":
+				nouveau = new Label(
+					joueur.getNom() + " a lance un defi a " + proprietaire.getNom() + ".");
+				break;
+				
+			case "accepterDefi":
+				if(des[0] > des[1]) {
+					nouveau = new Label(
+						proprietaire.getNom() + " a accepte le defi. " + joueur.getNom() + 
+						" a gagne avec " + des[0] + " contre " + des[1] + "." );
+				}
+				else if(des[1] > des[0]) {
+					nouveau = new Label(
+							proprietaire.getNom() + " a accepte le defi. " + proprietaire.getNom() + 
+							" a gagne avec " + des[1] + " contre " + des[0] + "." );
+				}
+				else {
+					nouveau = new Label(
+						proprietaire.getNom() + " a accepte le defi. Il y a egalite avec " + des[0] + " partout.");
+				}
 				break;
 		}
 		return nouveau;
 	}
 	
-	void addEventHisto_controleur(Label nouveau) {
+	void gestion_historique(Label nouveau) {
 		ajouter_historique(nouveau);
 		actualiser_historique();
 	}
