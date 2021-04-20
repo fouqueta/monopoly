@@ -11,7 +11,7 @@ public class Joueur{
     private boolean enPrison;
     private int nbToursPrison;
     private boolean carteLibPrison;
-    Scanner reponse;
+    private Scanner reponse;
     private boolean faillite;
 	private boolean robot = false;
     

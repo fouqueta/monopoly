@@ -46,31 +46,33 @@ public class Proprietes extends Cases {
 	public int getNbMaisons() { return this.nbMaisons; }
 	
 	public boolean aUnHotel() { return this.aHotel; }
+	
+	public int getPrixBatiment() { return this.prixBatiment; }
 
 	//Setters
 	public void setPrix(int prix) { this.prixAchat = prix; }
 	
 	public void setProprietaire(Joueur nouveau_proprietaire) { this.proprietaire = nouveau_proprietaire; }
 	
-	public void achatMaison(Joueur joueurJ) {
+	public void achatMaison() {
 		this.nbMaisons+=1 ;
-		joueurJ.transaction(-prixBatiment);
+		proprietaire.transaction(-prixBatiment);
 	}
 	
-	public void achatHotel(Joueur joueurJ) {
+	public void achatHotel() {
 		this.nbMaisons = 0; //Pour acheter un hotel, il faut "donner" toutes ses maisons
 		this.aHotel = true;
-		joueurJ.transaction(-prixBatiment);		
+		proprietaire.transaction(-prixBatiment);		
 	}
 	
-	public void venteMaison(Joueur joueurJ) {
+	public void venteMaison() {
 		this.nbMaisons-=1;
-		joueurJ.transaction(prixBatiment/2); //Le prix de vente d'une maison est la moitie du prix d'achat
+		proprietaire.transaction(prixBatiment/2); //Le prix de vente d'une maison est la moitie du prix d'achat
 	}
 	
-	public void venteHotel(Joueur joueurJ) {
+	public void venteHotel() {
 		this.aHotel = false;
-		joueurJ.transaction(prixBatiment*5/2); //Le prix de vente d'un hotel est la moitie du prix d'achat (qui est 5 fois le prix d'une maison puisqu'on a donne toutes ses maisons)
+		proprietaire.transaction(prixBatiment*5/2); //Le prix de vente d'un hotel est la moitie du prix d'achat (qui est 5 fois le prix d'une maison puisqu'on a donne toutes ses maisons)
 	}
 	
 	//toString()
@@ -88,4 +90,29 @@ public class Proprietes extends Cases {
 		if(this.couleur.equals("compagnie")) { return false; }
 		return true;
 	}
+	
+	public boolean familleComplete() {
+		Plateau plateau = new Plateau();
+		return proprietaire.getNbPropCouleur(this.getCouleur()) == plateau.nbProprDansUneFamille(this.getCouleur());
+	}
+	
+	public boolean estUniforme(String typeBatiment) { //Pour acheter des maisons, il faut que le nombre de maisons sur chaque propriete d'une meme famille soit uniforme
+		if(typeBatiment.equals("maison")) { //Si on veut acheter une maison
+			for(Proprietes c : proprietaire.getProprietes()){
+				if(c.getCouleur().equals(this.couleur) && (this.nbMaisons+1 - c.getNbMaisons()) >= 2) { //Si quand on rajoute une maison a la propriete this, son nb de maisons devient superieur... 
+					//...de 2 maisons au nb de maisons d'une des proprietes c, alors cela veut dire que l'achat de la maison sur this ne va pas respecter l'uniformite...
+					return false; //...donc l'achat de la maison ne sera pas propose pour respecter l'uniformite
+				}
+			}
+		}
+		else if(typeBatiment.equals("hotel")) { //Si on veut acheter un hotel
+			for(Proprietes c : proprietaire.getProprietes()){
+				if(c.getCouleur().equals(this.couleur) && (c.getNbMaisons()) != 4 && !c.aUnHotel()) { //Pour pouvoir acheter un hotel sur la propriete this en respectant l'uniformite, il faut que...
+					return false; //...chaque propriete c ait 4 maisons OU un hotel (et donc 0 maison), donc l'achat ne serait pas uniforme si ce n'est pas le cas
+				}
+			}
+		}
+		return true;		
+	}
+	
 }
