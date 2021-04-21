@@ -122,7 +122,7 @@ public class Plateau {
     }
 
     private String complete(String s, int n){
-        while(s.length() != n) s = s + " ";
+        while(s.length() != n) s = s  + " ";
         return s;
     }
 
