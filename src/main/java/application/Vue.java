@@ -576,6 +576,9 @@ public class Vue {
 
 			nom_proprietes_button[n].setOnAction(actionEvent->{
 				int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
+				if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
+					controleur.sendMsg("vendre", String.valueOf(n));
+				}
 				changement_couleur_case_blanche(ancienne_position);
 				nom_proprietes_button[n].setVisible(false);
 				if (jeu.getJoueurs()[curseur].getArgent() < montant && proprietes_joueur_actuel.length>1) {

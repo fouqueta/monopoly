@@ -105,12 +105,12 @@ public class Controleur extends Thread {
 
 	//Gestion des cases chance/communaute
 	public void controleur_chance_commu(int curseur, Cases case_actuelle) {
+		Cartes carteTiree;
 		if(!jeu.isReseau() || jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 			carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
 		}else{
 			carteTiree = carte;
 		}
-		Cartes carteTiree = jeu.tireCarteChanceCommu(case_actuelle);
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 
 		vue.caseChanceCommu(curseur, carteTiree);
@@ -369,13 +369,13 @@ public class Controleur extends Thread {
 
 					vue.affichage_joueurs();
 
-					vue.definition_label();
+					vue.pionLabel_positionnement();
 					vue.affichage_pions_initial();
 
 					vue.bouton_lancer_de_des();
 					vue.bouton_fin_de_tour();
 					vue.boutons_jeu();
-					vue.initialisation_boutons_achat_vente();
+					vue.initialisation_boutons();
 
 				});
 				break;
@@ -398,8 +398,10 @@ public class Controleur extends Thread {
 			case "vendre":
 				Platform.runLater(() -> {
 					int curseur = jeu.getCurseur();
-					int a = controleur_vendreSesProprietes(curseur, Integer.valueOf(info));
-					vue.vendPropReseau(a, curseur);
+					int n = Integer.parseInt(info);
+					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
+					vue.changement_couleur_case_blanche(ancienne_position);
+					vue.vendPropReseau(ancienne_position, curseur);
 				});
 
 				break;
