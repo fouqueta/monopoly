@@ -32,6 +32,8 @@ public class Vue {
 	private AnchorPane root;
 	private Stage stage;
 	private Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
+	private double panePlateau_x;
+	private double panePlateau_y;
 	
 	//Accueil
 	private AnchorPane scene_accueil;
@@ -42,7 +44,6 @@ public class Vue {
 
 		//Plateau
 	private AnchorPane panePlateau; //jeu_pane
-	private AnchorPane grillePlateau; //plateau_pane
 	private Pane revente_pane;
 	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
@@ -126,23 +127,20 @@ public class Vue {
 		panePlateau.setStyle("-fx-background-color: beige");
 		root.getChildren().add(panePlateau);
 		
-		double x = panePlateau.getPrefWidth();
-		double y = panePlateau.getPrefHeight();
+		panePlateau_x = panePlateau.getPrefWidth();
+		panePlateau_y = panePlateau.getPrefHeight();
 		
-		grillePlateau = new AnchorPane();
-		
-		colonne_gauche = new VBox(); //TODO
-		//AnchorPane.setLeftAnchor(colonne_gauche, (double) (tailleEcran.width*2)/100);
-		//AnchorPane.setTopAnchor(colonne_gauche, (double) (tailleEcran.height*2)/100);
-		AnchorPane.setLeftAnchor(colonne_gauche, (double) (x*2)/100);
-		AnchorPane.setTopAnchor(colonne_gauche, (double) (y*2)/100);
+		colonne_gauche = new VBox();
+		AnchorPane.setLeftAnchor(colonne_gauche, (double) (panePlateau_x*2)/100);
+		AnchorPane.setTopAnchor(colonne_gauche, (double) (panePlateau_y*2)/100);
 		panePlateau.getChildren().add(colonne_gauche);
 		for(int i = 10; i>=0; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -150,22 +148,23 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*1.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}			
 			colonne_gauche.getChildren().add(casesPlateau[i]);
 		}
 		
-		colonne_droite = new VBox(); //TODO
-		AnchorPane.setLeftAnchor(colonne_droite, (double) (x*82.30)/100);
-		AnchorPane.setTopAnchor(colonne_droite, (double) (y*2)/100);
+		colonne_droite = new VBox();
+		AnchorPane.setRightAnchor(colonne_droite, (double) (panePlateau_x*9.90)/100);
+		AnchorPane.setTopAnchor(colonne_droite, (double) (panePlateau_y*2)/100);
 		panePlateau.getChildren().add(colonne_droite);
 		for(int i = 20; i<31; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -173,23 +172,24 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*2.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
 			colonne_droite.getChildren().add(casesPlateau[i]);
 		}
 		
-		ligne_haut = new HBox(); //TODO
-		AnchorPane.setLeftAnchor(ligne_haut, (double) (x*10)/100);
-		AnchorPane.setTopAnchor(ligne_haut, (double) (y*2)/100);
+		ligne_haut = new HBox();
+		AnchorPane.setLeftAnchor(ligne_haut, (double) (panePlateau_x*10)/100);
+		AnchorPane.setTopAnchor(ligne_haut, (double) (panePlateau_y*2)/100);
 		panePlateau.getChildren().add(ligne_haut);
 		for(int i = 11; i<20; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -197,23 +197,24 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*2.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
 			ligne_haut.getChildren().add(casesPlateau[i]);
 		}
 		
-		ligne_bas = new HBox(); //TODO
-		AnchorPane.setLeftAnchor(ligne_bas, (double) (x*10)/100);
-		AnchorPane.setTopAnchor(ligne_bas, (double) (y*82.5)/100);
+		ligne_bas = new HBox();
+		AnchorPane.setLeftAnchor(ligne_bas, (double) (panePlateau_x*10)/100);
+		AnchorPane.setTopAnchor(ligne_bas, (double) (panePlateau_y*82.5)/100);
 		panePlateau.getChildren().add(ligne_bas);
 		for(int i = 39; i>30; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -221,74 +222,67 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*2.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
 			ligne_bas.getChildren().add(casesPlateau[i]);
 		}
 		
-		/*joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX(300);
-		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
+		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
+		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
-		panePlateau.getChildren().add(joueur_actuel);*/
+		panePlateau.getChildren().add(joueur_actuel);
 		
-		//initialisation_familles();
-		//initialisation_casesSpeciales();
-		//initialisation_labelDes();
+		initialisation_familles();
+		initialisation_casesSpeciales();
+		initialisation_labelDes();
 	}
 	
 	void initialisation_casesSpeciales() {
-		Label com1 = new Label("Com.");
-		com1.setLayoutX(10);
-		com1.setStyle("-fx-font-size: 10");
+		Label com1 = new Label("Commu.");
+		com1.setLayoutX((panePlateau_x*1.5)/100);
 		casesPlateau[2].getChildren().add(com1);
 		
-		Label com2 = new Label("Com.");
-		com2.setLayoutX(15);
-		com2.setStyle("-fx-font-size: 10");
+		Label com2 = new Label("Commu.");
+		com2.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[17].getChildren().add(com2);
 		
-		Label com3 = new Label("Com.");
-		com3.setLayoutX(15);
-		com3.setStyle("-fx-font-size: 10");
+		Label com3 = new Label("Commu.");
+		com3.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[33].getChildren().add(com3);
 		
 		Label ch1 = new Label("Chance");
-		ch1.setLayoutX(10);
-		ch1.setStyle("-fx-font-size: 10");
+		ch1.setLayoutX((panePlateau_x*1.5)/100);
 		casesPlateau[7].getChildren().add(ch1);
 		
 		Label ch2 = new Label("Chance");
-		ch2.setLayoutX(15);
-		ch2.setStyle("-fx-font-size: 10");
+		ch2.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[22].getChildren().add(ch2);
 		
 		Label ch3 = new Label("Chance");
-		ch3.setLayoutX(15);
-		ch3.setStyle("-fx-font-size: 10");
+		ch3.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[36].getChildren().add(ch3);
 		
 		Label imp1 = new Label("Impots");
-		imp1.setLayoutX(10);
+		imp1.setLayoutX((panePlateau_x*1.5)/100);
 		casesPlateau[4].getChildren().add(imp1);
 		
 		Label imp2 = new Label("Taxe");
-		imp2.setLayoutX(15);
+		imp2.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[38].getChildren().add(imp2);
 		
 		Label prison = new Label("Prison");
-		prison.setLayoutX(15);
+		prison.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[10].getChildren().add(prison);
 		
-		Label allerPrison = new Label("Prison");
-		allerPrison.setLayoutX(15);
-		allerPrison.setStyle("-fx-font-size: 10");
+		Label allerPrison = new Label("->Prison");
+		allerPrison.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[30].getChildren().add(allerPrison);
 		
 		Label parc = new Label("Parc");
-		parc.setLayoutX(15);
+		parc.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[20].getChildren().add(parc);
 	}
 	
@@ -298,6 +292,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("violette");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -307,6 +303,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("ciel");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -316,6 +314,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete") && i != 12) {
 				Rectangle rec = bordure("rose");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -325,6 +325,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("orange");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -334,6 +336,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("rouge");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -343,6 +347,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete") && i != 28) {
 				Rectangle rec = bordure("jaune");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -352,6 +358,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("verte");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -361,6 +369,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("bleue");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -368,9 +378,9 @@ public class Vue {
 	
 	Rectangle bordure(String couleur) {
 		Rectangle rec = new Rectangle();
-		rec.setWidth(5);
-		rec.setHeight(50);
-		rec.setLayoutX(45);
+		rec.setLayoutX(1);
+		rec.setWidth((panePlateau_x*7.9)/100);
+		rec.setHeight((panePlateau_y*2)/100);
 		switch(couleur) {
 		case "violette":
 			rec.setFill(Color.rgb(125,122,188));
@@ -463,25 +473,27 @@ public class Vue {
 			pionLabel[i] = new Label("J" + String.valueOf(i+1));
 			if(i == 0) {
 				pionLabel[i].setLayoutY(15); 
+				pionLabel[i].setLayoutX(5); 
 			}
 			if(i == 1) {
 				pionLabel[i].setLayoutY(15); 
-				pionLabel[i].setLayoutX(15); 
+				pionLabel[i].setLayoutX(20); 
 			}
 			if(i == 2) {
 				pionLabel[i].setLayoutY(15); 
-				pionLabel[i].setLayoutX(30); 
+				pionLabel[i].setLayoutX(35); 
 			}
 			if(i == 3) {
 				pionLabel[i].setLayoutY(30); 
+				pionLabel[i].setLayoutX(5); 
 			}
 			if(i == 4) {
 				pionLabel[i].setLayoutY(30); 
-				pionLabel[i].setLayoutX(15); 
+				pionLabel[i].setLayoutX(20); 
 			}
 			if(i == 5) {
 				pionLabel[i].setLayoutY(30); 
-				pionLabel[i].setLayoutX(30); 
+				pionLabel[i].setLayoutX(35); 
 			}
 		}
 	}
@@ -538,8 +550,8 @@ public class Vue {
 	public void changement_joueur_actuel() {
 		panePlateau.getChildren().remove(joueur_actuel);
 		joueur_actuel = new Label("Au tour de J"+ String.valueOf(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX(300);
-		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 
 		panePlateau.getChildren().add(joueur_actuel);
@@ -548,10 +560,10 @@ public class Vue {
 	public void affichage_revente_proprietes(int curseur, int montant, Cartes carteTiree) {
 		achat_tab[curseur].setDisable(true);
 		revente_pane = new Pane();
-		revente_pane.setPrefSize(430, 430);
+		revente_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
 		revente_pane.setStyle("-fx-background-color: white");
-		revente_pane.setLayoutX(grillePlateau.getWidth()*30/100);
-		revente_pane.setLayoutY(grillePlateau.getWidth()*20/100);
+		revente_pane.setLayoutX((panePlateau_x*20)/100);
+		revente_pane.setLayoutY((panePlateau_y*15)/100);
 		
 		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due \n s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
 		revente_pane.getChildren().add(texte);
@@ -598,9 +610,10 @@ public class Vue {
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
-		lancer.setLayoutX(250);
-		lancer.setLayoutY(250);
-		grillePlateau.getChildren().add(lancer);
+		lancer.setLayoutX((panePlateau_x*40)/100);
+		lancer.setLayoutY((panePlateau_y*20)/100);
+		lancer.setPrefSize(100, 100);
+		panePlateau.getChildren().add(lancer);
 
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
@@ -616,27 +629,30 @@ public class Vue {
 	void initialisation_labelDes() {
 		desLabel = new Label("0 - 0");
 		
-		desLabel.setLayoutX(250);
-		desLabel.setLayoutY(280);
+		desLabel.setFont(new Font("Arial", 40));
+		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
-		grillePlateau.getChildren().add(desLabel);
+		panePlateau.getChildren().add(desLabel);
 	}
 	
 	void changement_labelDes(int des[]) {
-		grillePlateau.getChildren().remove(desLabel);
+		panePlateau.getChildren().remove(desLabel);
 		
 		desLabel = new Label(des[0] + " - " + des[1]);
-		desLabel.setLayoutX(250);
-		desLabel.setLayoutY(280);
+		desLabel.setFont(new Font("Arial", 40));
+		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
-		grillePlateau.getChildren().add(desLabel);
+		panePlateau.getChildren().add(desLabel);
 	}
 	
 	void bouton_fin_de_tour() {
 		fin = new Button("Fin");
-		fin.setLayoutX(250);
-		fin.setLayoutY(300);
-		grillePlateau.getChildren().add(fin);
+		fin.setLayoutX((panePlateau_x*40)/100);
+		fin.setLayoutY((panePlateau_y*55)/100);
+		fin.setPrefSize(100, 20);
+		panePlateau.getChildren().add(fin);
 
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
@@ -675,10 +691,8 @@ public class Vue {
 		quitter_button = new Button("Quitter");
 		historique_button = new Button("Historique");
 		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button);
-		boutons_box.setLayoutX(300);
-		boutons_box.setLayoutY(500); //700
-		//boutons_box.setLayoutX((tailleEcran.width*30)/100);
-		//boutons_box.setLayoutY((tailleEcran.height*60)/100);
+		boutons_box.setLayoutX((panePlateau_x*35)/100);
+		boutons_box.setLayoutY((panePlateau_y*70)/100);
 		panePlateau.getChildren().add(boutons_box);
 		quitter_button.setOnAction(actionEvent -> {
 		    stage.close();
@@ -775,10 +789,10 @@ public class Vue {
 		type_carte.setFont(new Font("Arial", 17));
 		contenu_carte.setFont(new Font("Arial", 15));
 		
-		carte_pane.setPrefSize(grillePlateau.getWidth()/1.5, grillePlateau.getHeight()/2.5);
+		carte_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
 		carte_pane.setStyle("-fx-background-color: white");
-		carte_pane.setLayoutX(grillePlateau.getWidth()*17/100);
-		carte_pane.setLayoutY(grillePlateau.getHeight()*30/100);
+		carte_pane.setLayoutX((panePlateau_x*20)/100);
+		carte_pane.setLayoutY((panePlateau_y*15)/100);
 		  
 		carte_pane.setTop(type_carte);
 		carte_pane.setCenter(contenu_carte);
@@ -788,9 +802,9 @@ public class Vue {
 		BorderPane.setAlignment(contenu_carte, Pos.CENTER);
 		BorderPane.setAlignment(bouton_fermer, Pos.BOTTOM_CENTER);
 		   
-		grillePlateau.getChildren().add(carte_pane);
+		panePlateau.getChildren().add(carte_pane);
 		  
-		bouton_fermer.setOnAction(actionEvent -> grillePlateau.getChildren().remove(carte_pane));
+		bouton_fermer.setOnAction(actionEvent -> panePlateau.getChildren().remove(carte_pane));
 		if(jeu.getJoueurs()[curseur].isRobot()){
 			PauseTransition wait = new PauseTransition(Duration.seconds(1));
 			wait.setOnFinished((e) -> {
@@ -927,12 +941,17 @@ public class Vue {
 	//Interface graphique : Accueil
 	void accueil_jeu() {
 		scene_accueil = new AnchorPane();
-		scene_accueil.setPrefSize(tailleEcran.width,tailleEcran.height);
+		scene_accueil.setPrefSize(tailleEcran.width, tailleEcran.height);
 		scene_accueil.setStyle("-fx-background-color: #BAEEB4");
+		Label titre = new Label("Monopoly");
+		titre.setFont(new Font("Arial", 50));
+		titre.setLayoutX((tailleEcran.width*40)/100);
+		titre.setLayoutY((tailleEcran.height*10)/100);
+		scene_accueil.getChildren().add(titre);
 		
 		GridPane grid = new GridPane();
 		grid.setVgap(10);
-		grid.setPadding(new Insets(300, 700, 450, 700));
+		grid.setPadding(new Insets((tailleEcran.height*35)/100, (tailleEcran.width*40)/100, (tailleEcran.height*35)/100, (tailleEcran.width*40)/100));
 
 		TextField[] tf = new TextField[6];
 
