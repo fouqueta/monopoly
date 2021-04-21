@@ -42,7 +42,7 @@ public class Vue {
 
 		//Plateau
 	private AnchorPane panePlateau; //jeu_pane
-	private Pane grillePlateau; //plateau_pane
+	private AnchorPane grillePlateau; //plateau_pane
 	private Pane revente_pane;
 	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
@@ -126,17 +126,20 @@ public class Vue {
 		panePlateau.setStyle("-fx-background-color: beige");
 		root.getChildren().add(panePlateau);
 		
-		grillePlateau = new Pane();
-		grillePlateau.setPrefSize(550, 550);
-		AnchorPane.setLeftAnchor(grillePlateau, (double) 100);
-		AnchorPane.setTopAnchor(grillePlateau, (double) 50);
-		panePlateau.getChildren().add(grillePlateau);
+		double x = panePlateau.getPrefWidth();
+		double y = panePlateau.getPrefHeight();
 		
-		colonne_gauche = new VBox();
-		grillePlateau.getChildren().add(colonne_gauche);
+		grillePlateau = new AnchorPane();
+		
+		colonne_gauche = new VBox(); //TODO
+		//AnchorPane.setLeftAnchor(colonne_gauche, (double) (tailleEcran.width*2)/100);
+		//AnchorPane.setTopAnchor(colonne_gauche, (double) (tailleEcran.height*2)/100);
+		AnchorPane.setLeftAnchor(colonne_gauche, (double) (x*2)/100);
+		AnchorPane.setTopAnchor(colonne_gauche, (double) (y*2)/100);
+		panePlateau.getChildren().add(colonne_gauche);
 		for(int i = 10; i>=0; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
@@ -153,12 +156,13 @@ public class Vue {
 			colonne_gauche.getChildren().add(casesPlateau[i]);
 		}
 		
-		colonne_droite = new VBox();
-		colonne_droite.setLayoutX(500);
-		grillePlateau.getChildren().add(colonne_droite);
+		colonne_droite = new VBox(); //TODO
+		AnchorPane.setLeftAnchor(colonne_droite, (double) (x*82.30)/100);
+		AnchorPane.setTopAnchor(colonne_droite, (double) (y*2)/100);
+		panePlateau.getChildren().add(colonne_droite);
 		for(int i = 20; i<31; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
@@ -176,12 +180,13 @@ public class Vue {
 			colonne_droite.getChildren().add(casesPlateau[i]);
 		}
 		
-		ligne_haut = new HBox();
-		ligne_haut.setLayoutX(50);
-		grillePlateau.getChildren().add(ligne_haut);
+		ligne_haut = new HBox(); //TODO
+		AnchorPane.setLeftAnchor(ligne_haut, (double) (x*10)/100);
+		AnchorPane.setTopAnchor(ligne_haut, (double) (y*2)/100);
+		panePlateau.getChildren().add(ligne_haut);
 		for(int i = 11; i<20; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
@@ -199,13 +204,13 @@ public class Vue {
 			ligne_haut.getChildren().add(casesPlateau[i]);
 		}
 		
-		ligne_bas = new HBox();
-		ligne_bas.setLayoutY(500);
-		ligne_bas.setLayoutX(50);
-		grillePlateau.getChildren().add(ligne_bas);
+		ligne_bas = new HBox(); //TODO
+		AnchorPane.setLeftAnchor(ligne_bas, (double) (x*10)/100);
+		AnchorPane.setTopAnchor(ligne_bas, (double) (y*82.5)/100);
+		panePlateau.getChildren().add(ligne_bas);
 		for(int i = 39; i>30; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((x*8)/100, (y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
@@ -223,15 +228,15 @@ public class Vue {
 			ligne_bas.getChildren().add(casesPlateau[i]);
 		}
 		
-		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
+		/*joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
 		joueur_actuel.setLayoutX(300);
 		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
-		panePlateau.getChildren().add(joueur_actuel);
+		panePlateau.getChildren().add(joueur_actuel);*/
 		
-		initialisation_familles();
-		initialisation_casesSpeciales();
-		initialisation_labelDes();
+		//initialisation_familles();
+		//initialisation_casesSpeciales();
+		//initialisation_labelDes();
 	}
 	
 	void initialisation_casesSpeciales() {
