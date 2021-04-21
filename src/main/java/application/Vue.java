@@ -2,6 +2,9 @@ package application;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javafx.animation.PauseTransition;
 import javafx.scene.control.Button;
@@ -9,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -22,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import monopoly.*;
@@ -539,7 +544,7 @@ public class Vue {
 		revente_pane.setPrefSize(430, 430);
 		revente_pane.setStyle("-fx-background-color: white");
 		revente_pane.setLayoutX(grillePlateau.getWidth()*30/100);
-		revente_pane.setLayoutY(grillePlateau.getWidth()*20/100);
+		revente_pane.setLayoutY(grillePlateau.getHeight()*20/100);
 		
 		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due \n s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
 		revente_pane.getChildren().add(texte);
@@ -580,6 +585,39 @@ public class Vue {
 		if(jeu.getJoueurs()[curseur].isRobot()){
 			nom_proprietes_button[0].fire();
 		}		
+	}
+	
+	void afficherRegles() {
+		String texte="";
+		try {
+			Scanner sc = new Scanner(new File("regles.txt")); 
+			while(sc.hasNext()) {
+				String prochaineLigne = sc.nextLine();
+				texte=texte+prochaineLigne+"\n";
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Fichier introuvable");
+		}
+		
+		BorderPane regles_pane = new BorderPane();
+		Text regles_texte = new Text(texte);
+		Button fermer = new Button("Fermer");
+		ScrollPane scrollPane = new ScrollPane();
+		
+		scrollPane.setContent(regles_texte);
+		scrollPane.setPrefSize(panePlateau.getWidth()*78/100, 667);
+		regles_pane.setPrefSize(panePlateau.getWidth()*78/100, 680);
+		regles_pane.setLayoutX(panePlateau.getWidth()*5/100);
+		regles_pane.setLayoutY(panePlateau.getHeight()*5/100);
+		regles_pane.setStyle("-fx-background-color: white");
+		regles_pane.setTop(scrollPane);
+		regles_pane.setBottom(fermer);
+		BorderPane.setAlignment(scrollPane,Pos.TOP_CENTER);
+		BorderPane.setAlignment(fermer,Pos.BOTTOM_RIGHT);
+	    fermer.setOnAction(actionEvent -> {
+			panePlateau.getChildren().remove(regles_pane);
+		});
+		panePlateau.getChildren().add(regles_pane);
 	}
 	
 
@@ -637,10 +675,6 @@ public class Vue {
 			defis_tab[proprietaires[position]].setDisable(true);
 			
 			controleur.controleur_faillite(curseur);
-			/*int curseurSuivant = (curseur+1)%jeu.getNbJ();
-	    	while(jeu.getJoueurs()[curseurSuivant].getFaillite()==true) {
-				curseurSuivant= + (curseurSuivant + 1) % jeu.getNbJ();
-				}*/
 			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
 			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
 				controleur.controleur_fin();
@@ -674,12 +708,14 @@ public class Vue {
 	void boutons_jeu() {
 		boutons_box = new HBox();
 		regles_button = new Button("Regles");
-		aide_button = new Button("Aide");
 		quitter_button = new Button("Quitter");
-		boutons_box.getChildren().addAll(regles_button,aide_button,quitter_button);
-		boutons_box.setLayoutX(300);
-		boutons_box.setLayoutY(700);
+		boutons_box.getChildren().addAll(regles_button,quitter_button);
+		boutons_box.setLayoutX((tailleEcran.width*30)/100);
+		boutons_box.setLayoutY((tailleEcran.height*60)/100);
 		panePlateau.getChildren().add(boutons_box);
+		regles_button.setOnAction(actionEvent -> {
+			afficherRegles();
+		}); 
 		quitter_button.setOnAction(actionEvent -> {
 			Stage stage = (Stage) quitter_button.getScene().getWindow();
 		    stage.close();

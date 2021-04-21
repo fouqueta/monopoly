@@ -1,0 +1,47 @@
+
+                      REGLES DU MONOPOLY 
+                      
+
+	PRINCIPE DU JEU:
+Le Monopoly est un jeu ou l'on achete, loue et vend des proprietes de facon a accroitre ses richesses.
+En partant de la case depart, deplacez votre pion sur le plateau de jeu suivant votre resultat au lancer de des. Quand vous arrivez sur une case qui n'appartient encore a 
+personne, vous pouvez l'acheter a la banque. Les joueurs qui sont proprietaires percoivent des loyers de la part des adversaires s'arretant sur leur terrain. La construction 
+de maisons et hotels ou l'acquisition de plusieurs biens de la meme couleur augmente considerablement le loyer que vous pouvez percevoir pour vos proprietes.
+Vous devez toujours vous plier aux instructions donnees par les cartes de caisse de communaute et chance. Parfois, vous serez envoye en prison.
+
+	COMMENT GAGNER:
+Etre le dernier joueur qui n'ait pas fait faillite.
+
+	COMMENT PERDRE:
+Etre en faillite: ne plus avoir d'argent ou de proprietes a vendre.
+
+	DEROULEMENT D'UN TOUR:
+Cliquez sur le bouton "Lancer" et vos pions se deplaceront suivant le nombre obtenu au lancement des des. Vous avez la possibilite de tomber sur une case:
+	- Proprietes: si cette propriete n'est pas encore achetee, vous pouvez choisir de l'acheter. Au contraire, si cette propriete appartient deja a un autre joueur, 
+		      vous devez lui verser un loyer ou vous avez la possibilite de lui lancer un defi si vous refusez ce loyer. S'il s'avere que votre argent n'excede 
+		      pas le montant du loyer, vous devrez vendre autant de bien que possible jusqu'a atteindre cette somme.
+	- Chance/Caisse de communaute: a l'arrivee d'une de ses cases, vous piocherez une carte contenant une indication que vous devrez suivre. Si vous tirez une carte 
+				       "Vous etes libere de prison", vous pouvez la garder jusqu'a ce que vous decidiez de l'utiliser.
+				       Une carte peut vous demander de vous rendre a une autre case. Si vous passez par la case depart, recevez 2000e. Vous ne passez pas 
+				       par la case depart quand vous etes envoye en prison.
+	- Taxe/Impot: si vous vous arretez sur l'une de ces cases, payez le montant indique a la banque.
+	- Eau/Electricite:
+	- Prison: Si vous arrivez sur la case "Prison", vous serez immediatement envoyer en prison et vous y resterez pendant 3 tours.
+	- Depart: vous percevrez 2000e a chaque fois que vous passerez par la case "Depart".
+Vous cliquerez ensuite sur le bouton "Fin" qui laissera le tour au joueur suivant.
+
+	FIN DE PARTIE:
+La partie se termine lorsqu'il ne reste plus qu'un joueur en jeu.
+
+	OPTIONS:
+Robot: Vous pouvez jouer contre des robots ou de faire une partie essentiellement composee de robots.
+Defi: En tombant sur la propriete d'un autre joueur, vous avez la possibilite de lui lancer un defi si vous ne souhaitez pas lui verser un loyer. Ce dernier pourra 
+      alors accepter ou refuser ce defi. S'il accepte, vous lancerez tous les deux les des et le joueur ayant obtenu le plus grand nombre gagne. Le perdant repart avec 
+      malus.
+Maison/hotel: Vous pouvez transformer vos proprietes en maison a condition que vous possedez toutes les proprietes de couleur. Vous pouvez ensuite transformer vos maisons
+	      en un hotel seulement lorsque que dans chaque terrain de cette couleur, vous possedez le nombre maximal de maison.
+Prison: Pour sortir de la prison, vous devez soit posseder une carte "Vous etes libere de prison" soit faire un double au lancer de des.
+
+
+	
+																		Bon jeu.
