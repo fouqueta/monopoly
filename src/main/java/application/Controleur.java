@@ -283,12 +283,15 @@ public class Controleur extends Thread {
 
 		if(sommeJoueur > sommeProprio) { //Rembourse le loyer au joueur gagnant.
 			joueur.thisRecoitDe(proprio, loyerEnJeu);
+			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur");
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
 			joueur.thisPayeA(proprio, loyerEnJeu);
+			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio");
 		}
 		else {
 			System.out.println("Egalite");
+			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite");
 		}
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
@@ -406,6 +409,34 @@ public class Controleur extends Thread {
 
 				break;
 			case "deco":
+				break;
+			case "demande defis":
+				Platform.runLater(() -> {
+					int curseur = jeu.getCurseur();
+					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+					if (jeu.getJoueurReseau() == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
+						vue.boutonDefisReseau(position, curseur);
+					}
+				});
+				break;
+			case "defis gagnant":
+				Platform.runLater(() -> {
+					int curseur = jeu.getCurseur();
+					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+					Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+					int loyerEnJeu = propriete_actuelle.getLoyer();
+					Joueur joueur = jeu.getJoueurs()[curseur];
+					Joueur proprio = propriete_actuelle.getProprietaire();
+
+					if(info.equals("joueur")) { //Rembourse le loyer au joueur gagnant.
+						joueur.thisRecoitDe(proprio, loyerEnJeu);
+					}
+					else if(info.equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+						joueur.thisPayeA(proprio, loyerEnJeu);
+					}
+					vue.changement_argent(curseur);
+				});
+
 				break;
 			default:
 				break;

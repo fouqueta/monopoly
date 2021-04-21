@@ -786,34 +786,7 @@ public class Vue {
 		}
 	}
 
-	void initialisation_boutons_achat_vente() {
-		VBox AV_boutons = new VBox();
-		AV_boutons.setLayoutX((tailleEcran.width*20)/100);
-		paneJoueurs.getChildren().add(AV_boutons);
 
-		int nbr = jeu.getNbJ();
-		for(int i = 0; i<nbr; i++) { 
-			Pane joueur_boutons = new Pane();
-			joueur_boutons.setPrefSize((tailleEcran.width*10)/100, (int) ((tailleEcran.height-50)/nbr));
-			joueur_boutons.setStyle("-fx-background-color: peachpuff; -fx-border-color: white");
-			
-			achat = new Button("Achat");
-			vente = new Button("Vente");
-			achat_tab[i] = achat;
-			vente_tab[i] = vente;
-			
-			achat.setDisable(true);
-			vente.setDisable(true);
-			
-			achat.setLayoutY(0);
-			vente.setLayoutY(50);
-			
-			joueur_boutons.getChildren().add(achat);
-			joueur_boutons.getChildren().add(vente);
-			
-			AV_boutons.getChildren().add(joueur_boutons);
-		}
-	}
 	
 	void caseChanceCommu(int curseur, Cartes carteTiree) {
 		BorderPane carte_pane = new BorderPane();
@@ -959,7 +932,8 @@ public class Vue {
 		}
 		defis_tab[curseur].setOnAction(actionEvent ->{
 			defis_tab[curseur].setDisable(true);
-			defis_tab[proprietaires[position]].setDisable(false);
+			if(jeu.isReseau()) controleur.sendMsg("demande defis", "");
+			else defis_tab[proprietaires[position]].setDisable(false);
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
 				defis_tab[proprietaires[position]].fire();
 			}
@@ -1152,5 +1126,13 @@ public class Vue {
 		changement_argent(curseur);
 		changement_argent(proprietaires[position]);
 		proprietaires[position]=curseur;
+	}
+
+	public void boutonDefisReseau(int position, int curseur) {
+		defis_tab[proprietaires[position]].setDisable(false);
+		defis_tab[proprietaires[position]].setOnAction(actionEvent ->{
+			controleur.controleur_defis(curseur);
+			defis_tab[proprietaires[position]].setDisable(true);
+		});
 	}
 }

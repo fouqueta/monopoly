@@ -237,7 +237,7 @@ public class Joueur{
 	public void utiliserCarteLibPrison_IG() {
 		enPrison = false;
 		carteLibPrison = false;
-}
+	}
 
 
 }
