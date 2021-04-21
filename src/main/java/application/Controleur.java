@@ -333,12 +333,12 @@ public class Controleur extends Thread {
 	}
 
 	private void action(String action, String info) {
+		int curseur = jeu.getCurseur();
 		switch (action) {
 			case "message":
 				break;
 			case "carte":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
 					String[] temp = info.split("-");
 					carte = jeu.carteParIndex(Integer.valueOf(temp[0]), temp[1]);
 				});
@@ -360,7 +360,6 @@ public class Controleur extends Thread {
 					int[] des = new int[2];
 					des[0] = Integer.valueOf(temp[0]);
 					des[1] = Integer.valueOf(temp[1]);
-					int curseur = jeu.getCurseur();
 					controleur_lancer(des, curseur);
 				});
 				break;
@@ -384,7 +383,6 @@ public class Controleur extends Thread {
 				break;
 			case "demande achat":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					if (jeu.getJoueurReseau() == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
 						vue.active_vente(position, curseur);
@@ -393,14 +391,12 @@ public class Controleur extends Thread {
 				break;
 			case "vente à joueur":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					vue.updateVenteReseau(position, curseur);
 				});
 				break;
 			case "vendre":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
 					int n = Integer.parseInt(info);
 					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
 					vue.changement_couleur_case_blanche(ancienne_position);
@@ -412,7 +408,6 @@ public class Controleur extends Thread {
 				break;
 			case "demande defis":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					if (jeu.getJoueurReseau() == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
 						vue.boutonDefisReseau(position, curseur);
@@ -421,7 +416,6 @@ public class Controleur extends Thread {
 				break;
 			case "defis gagnant":
 				Platform.runLater(() -> {
-					int curseur = jeu.getCurseur();
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
 					int loyerEnJeu = propriete_actuelle.getLoyer();
@@ -437,6 +431,11 @@ public class Controleur extends Thread {
 					vue.changement_argent(curseur);
 				});
 
+				break;
+			case "carte prison":
+				Platform.runLater(() -> {
+					controleur_libererPrison(curseur);
+				});
 				break;
 			default:
 				break;
