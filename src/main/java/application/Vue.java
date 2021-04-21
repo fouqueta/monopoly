@@ -1027,12 +1027,35 @@ public class Vue {
 	}
 	
 	//Interface graphique: fin de la partie
-	void fin_partie() {
+	void fin_partie() {		
 		lancer.setDisable(true);
 		fin.setDisable(true);
 		achat.setDisable(true);
 		vente.setDisable(true);
 		defis.setDisable(true);
+		
+		BorderPane victoire_pane = new BorderPane ();
+		String nom = "";
+		for (int i=0; i<jeu.getJoueurs().length; i++) {
+			if (!jeu.getJoueurs()[i].getFaillite()) {
+				nom = jeu.getJoueurs()[i].getNom();
+			}
+		}
+		Label l1 = new Label ("VICTOIRE DU JOUEUR");
+		Label l2 = new Label (nom);
+		victoire_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
+		victoire_pane.setStyle("-fx-background-color: white");
+		victoire_pane.setLayoutX((panePlateau_x*20)/100);
+		victoire_pane.setLayoutY((panePlateau_y*15)/100);
+		l1.setFont(new Font(30));
+		l2.setFont(new Font(30));
+		victoire_pane.setTop(l1);
+		victoire_pane.setCenter(l2);
+		l1.setPadding(new Insets(180,0,0,0));
+		l2.setPadding(new Insets(-150,0,0,0));
+		BorderPane.setAlignment(l1, Pos.TOP_CENTER);
+		BorderPane.setAlignment(l2, Pos.CENTER);
+		panePlateau.getChildren().add(victoire_pane);
 	}
 
 	void lancerRobot(){
