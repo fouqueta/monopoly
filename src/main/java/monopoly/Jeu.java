@@ -366,10 +366,12 @@ public class Jeu {
     }
     
     
-    public void faillite_IG(Joueur j) {
+    public boolean faillite_IG(Joueur j) {
     	if (j.getArgent()<=0 && j.getProprietes().length == 0){
     		j.setFaillite(true);
+    		return true;
     	}
+    	return false;
     }
     
     public boolean jeuFini_IG() {

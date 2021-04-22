@@ -37,7 +37,9 @@ public class Vue {
 	private AnchorPane root;
 	private Stage stage;
 	private Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
-	
+	private double panePlateau_x;
+	private double panePlateau_y;
+
 	//Accueil
 	private AnchorPane scene_accueil;
 		
@@ -47,7 +49,6 @@ public class Vue {
 
 		//Plateau
 	private AnchorPane panePlateau; //jeu_pane
-	private Pane grillePlateau; //plateau_pane
 	private Pane revente_pane;
 	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
@@ -59,7 +60,7 @@ public class Vue {
 	private Label desLabel = new Label();
 
 		//Proprietaires
-	private int[] proprietaires = new int [40];
+	private int[] proprietaires = new int[40];
 	
 		//Joueurs
 	private AnchorPane paneJoueurs; //joueurs_pane
@@ -76,9 +77,9 @@ public class Vue {
 	private Button prison;
 	private HBox boutons_box;
 	private Button regles_button;
-	private Button aide_button;
 	private Button quitter_button;
-	
+	private Button historique_button;
+
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
 	private Button prison_tab[] = new Button[6];
@@ -92,6 +93,13 @@ public class Vue {
 	
 	private Label des_label = new Label();
 	
+	//Historique(Local) - Tchat(Reseau)
+	private AnchorPane rootHisto;
+	private Stage stageHisto;
+	private Scene sceneHisto;
+	private Label historique_tab[];
+	private VBox historiqueVBox;
+
 	Vue(Controleur controleur){
 		this.controleur = controleur;
 		
@@ -124,20 +132,20 @@ public class Vue {
 		panePlateau.setStyle("-fx-background-color: beige");
 		root.getChildren().add(panePlateau);
 		
-		grillePlateau = new Pane();
-		grillePlateau.setPrefSize(550, 550);
-		AnchorPane.setLeftAnchor(grillePlateau, (double) 100);
-		AnchorPane.setTopAnchor(grillePlateau, (double) 50);
-		panePlateau.getChildren().add(grillePlateau);
+		panePlateau_x = panePlateau.getPrefWidth();
+		panePlateau_y = panePlateau.getPrefHeight();
 		
 		colonne_gauche = new VBox();
-		grillePlateau.getChildren().add(colonne_gauche);
+		AnchorPane.setLeftAnchor(colonne_gauche, (double) (panePlateau_x*2)/100);
+		AnchorPane.setTopAnchor(colonne_gauche, (double) (panePlateau_y*2)/100);
+		panePlateau.getChildren().add(colonne_gauche);
 		for(int i = 10; i>=0; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -145,21 +153,23 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*1.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}			
 			colonne_gauche.getChildren().add(casesPlateau[i]);
 		}
 		
 		colonne_droite = new VBox();
-		colonne_droite.setLayoutX(500);
-		grillePlateau.getChildren().add(colonne_droite);
+		AnchorPane.setRightAnchor(colonne_droite, (double) (panePlateau_x*9.90)/100);
+		AnchorPane.setTopAnchor(colonne_droite, (double) (panePlateau_y*2)/100);
+		panePlateau.getChildren().add(colonne_droite);
 		for(int i = 20; i<31; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -167,7 +177,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*2.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
@@ -175,14 +185,16 @@ public class Vue {
 		}
 		
 		ligne_haut = new HBox();
-		ligne_haut.setLayoutX(50);
-		grillePlateau.getChildren().add(ligne_haut);
+		AnchorPane.setLeftAnchor(ligne_haut, (double) (panePlateau_x*10)/100);
+		AnchorPane.setTopAnchor(ligne_haut, (double) (panePlateau_y*2)/100);
+		panePlateau.getChildren().add(ligne_haut);
 		for(int i = 11; i<20; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -190,7 +202,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*2.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
@@ -198,15 +210,16 @@ public class Vue {
 		}
 		
 		ligne_bas = new HBox();
-		ligne_bas.setLayoutY(500);
-		ligne_bas.setLayoutX(50);
-		grillePlateau.getChildren().add(ligne_bas);
+		AnchorPane.setLeftAnchor(ligne_bas, (double) (panePlateau_x*10)/100);
+		AnchorPane.setTopAnchor(ligne_bas, (double) (panePlateau_y*82.5)/100);
+		panePlateau.getChildren().add(ligne_bas);
 		for(int i = 39; i>30; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize(50, 50);
+			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
+			numero.setLayoutX((panePlateau_x*0.5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -214,7 +227,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX(15);
+				prix.setLayoutX((panePlateau_x*2.5)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
@@ -222,8 +235,8 @@ public class Vue {
 		}
 		
 		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX(300);
-		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 		panePlateau.getChildren().add(joueur_actuel);
 		
@@ -233,55 +246,48 @@ public class Vue {
 	}
 	
 	void initialisation_casesSpeciales() {
-		Label com1 = new Label("Com.");
-		com1.setLayoutX(10);
-		com1.setStyle("-fx-font-size: 10");
+		Label com1 = new Label("Commu.");
+		com1.setLayoutX((panePlateau_x*1.5)/100);
 		casesPlateau[2].getChildren().add(com1);
 		
-		Label com2 = new Label("Com.");
-		com2.setLayoutX(15);
-		com2.setStyle("-fx-font-size: 10");
+		Label com2 = new Label("Commu.");
+		com2.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[17].getChildren().add(com2);
 		
-		Label com3 = new Label("Com.");
-		com3.setLayoutX(15);
-		com3.setStyle("-fx-font-size: 10");
+		Label com3 = new Label("Commu.");
+		com3.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[33].getChildren().add(com3);
 		
 		Label ch1 = new Label("Chance");
-		ch1.setLayoutX(10);
-		ch1.setStyle("-fx-font-size: 10");
+		ch1.setLayoutX((panePlateau_x*1.5)/100);
 		casesPlateau[7].getChildren().add(ch1);
 		
 		Label ch2 = new Label("Chance");
-		ch2.setLayoutX(15);
-		ch2.setStyle("-fx-font-size: 10");
+		ch2.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[22].getChildren().add(ch2);
 		
 		Label ch3 = new Label("Chance");
-		ch3.setLayoutX(15);
-		ch3.setStyle("-fx-font-size: 10");
+		ch3.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[36].getChildren().add(ch3);
 		
 		Label imp1 = new Label("Impots");
-		imp1.setLayoutX(10);
+		imp1.setLayoutX((panePlateau_x*1.5)/100);
 		casesPlateau[4].getChildren().add(imp1);
 		
 		Label imp2 = new Label("Taxe");
-		imp2.setLayoutX(15);
+		imp2.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[38].getChildren().add(imp2);
 		
 		Label prison = new Label("Prison");
-		prison.setLayoutX(15);
+		prison.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[10].getChildren().add(prison);
 		
-		Label allerPrison = new Label("Prison");
-		allerPrison.setLayoutX(15);
-		allerPrison.setStyle("-fx-font-size: 10");
+		Label allerPrison = new Label("->Prison");
+		allerPrison.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[30].getChildren().add(allerPrison);
 		
 		Label parc = new Label("Parc");
-		parc.setLayoutX(15);
+		parc.setLayoutX((panePlateau_x*2.5)/100);
 		casesPlateau[20].getChildren().add(parc);
 	}
 	
@@ -291,6 +297,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("violette");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -300,6 +308,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("ciel");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -309,6 +319,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete") && i != 12) {
 				Rectangle rec = bordure("rose");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -318,6 +330,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("orange");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -327,6 +341,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("rouge");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -336,6 +352,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete") && i != 28) {
 				Rectangle rec = bordure("jaune");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -345,6 +363,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("verte");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -354,6 +374,8 @@ public class Vue {
 			Cases case_curseur = jeu.getPlateau().getGrille()[i];
 			if(case_curseur.getType().equals("Propriete")) {
 				Rectangle rec = bordure("bleue");
+				rec.setOpacity(0.7);
+				rec.setViewOrder(0.5);
 				casesPlateau[i].getChildren().add(rec);
 			}
 		}
@@ -361,9 +383,9 @@ public class Vue {
 	
 	Rectangle bordure(String couleur) {
 		Rectangle rec = new Rectangle();
-		rec.setWidth(5);
-		rec.setHeight(50);
-		rec.setLayoutX(45);
+		rec.setLayoutX(1);
+		rec.setWidth((panePlateau_x*7.9)/100);
+		rec.setHeight((panePlateau_y*2)/100);
 		switch(couleur) {
 		case "violette":
 			rec.setFill(Color.rgb(125,122,188));
@@ -456,25 +478,27 @@ public class Vue {
 			pionLabel[i] = new Label("J" + String.valueOf(i+1));
 			if(i == 0) {
 				pionLabel[i].setLayoutY(15);
+				pionLabel[i].setLayoutX(5);
 			}
 			if(i == 1) {
-				pionLabel[i].setLayoutY(15);
-				pionLabel[i].setLayoutX(15);
+				pionLabel[i].setLayoutY(15); 
+				pionLabel[i].setLayoutX(20);
 			}
 			if(i == 2) {
-				pionLabel[i].setLayoutY(15);
-				pionLabel[i].setLayoutX(30);
+				pionLabel[i].setLayoutY(15); 
+				pionLabel[i].setLayoutX(35);
 			}
 			if(i == 3) {
 				pionLabel[i].setLayoutY(30);
+				pionLabel[i].setLayoutX(5);
 			}
 			if(i == 4) {
-				pionLabel[i].setLayoutY(30);
-				pionLabel[i].setLayoutX(15);
+				pionLabel[i].setLayoutY(30); 
+				pionLabel[i].setLayoutX(20);
 			}
 			if(i == 5) {
-				pionLabel[i].setLayoutY(30);
-				pionLabel[i].setLayoutX(30);
+				pionLabel[i].setLayoutY(30); 
+				pionLabel[i].setLayoutX(35);
 			}
 		}
 	}
@@ -531,8 +555,8 @@ public class Vue {
 	public void changement_joueur_actuel() {
 		panePlateau.getChildren().remove(joueur_actuel);
 		joueur_actuel = new Label("Au tour de J"+ String.valueOf(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX(300);
-		joueur_actuel.setLayoutY((tailleEcran.height*85)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 
 		panePlateau.getChildren().add(joueur_actuel);
@@ -551,10 +575,10 @@ public class Vue {
 	public void affichage_revente_proprietes(int curseur, int montant, Cartes carteTiree) {
 		achat_tab[curseur].setDisable(true);
 		revente_pane = new Pane();
-		revente_pane.setPrefSize(430, 430);
+		revente_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
 		revente_pane.setStyle("-fx-background-color: white");
-		revente_pane.setLayoutX(grillePlateau.getWidth()*30/100);
-		revente_pane.setLayoutY(grillePlateau.getHeight()*20/100);
+		revente_pane.setLayoutX((panePlateau_x*20)/100);
+		revente_pane.setLayoutY((panePlateau_y*15)/100);
 		
 		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due \n s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
 		revente_pane.getChildren().add(texte);
@@ -632,14 +656,15 @@ public class Vue {
 		});
 		panePlateau.getChildren().add(regles_pane);
 	}
-	
+
 
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
-		lancer.setLayoutX(250);
-		lancer.setLayoutY(250);
-		grillePlateau.getChildren().add(lancer);
+		lancer.setLayoutX((panePlateau_x*40)/100);
+		lancer.setLayoutY((panePlateau_y*20)/100);
+		lancer.setPrefSize(100, 100);
+		panePlateau.getChildren().add(lancer);
 
 		if(jeu.isReseau() && !(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()])) lancer.setDisable(true);
 		else lancer.setDisable(false);
@@ -658,27 +683,30 @@ public class Vue {
 	void initialisation_labelDes() {
 		desLabel = new Label("0 - 0");
 		
-		desLabel.setLayoutX(250);
-		desLabel.setLayoutY(280);
+		desLabel.setFont(new Font("Arial", 40));
+		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
-		grillePlateau.getChildren().add(desLabel);
+		panePlateau.getChildren().add(desLabel);
 	}
 	
 	void changement_labelDes(int des[]) {
-		grillePlateau.getChildren().remove(desLabel);
+		panePlateau.getChildren().remove(desLabel);
 		
 		desLabel = new Label(des[0] + " - " + des[1]);
-		desLabel.setLayoutX(250);
-		desLabel.setLayoutY(280);
+		desLabel.setFont(new Font("Arial", 40));
+		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
-		grillePlateau.getChildren().add(desLabel);
+		panePlateau.getChildren().add(desLabel);
 	}
 	
 	void bouton_fin_de_tour() {
 		fin = new Button("Fin");
-		fin.setLayoutX(250);
-		fin.setLayoutY(300);
-		grillePlateau.getChildren().add(fin);
+		fin.setLayoutX((panePlateau_x*40)/100);
+		fin.setLayoutY((panePlateau_y*55)/100);
+		fin.setPrefSize(100, 20);
+		panePlateau.getChildren().add(fin);
 
 		if(jeu.isReseau() && !(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()])) {
 			fin.setDisable(true);
@@ -733,17 +761,27 @@ public class Vue {
 		boutons_box = new HBox();
 		regles_button = new Button("Regles");
 		quitter_button = new Button("Quitter");
-		boutons_box.getChildren().addAll(regles_button,quitter_button);
-		boutons_box.setLayoutX((tailleEcran.width*30)/100);
-		boutons_box.setLayoutY((tailleEcran.height*60)/100);
+		historique_button = new Button("Historique");
+		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button);
+		boutons_box.setLayoutX((panePlateau_x*35)/100);
+		boutons_box.setLayoutY((panePlateau_y*70)/100);
 		panePlateau.getChildren().add(boutons_box);
 		regles_button.setOnAction(actionEvent -> {
 			afficherRegles();
 		});
 		quitter_button.setOnAction(actionEvent -> {
-			Stage stage = (Stage) quitter_button.getScene().getWindow();
 		    stage.close();
-		}); 
+		    stageHisto.close();
+		});
+
+		historique_button.setOnAction(actionEvent-> {
+			if(stageHisto.isShowing()) {
+				stageHisto.hide();
+			}
+			else {
+				stageHisto.show();
+			}
+		});
 	}
 	
 	void initialisation_boutons() {
@@ -799,10 +837,10 @@ public class Vue {
 		type_carte.setFont(new Font("Arial", 17));
 		contenu_carte.setFont(new Font("Arial", 15));
 		
-		carte_pane.setPrefSize(grillePlateau.getWidth()/1.5, grillePlateau.getHeight()/2.5);
+		carte_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
 		carte_pane.setStyle("-fx-background-color: white");
-		carte_pane.setLayoutX(grillePlateau.getWidth()*17/100);
-		carte_pane.setLayoutY(grillePlateau.getHeight()*30/100);
+		carte_pane.setLayoutX((panePlateau_x*20)/100);
+		carte_pane.setLayoutY((panePlateau_y*15)/100);
 		  
 		carte_pane.setTop(type_carte);
 		carte_pane.setCenter(contenu_carte);
@@ -812,9 +850,9 @@ public class Vue {
 		BorderPane.setAlignment(contenu_carte, Pos.CENTER);
 		BorderPane.setAlignment(bouton_fermer, Pos.BOTTOM_CENTER);
 		   
-		grillePlateau.getChildren().add(carte_pane);
+		panePlateau.getChildren().add(carte_pane);
 		  
-		bouton_fermer.setOnAction(actionEvent -> grillePlateau.getChildren().remove(carte_pane));
+		bouton_fermer.setOnAction(actionEvent -> panePlateau.getChildren().remove(carte_pane));
 		if(jeu.getJoueurs()[curseur].isRobot()){
 			PauseTransition wait = new PauseTransition(Duration.seconds(1));
 			wait.setOnFinished((e) -> {
@@ -856,6 +894,7 @@ public class Vue {
 				controleur.controleur_achat(curseur);
 				achat_tab[curseur].setDisable(true);
 				changement_argent(curseur);
+				gestion_historique(unJoueur_historique("achat", jeu.getJoueurs()[curseur], null, position));
 			});
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				achat_tab[curseur].fire();
@@ -879,6 +918,7 @@ public class Vue {
 		
 		achat_tab[curseur].setOnAction(actionEvent ->{
 			achat_tab[curseur].setDisable(true);
+			gestion_historique(deuxJoueurs_historique("achat", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			if(jeu.isReseau()) controleur.sendMsg("demande achat", "");
 			else vente_tab[proprietaires[position]].setDisable(false);
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
@@ -896,6 +936,7 @@ public class Vue {
 			controleur.controleur_vente(curseur);
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
+			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			proprietaires[position]=curseur;
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
@@ -912,6 +953,7 @@ public class Vue {
 			controleur.controleur_vente(curseur);
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
+			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			proprietaires[position]=curseur;
 			controleur.sendMsg("vente à joueur", "");
 			if(jeu.getJoueurs()[curseur].isRobot()){
@@ -934,6 +976,7 @@ public class Vue {
 		}
 		defis_tab[curseur].setOnAction(actionEvent ->{
 			defis_tab[curseur].setDisable(true);
+			gestion_historique(deuxJoueurs_historique("lancerDefi", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			if(jeu.isReseau()) controleur.sendMsg("demande defis", "");
 			else defis_tab[proprietaires[position]].setDisable(false);
 			if(jeu.getJoueurs()[proprietaires[position]].isRobot()) {
@@ -956,6 +999,9 @@ public class Vue {
 
 	void bouton_prison(int curseur) {
 		prison_tab[curseur].setDisable(false);
+		/*if(jeu.getJoueurs()[curseur].isRobot()){
+			prison_tab[curseur].fire();
+		}*/
 		prison_tab[curseur].setOnAction(actionEvent ->{
 			prison_tab[curseur].setDisable(true);
 			controleur.controleur_libererPrison(curseur);
@@ -970,12 +1016,17 @@ public class Vue {
 	//Interface graphique : Accueil
 	void accueil_jeu() {
 		scene_accueil = new AnchorPane();
-		scene_accueil.setPrefSize(tailleEcran.width,tailleEcran.height);
+		scene_accueil.setPrefSize(tailleEcran.width, tailleEcran.height);
 		scene_accueil.setStyle("-fx-background-color: #BAEEB4");
-		
+		Label titre = new Label("Monopoly");
+		titre.setFont(new Font("Arial", 50));
+		titre.setLayoutX((tailleEcran.width*40)/100);
+		titre.setLayoutY((tailleEcran.height*10)/100);
+		scene_accueil.getChildren().add(titre);
+
 		GridPane grid = new GridPane();
 		grid.setVgap(10);
-		grid.setPadding(new Insets(300, 700, 450, 700));
+		grid.setPadding(new Insets((tailleEcran.height*35)/100, (tailleEcran.width*40)/100, (tailleEcran.height*35)/100, (tailleEcran.width*40)/100));
 
 		TextField[] tf;
 		Button[] bt;
@@ -1035,6 +1086,9 @@ public class Vue {
 				bouton_fin_de_tour();
 				boutons_jeu();
 				initialisation_boutons();
+
+				creation_fenetreHistorique();
+
 				if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 					lancerRobot();
 					if (jeu.onlyRobot()) controleur.controleur_fin();
@@ -1082,11 +1136,183 @@ public class Vue {
 		achat.setDisable(true);
 		vente.setDisable(true);
 		defis.setDisable(true);
+
+		BorderPane victoire_pane = new BorderPane ();
+		String nom = "";
+		for (int i=0; i<jeu.getJoueurs().length; i++) {
+			if (!jeu.getJoueurs()[i].getFaillite()) {
+				nom = jeu.getJoueurs()[i].getNom();
+			}
+		}
+		Label l1 = new Label ("VICTOIRE DU JOUEUR");
+		Label l2 = new Label (nom);
+		victoire_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
+		victoire_pane.setStyle("-fx-background-color: white");
+		victoire_pane.setLayoutX((panePlateau_x*20)/100);
+		victoire_pane.setLayoutY((panePlateau_y*15)/100);
+		l1.setFont(new Font(30));
+		l2.setFont(new Font(30));
+		victoire_pane.setTop(l1);
+		victoire_pane.setCenter(l2);
+		l1.setPadding(new Insets(180,0,0,0));
+		l2.setPadding(new Insets(-150,0,0,0));
+		BorderPane.setAlignment(l1, Pos.TOP_CENTER);
+		BorderPane.setAlignment(l2, Pos.CENTER);
+		panePlateau.getChildren().add(victoire_pane);
 	}
 
 	//lance tour robot
 	void lancerRobot(){
 		lancer.fire();
+	}
+
+
+	//Interface graphique: Historique des actions/Tchat
+	void creation_fenetreHistorique() { //Mode local
+		stageHisto = new Stage();
+		stageHisto.setTitle("Historique");
+		stageHisto.setResizable(false);
+		stageHisto.show();
+
+		rootHisto = new AnchorPane();
+		rootHisto.setStyle("-fx-background-color: beige");
+
+		sceneHisto = new Scene(rootHisto, 400, tailleEcran.height);
+		stageHisto.setScene(sceneHisto);
+
+		historiqueVBox = new VBox(8);
+		historique_tab = new Label[20];
+		rootHisto.getChildren().add(historiqueVBox);
+
+		remplissage_temporaire();
+		actualiser_historique();
+	}
+
+	void creation_fenetreTchat() { //Mode réseau
+		//TODO: VBOX (separation du tchat et de l'historique)
+	}
+
+	void remplissage_temporaire() {
+		for(int i = 0; i<19; i++) {
+			historique_tab[i] = new Label("");
+		}
+		historique_tab[19] = new Label("Bienvenue dans Monopoly !");
+	}
+
+	void actualiser_historique() {
+		historiqueVBox.getChildren().clear();
+		for(int i = 0; i<20; i++) {
+			historiqueVBox.getChildren().add(historique_tab[i]);
+		}
+	}
+
+	void ajouter_historique(Label nouveau) {
+		for(int i = 0; i<19;i++) {
+			historique_tab[i] = historique_tab[i+1];
+		}
+		historique_tab[19] = nouveau;
+	}
+
+	//Creation d'un message d'evenement (action concernant un seul joueur)
+	Label unJoueur_historique(String type, Joueur joueur, int des[], int variable) { //TODO
+		Label nouveau = new Label();
+		switch(type) {
+			case "lancer":
+				nouveau = new Label(
+					joueur.getNom() + " a fait " + Integer.toString(des[0]) +
+					" et " + Integer.toString(des[1]) + " avec les des. Arrivee en case " +
+					Integer.toString(variable) + ".");
+				break;
+
+			case "achat":
+				nouveau = new Label(
+					joueur.getNom() + " a achete la propriete a la position " + variable + ".");
+				break;
+
+			case "enPrison":
+				if(des[0] == des[1]) {
+					nouveau = new Label(
+						joueur.getNom() + " a fait " + Integer.toString(des[0]) +
+						" et " + Integer.toString(des[1]) + " avec les des. Liberation de prison.");
+				}
+				else {
+					nouveau = new Label(
+						joueur.getNom() + " a fait " + Integer.toString(des[0]) +
+						" et " + Integer.toString(des[1]) + " avec les des.");
+				}
+				break;
+
+			case "tirerUneCarte":
+				nouveau = new Label(
+					joueur.getNom() + " a tire une carte.");
+				break;
+
+			case "carteLiberation":
+				nouveau = new Label(
+					joueur.getNom() + " a utilise une carte de liberation.");
+				break;
+
+			case "amelioration": //TODO
+				nouveau = new Label(
+					joueur.getNom() + " a ameliore sa propriete pour " + variable + " euros.");
+				break;
+
+			case "faillite": //TODO
+				break;
+
+			//Case fin de jeu: Controleur
+		}
+		return nouveau;
+	}
+
+	//Creation d'un message d'evenement (action concernant deux joueurs)
+	Label deuxJoueurs_historique(String type, Joueur joueur, Joueur proprietaire, int des[], int variable) {
+		Label nouveau = new Label();
+		switch(type) {
+			case "loyer":
+				nouveau = new Label(
+					joueur.getNom() + " a paye " + variable + " euros de loyer a " + proprietaire.getNom() + ".");
+				break;
+
+			case "achat":
+				nouveau = new Label(
+					joueur.getNom() + " a fait une proposition d'achat a " + proprietaire.getNom() +
+					" pour sa propriete position " + variable + ".");
+				break;
+
+			case "vente":
+				nouveau = new Label(
+					proprietaire.getNom() + " a accepte la proposition d'achat de " + joueur.getNom() + ".");
+				break;
+
+			case "lancerDefi":
+				nouveau = new Label(
+					joueur.getNom() + " a lance un defi a " + proprietaire.getNom() + ".");
+				break;
+
+			case "accepterDefi":
+				if(des[0] > des[1]) {
+					nouveau = new Label(
+						proprietaire.getNom() + " a accepte le defi. " + joueur.getNom() +
+						" a gagne avec " + des[0] + " contre " + des[1] + "." );
+				}
+				else if(des[1] > des[0]) {
+					nouveau = new Label(
+							proprietaire.getNom() + " a accepte le defi. " + proprietaire.getNom() +
+							" a gagne avec " + des[1] + " contre " + des[0] + "." );
+				}
+				else {
+					nouveau = new Label(
+						proprietaire.getNom() + " a accepte le defi. Il y a egalite avec " + des[0] + " partout.");
+				}
+				break;
+		}
+		return nouveau;
+	}
+
+	void gestion_historique(Label nouveau) {
+		ajouter_historique(nouveau);
+		actualiser_historique();
 	}
 
 	//Actualise l'IG à la fin du tour en mode reseau
@@ -1122,6 +1348,7 @@ public class Vue {
 		proprietaires[position]=curseur;
 		controleur.controleur_achat(curseur);
 		changement_argent(curseur);
+		gestion_historique(unJoueur_historique("achat", jeu.getJoueurs()[curseur], null, position));
 	}
 
 	//Vend la propriété en reseau
@@ -1145,6 +1372,7 @@ public class Vue {
 		changement_argent(curseur);
 		changement_argent(proprietaires[position]);
 		proprietaires[position]=curseur;
+		gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 	}
 
 	public void boutonDefisReseau(int position, int curseur) {

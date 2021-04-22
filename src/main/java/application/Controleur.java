@@ -2,6 +2,7 @@ package application;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.util.Duration;
 import monopoly.*;
 
@@ -74,19 +75,24 @@ public class Controleur extends Thread {
 		if(jeu.getJoueurs()[curseur].isEnPrison() &&
 			(des[0] == des[1] || jeu.getJoueurs()[curseur].getNbToursPrison() == 1)) {
 			jeu.getJoueurs()[curseur].setEnPrison(false);
+			vue.gestion_historique(vue.unJoueur_historique("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition()));
 		}
 		if( !(jeu.getJoueurs()[curseur].isEnPrison()) ){
 			Pion p = jeu.getJoueurs()[curseur].getPion();
 			int depart = p.getPosition();
 			jeu.deplace_IG(p, des);
+			vue.gestion_historique(vue.unJoueur_historique("lancer", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition()));
 			controleur_surCaseParticuliere(p, curseur);
 			int arrivee = p.getPosition();
 			
-			if (depart!=arrivee) { vue.changement_position_pion(curseur, depart, arrivee); }
+			if (depart!=arrivee) {
+				vue.changement_position_pion(curseur, depart, arrivee);
+			}
 		}	
 		else {
 			int tour_restant = jeu.getJoueurs()[curseur].getNbToursPrison();
 			jeu.getJoueurs()[curseur].setNbToursPrison(tour_restant-1);
+			vue.gestion_historique(vue.unJoueur_historique("enPrison", jeu.getJoueurs()[curseur], des, jeu.getJoueurs()[curseur].getPion().getPosition()));
 		}
 	}
 	
@@ -96,6 +102,7 @@ public class Controleur extends Thread {
 		if (case_actuelle instanceof Proprietes) { return; }
 		else if (case_actuelle instanceof CasesChance || case_actuelle instanceof CasesCommunaute) {
 			controleur_chance_commu(curseur, case_actuelle);
+			vue.gestion_historique(vue.unJoueur_historique("tirerUneCarte", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition()));
     	}
     	else if (case_actuelle instanceof CasesSpeciales) {
     		controleur_case_speciale(curseur, case_actuelle);
@@ -160,26 +167,28 @@ public class Controleur extends Thread {
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
 				&& propriete_actuelle.coloree()){
 				verifPuisPaiement(curseur, propriete_actuelle.getLoyer(), null);
+				vue.gestion_historique(vue.deuxJoueurs_historique("loyer", jeu.getJoueurs()[curseur], propriete_actuelle.getProprietaire(), null, propriete_actuelle.getLoyer()));
 				vue.changement_argent(vue.getTabProprietaires(position));
 			}
 		}
 	}
 
+	//Gestion des robots
 	private void fin_only_robot(){
 		PauseTransition wait = new PauseTransition(Duration.seconds(2));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
+				vue.gestion_historique(new Label("La partie est terminee (onlyRobot)."));
 			} else {
 				jeu.finTour_IG();
 				vue.changement_joueur_actuel();
 				vue.lancerRobot();
+				wait.playFromStart();
 			}
-			wait.playFromStart();
 		});
 		wait.play();
 	}
-
 
 	void controleur_fin() {
 		if(jeu.onlyRobot()) {
@@ -187,6 +196,7 @@ public class Controleur extends Thread {
 		}
 		else if (jeu.jeuFini_IG()) {
 			vue.fin_partie();
+			vue.gestion_historique(new Label("La partie est terminee."));
 		} else {
 			if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
 				sendMsg("fin tour", "");
@@ -206,7 +216,7 @@ public class Controleur extends Thread {
 
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
-		jeu.faillite_IG(joueur_actuel);
+		boolean b = jeu.faillite_IG(joueur_actuel);
 	}
 
 
@@ -283,22 +293,25 @@ public class Controleur extends Thread {
 
 		if(sommeJoueur > sommeProprio) { //Rembourse le loyer au joueur gagnant.
 			joueur.thisRecoitDe(proprio, loyerEnJeu);
-			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur");
+			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio);
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
 			joueur.thisPayeA(proprio, loyerEnJeu);
-			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio");
+			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio);
 		}
 		else {
-			System.out.println("Egalite");
-			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite");
+			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite-" + sommeJoueur + "-" + sommeProprio);
 		}
+		int tab_histo[] = {sommeJoueur, sommeProprio};
+		vue.gestion_historique(vue.deuxJoueurs_historique("accepterDefi", joueur, proprio, tab_histo, 0));
+
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}
 
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
+		vue.gestion_historique(vue.unJoueur_historique("carteLiberation", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition()));
 	}
 
 	int controleur_curseurSuivant(int curseur) {
@@ -379,6 +392,8 @@ public class Controleur extends Thread {
 					vue.boutons_jeu();
 					vue.initialisation_boutons();
 
+					vue.creation_fenetreHistorique();
+
 				});
 				break;
 			case "demande achat":
@@ -387,6 +402,7 @@ public class Controleur extends Thread {
 					if (jeu.getJoueurReseau() == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
 						vue.active_vente(position, curseur);
 					}
+					vue.gestion_historique(vue.deuxJoueurs_historique("achat", jeu.getJoueurs()[curseur], jeu.getJoueurs()[vue.getTabProprietaires(position)], null, position));
 				});
 				break;
 			case "vente à joueur":
@@ -412,6 +428,7 @@ public class Controleur extends Thread {
 					if (jeu.getJoueurReseau() == ((Proprietes) jeu.getPlateau().getCases(position)).getProprietaire()) {
 						vue.boutonDefisReseau(position, curseur);
 					}
+					vue.gestion_historique(vue.deuxJoueurs_historique("lancerDefi", jeu.getJoueurs()[curseur], jeu.getJoueurs()[vue.getTabProprietaires(position)], null, position));
 				});
 				break;
 			case "defis gagnant":
@@ -422,13 +439,18 @@ public class Controleur extends Thread {
 					Joueur joueur = jeu.getJoueurs()[curseur];
 					Joueur proprio = propriete_actuelle.getProprietaire();
 
-					if(info.equals("joueur")) { //Rembourse le loyer au joueur gagnant.
+					String[] t = info.split("-");
+
+					if(t[0].equals("joueur")) { //Rembourse le loyer au joueur gagnant.
 						joueur.thisRecoitDe(proprio, loyerEnJeu);
 					}
-					else if(info.equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+					else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
 						joueur.thisPayeA(proprio, loyerEnJeu);
 					}
 					vue.changement_argent(curseur);
+
+					int tab_histo[] = {Integer.parseInt(t[1]), Integer.parseInt(t[2])};
+					vue.gestion_historique(vue.deuxJoueurs_historique("accepterDefi", joueur, proprio, tab_histo, 0));
 				});
 
 				break;
