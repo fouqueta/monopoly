@@ -41,14 +41,17 @@ public class Controleur extends Thread {
 				sendMsg("close","");
 				pw.close();
 				socket.close();
+				jeu.setReseau(false);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			jeu.setReseau(false);
+
 		}else{
 			try {
 				socket = new Socket("176.144.217.163", 666);
+				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 				jeu.setReseau(true);
+				this.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -328,8 +331,6 @@ public class Controleur extends Thread {
 		boolean running = true;
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-			sendMsg("start", jeu.getJoueurReseau().getNom());
 			while (running) {
 				String action = br.readLine();
 				String info = br.readLine();
@@ -485,6 +486,13 @@ public class Controleur extends Thread {
 					controleur_libererPrison(curseur);
 				});
 				break;
+			case "erreur":
+				Platform.runLater(() -> {
+					if(info.equals("Pseudo deja prit")){
+						vue.accueil_jeu(true);
+					}
+				});
+
 			default:
 				break;
 		}

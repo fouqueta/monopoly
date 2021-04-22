@@ -111,7 +111,7 @@ public class Vue {
 		jeu = controleur.getJeu();
 		
 		initilisation_scene_jeu();
-		accueil_jeu();
+		accueil_jeu(false);
 		
 		stage.show();
 	}
@@ -1014,7 +1014,7 @@ public class Vue {
 
 
 	//Interface graphique : Accueil
-	void accueil_jeu() {
+	void accueil_jeu(boolean b) {
 		scene_accueil = new AnchorPane();
 		scene_accueil.setPrefSize(tailleEcran.width, tailleEcran.height);
 		scene_accueil.setStyle("-fx-background-color: #BAEEB4");
@@ -1070,7 +1070,7 @@ public class Vue {
 			if(jeu.isReseau()){
 				if (!tf[0].equals("")) {
 					jeu.setJoueurReseau(new Joueur(tf[0].getText()));
-					controleur.start();
+					controleur.sendMsg("start", jeu.getJoueurReseau().getNom());
 				}
 			}else if(noms.length>1) {
 				jeu.initialisation_joueurs(noms, flags);
@@ -1103,12 +1103,20 @@ public class Vue {
 		}else{
 			reseau = new Button("Mode Reseau");
 			reseau.setStyle("-fx-background-color: #0000FF");
+			grid.add(reseau,0,8);
 		}
-		grid.add(reseau,0,8);
+
 		reseau.setOnAction(actionEvent->{
 			controleur.startSocket();
-			accueil_jeu();
+			accueil_jeu(false);
 		});
+		if(b){
+			Label erreur = new Label("Pseudo invalide ou deja pris.");
+			erreur.setFont(new Font("Arial", 10));
+			erreur.setLayoutX((tailleEcran.width*40)/100);
+			erreur.setLayoutY((tailleEcran.height*60)/100);
+			grid.add(erreur,0,9);
+		}
 		scene_accueil.getChildren().add(grid);
 		root.getChildren().add(scene_accueil);
 	}
@@ -1382,4 +1390,5 @@ public class Vue {
 			defis_tab[proprietaires[position]].setDisable(true);
 		});
 	}
+
 }
