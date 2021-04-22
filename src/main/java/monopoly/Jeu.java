@@ -426,4 +426,14 @@ public class Jeu {
     		return plateau.getCartesCommu()[i];
 		}
 	}
+	
+	public int quiEstJ(String info) {
+		for (int i=0; i<nbJ; i++) {
+			if (joueurs[i].getNom().equals(info)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 }

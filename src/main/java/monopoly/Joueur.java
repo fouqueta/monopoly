@@ -239,5 +239,8 @@ public class Joueur{
 		carteLibPrison = false;
 	}
 
+	public void viderPropriete() {
+        proprietes = new Proprietes[0];
+    }
 
 }

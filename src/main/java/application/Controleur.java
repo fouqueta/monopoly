@@ -421,6 +421,32 @@ public class Controleur extends Thread {
 
 				break;
 			case "deco":
+				Platform.runLater(() -> {
+                    int pos = jeu.quiEstJ(info);
+
+                    if(pos>-1){
+                        Joueur j = jeu.getJoueurs()[pos];
+                        j.setArgent(0);
+                        j.setFaillite(true);
+
+                        vue.changement_argent(pos);
+
+                        for(Proprietes p: j.getProprietes()){
+                            vue.changement_couleur_case_blanche(p.getPosition());
+                            p.setProprietaire(null);
+                        }
+
+                        j.viderPropriete();
+
+                        if(jeu.getJoueurs()[curseur] == j){
+                            vue.finDeTourReseau();
+                            controleur_fin();
+                        }else if(jeu.jeuFini_IG()){
+                            vue.fin_partie();
+                            vue.gestion_historique(new Label("La partie est terminee."));
+                        }
+                    }
+                });
 				break;
 			case "demande defis":
 				Platform.runLater(() -> {
