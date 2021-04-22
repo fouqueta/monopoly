@@ -53,6 +53,7 @@ public class Vue {
 		//Plateau
 	private AnchorPane panePlateau; //jeu_pane
 	private Pane revente_pane;
+	//private Pane joueur_boutons;
 	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
 	private VBox colonne_gauche;
@@ -783,7 +784,7 @@ public class Vue {
 				prison_tab[curseur].setDisable(true);
 			}
         }
-		if (jeu.onlyRobot()) {
+		if (jeu.onlyRobot()) { 
         	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
         	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
 				bouton_prison(curseurSuivant);
@@ -798,9 +799,14 @@ public class Vue {
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				System.out.println("je rentre dedans");
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+
 				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
-				achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
+				
+				//maison_menuItem = new MenuItem("Maison");
+				//achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
+				achatBatiments_menu.getItems().addAll(maison_menuItem);
+				System.out.println("fin menu");
 			}
 		}
 	}
@@ -875,8 +881,6 @@ public class Vue {
 			boutonsJoueurs.getChildren().add(joueur_boutons);
 		}
 	}
-
-
 	
 	void caseChanceCommu(int curseur, Cartes carteTiree) {
 		BorderPane carte_pane = new BorderPane();
