@@ -645,7 +645,7 @@ public class Vue {
 			lancer.setDisable(false);
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
-			achatBatiments_menu_tab[curseur].setDisable(true);
+			//achatBatiments_menu_tab[curseur].setDisable(true);
 			//achatBatiments_menu_tab[curseur].setVisible(false);
 			
 			controleur.controleur_faillite(curseur);
@@ -690,13 +690,46 @@ public class Vue {
 		for (Proprietes p : joueurSuivant.getProprietes()) {
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				System.out.println("je rentre dedans");
-				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
-				//achatBatiments_menu_tab[curseurSuivant].setVisible(true);
-				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
-				achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
-				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
+				creationMenuAchatBatiments(curseurSuivant);
+//				joueur_boutons.getChildre().remove
+//				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+//				boutonsJoueurs.getChildren().remove(achatBatiments_menu_tab[curseurSuivant]);
+//				boutonsJoueurs.getChildren().remove(achatBatiments_menu);
+//				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+////				achatBatiments_menu.setDisable(false);
+//				//achatBatiments_menu_tab[curseurSuivant].setVisible(true);
+//				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
+//				achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
+//				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
+//				//boutonsJoueurs.getChildren().add(achatBatiments_menu);
+//				boutonsJoueurs.getChildren().add(achatBatiments_menu_tab[curseurSuivant]);
+//				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+				//				achatBatiments_menu.setDisable(false);
+//				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+//				System.out.println("Je suis au bout !");
 			}
 		}
+	}
+	
+	public void creationMenuAchatBatiments(int curseur) {
+		BorderPane test = new BorderPane();	
+		test.setStyle("-fx-background-color: white; -fx-border-color: black");
+		test.setPrefSize(500, 500);
+		test.toFront();
+		
+		//		Pane joueur_boutons = new Pane();
+//		joueur_boutons.setPrefSize((tailleEcran.width*10)/100, (int) ((tailleEcran.height-50)/nbr));
+		//achatBatiments_menu.setDisable(false);
+		achatBatiments_menu = new MenuButton("Achats de tiplouf");
+		achatBatiments_menu_tab[curseur] = achatBatiments_menu;
+		
+		achatBatiments_menu.setLayoutY(65);
+		//test.getChildren().add(achatBatiments_menu);
+		test.getChildren().add(achatBatiments_menu_tab[curseur]);
+		//joueur_boutons.getChildren().add(achatBatiments_menu);
+		boutonsJoueurs.getChildren().add(test);
+		achatBatiments_menu_tab[curseur].setDisable(false);
+		achatBatiments_menu_tab[curseur].setVisible(true);
 	}
 
 	
@@ -711,7 +744,7 @@ public class Vue {
 		panePlateau.getChildren().add(boutons_box);
 		quitter_button.setOnAction(actionEvent -> {
 			Stage stage = (Stage) quitter_button.getScene().getWindow();
-		    stage.close();
+		    stage.close(); 
 		}); 
 	}
 	
@@ -732,20 +765,20 @@ public class Vue {
 //			maison_menuItem = new MenuItem("Maison");
 //			hotel_menuItem = new MenuItem("Hotel");
 			//achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem, hotel_menuItem);
-			achatBatiments_menu = new MenuButton("Achats de tiplouf");
+			//achatBatiments_menu = new MenuButton("Achats de tiplouf");
 			//achatBatiments_menu.getItems().addAll(maison_menuItem, hotel_menuItem);
 			
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
 			prison_tab[i] = prison;
-			achatBatiments_menu_tab[i] = achatBatiments_menu;
+			//achatBatiments_menu_tab[i] = achatBatiments_menu;
 			
 			achat.setDisable(true);
 			vente.setDisable(true);
 			defis.setDisable(true);
 			prison.setDisable(true);
-			achatBatiments_menu.setDisable(true);
+			//achatBatiments_menu.setDisable(true);
 			//achatBatiments_menu.setVisible(false);
 			
 			achat.setLayoutY(5);
@@ -755,9 +788,9 @@ public class Vue {
 			defis.setLayoutX(50);
 			prison.setLayoutX(50);
 			prison.setLayoutY(35);
-			achatBatiments_menu.setLayoutY(65);
+			//achatBatiments_menu.setLayoutY(65);
 			
-			joueur_boutons.getChildren().addAll(achat, vente, defis, prison, achatBatiments_menu);
+			joueur_boutons.getChildren().addAll(achat, vente, defis, prison);
 //			joueur_boutons.getChildren().add(achat);
 //			joueur_boutons.getChildren().add(vente);
 //			joueur_boutons.getChildren().add(defis);
@@ -807,7 +840,7 @@ public class Vue {
 		contenu_carte.setFont(new Font("Arial", 15));
 		
 		carte_pane.setPrefSize(grillePlateau.getWidth()/1.5, grillePlateau.getHeight()/2.5);
-		carte_pane.setStyle("-fx-background-color: white");
+		carte_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 		carte_pane.setLayoutX(grillePlateau.getWidth()*17/100);
 		carte_pane.setLayoutY(grillePlateau.getHeight()*30/100);
 		  
