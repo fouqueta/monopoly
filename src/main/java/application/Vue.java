@@ -1025,3 +1025,4 @@ public class Vue {
 	}
 
 }
+
