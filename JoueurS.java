@@ -92,11 +92,17 @@ class JoueurS extends Thread{
         switch(action){
             case "message" -> {
                 info = nom + " : " + info; 
-                sendToAllClientsNotSender(action, info);
+                sendToAllClients(action, info);
             }
             case "start" -> {
-                pret = true;
-                nom = info;
+                if(pseudoNonPresent(info)){
+                    pret = true;
+                    nom = info;
+                }else{
+                    pw.println("erreur");
+                    pw.println("Pseudo deja prit");
+                }
+                
             }
             case "close" -> closeClient();
             default -> sendToAllClientsNotSender(action, info);
@@ -129,15 +135,25 @@ class JoueurS extends Thread{
     //Ferme le client correctement
     private void closeClient(){
         try {
+            pw.println("close");
+            pw.println("");
             socket.close();
             ServeurMonopoly.removePlayer(this);
             list.forEach(j -> {
                 j.removePlayer(this);
             });
             running = false;
+
             this.interrupt();
         } catch (IOException ex) {
             Logger.getLogger(JoueurS.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private boolean pseudoNonPresent(String info) {
+        for(JoueurS j: list){
+            if(j!=this && j.getNom().equals(info)) return false;
+        }
+        return true;
     }
 }
