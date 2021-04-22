@@ -755,7 +755,7 @@ public class Vue {
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
 			achatBatiments_menu_tab[curseur].setDisable(true);
-		
+			
 			controleur.controleur_faillite(curseur);
 
 			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
@@ -798,17 +798,34 @@ public class Vue {
 		for (Proprietes p : joueurSuivant.getProprietes()) {
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				System.out.println("je rentre dedans");
+
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 
 				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
 				
-				//maison_menuItem = new MenuItem("Maison");
-				//achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
 				achatBatiments_menu.getItems().addAll(maison_menuItem);
 				System.out.println("fin menu");
 			}
 		}
+	}
+	
+	public void creationMenuAchatBatiments(int curseur) {
+		BorderPane test = new BorderPane();	
+		test.setStyle("-fx-background-color: white; -fx-border-color: black");
+		test.setPrefSize(500, 500);
+		test.toFront();
+		
+		achatBatiments_menu = new MenuButton("Achats de tiplouf");
+		achatBatiments_menu_tab[curseur] = achatBatiments_menu;
+		
+		achatBatiments_menu.setLayoutY(65);
+		//test.getChildren().add(achatBatiments_menu);
+		test.getChildren().add(achatBatiments_menu_tab[curseur]);
+		//joueur_boutons.getChildren().add(achatBatiments_menu);
+		boutonsJoueurs.getChildren().add(test);
+		achatBatiments_menu_tab[curseur].setDisable(false);
+		achatBatiments_menu_tab[curseur].setVisible(true);
 	}
 
 
@@ -859,7 +876,7 @@ public class Vue {
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
 			prison_tab[i] = prison;
-			achatBatiments_menu_tab[i] = achatBatiments_menu;
+			//achatBatiments_menu_tab[i] = achatBatiments_menu;
 			
 			achat.setDisable(true);
 			vente.setDisable(true);
@@ -892,7 +909,7 @@ public class Vue {
 		contenu_carte.setFont(new Font("Arial", 15));
 		
 		carte_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
-		carte_pane.setStyle("-fx-background-color: white");
+		carte_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 		carte_pane.setLayoutX((panePlateau_x*20)/100);
 		carte_pane.setLayoutY((panePlateau_y*15)/100);
 		  
