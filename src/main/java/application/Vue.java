@@ -795,17 +795,18 @@ public class Vue {
 	
 	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
 		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
 		for (Proprietes p : joueurSuivant.getProprietes()) {
-			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
-				System.out.println("je rentre dedans");
-
+			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
+				int nbMaisonsPlus1 = p.getNbMaisons()+1;
+				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
-
-				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
-				
-				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
-				achatBatiments_menu.getItems().addAll(maison_menuItem);
-				System.out.println("fin menu");
+			}
+			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
+				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(hotel_menuItem);
+				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 			}
 		}
 	}

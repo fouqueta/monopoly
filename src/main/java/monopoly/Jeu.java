@@ -188,7 +188,7 @@ public class Jeu {
 			carte = plateau.getCartesChance()[alea];
 		}
 		else if (caseC instanceof CasesCommunaute) {
-			carte = plateau.getCartesCommu()[alea];
+			carte = plateau.getCartesCommu()[7];
 		}
 		return carte;
     }
