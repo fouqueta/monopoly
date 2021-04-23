@@ -81,6 +81,7 @@ public class Vue {
 	private Button regles_button;
 	private Button quitter_button;
 	private Button historique_button;
+	private Button tchat_button;
 
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
@@ -95,12 +96,19 @@ public class Vue {
 	
 	private Label des_label = new Label();
 	
-	//Historique(Local) - Tchat(Reseau)
+	//Historique(Local/Reseau)
 	private AnchorPane rootHisto;
 	private Stage stageHisto;
 	private Scene sceneHisto;
 	private Label historique_tab[];
 	private VBox historiqueVBox;
+	
+	//Tchat(Reseau)
+	private AnchorPane rootTchat;
+	private Stage stageTchat;
+	private Scene sceneTchat;
+	private Label tchat_tab[];
+	private VBox tchatVBox;
 
 	Vue(Controleur controleur){
 		this.controleur = controleur;
@@ -767,7 +775,8 @@ public class Vue {
 		regles_button = new Button("Regles");
 		quitter_button = new Button("Quitter");
 		historique_button = new Button("Historique");
-		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button);
+		tchat_button = new Button("Tchat");
+		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button, tchat_button);
 		boutons_box.setLayoutX((panePlateau_x*35)/100);
 		boutons_box.setLayoutY((panePlateau_y*70)/100);
 		panePlateau.getChildren().add(boutons_box);
@@ -785,6 +794,18 @@ public class Vue {
 			}
 			else {
 				stageHisto.show();
+			}
+		});
+		
+		if(!jeu.isReseau()) {
+			tchat_button.setDisable(true);
+		}
+		tchat_button.setOnAction(actionEvent-> {
+			if(stageTchat.isShowing()) {
+				stageTchat.hide();
+			}
+			else {
+				stageTchat.show();
 			}
 		});
 	}
@@ -1181,7 +1202,7 @@ public class Vue {
 
 
 	//Interface graphique: Historique des actions/Tchat
-	void creation_fenetreHistorique() { //Mode local
+	void creation_fenetreHistorique() { //Mode local/Reseau
 		stageHisto = new Stage();
 		stageHisto.setTitle("Historique");
 		stageHisto.setResizable(false);
@@ -1197,15 +1218,11 @@ public class Vue {
 		historique_tab = new Label[20];
 		rootHisto.getChildren().add(historiqueVBox);
 
-		remplissage_temporaire();
+		remplissage_temporaireHistorique();
 		actualiser_historique();
 	}
 
-	void creation_fenetreTchat() { //Mode rÃ©seau
-		//TODO: VBOX (separation du tchat et de l'historique)
-	}
-
-	void remplissage_temporaire() {
+	void remplissage_temporaireHistorique() {
 		for(int i = 0; i<19; i++) {
 			historique_tab[i] = new Label("");
 		}
@@ -1328,6 +1345,70 @@ public class Vue {
 	void gestion_historique(Label nouveau) {
 		ajouter_historique(nouveau);
 		actualiser_historique();
+	}
+	
+	void creation_fenetreTchat() { //Mode reseau
+		stageTchat = new Stage();
+		stageTchat.setTitle("Tchat");
+		stageTchat.setResizable(false);
+		stageTchat.show();
+
+		rootTchat = new AnchorPane();
+		rootTchat.setStyle("-fx-background-color: pink");
+
+		sceneTchat = new Scene(rootTchat, 400, (tailleEcran.height*55)/100);
+		stageTchat.setScene(sceneTchat);
+
+		tchatVBox = new VBox();
+		tchat_tab = new Label[20];
+		rootTchat.getChildren().add(tchatVBox);
+		
+		TextField zone = new TextField();
+		zone.setPrefSize(325, (rootTchat.getHeight())/100);
+		AnchorPane.setBottomAnchor(zone, (double) (rootTchat.getHeight())/100);
+		rootTchat.getChildren().add(zone);
+		
+		Button validerMsg = new Button("Envoyer");
+		AnchorPane.setBottomAnchor(validerMsg, (double) (rootTchat.getHeight())/100);
+		AnchorPane.setRightAnchor(validerMsg, (double) (rootTchat.getWidth())/100);
+		rootTchat.getChildren().add(validerMsg);
+		
+		remplissageTemporaire_Tchat();
+		actualiser_tchat();
+		validerMsg.setOnAction(actionEvent -> {
+			if(zone.getText() != null) {
+				String msg = zone.getText();
+				controleur.sendMsg("message", msg);
+				zone.clear();
+			}
+		});
+	}
+	
+	void remplissageTemporaire_Tchat() {
+		for(int i = 0; i<19; i++) {
+			tchat_tab[i] = new Label("");
+			//tchat_tab[i] = new Label(Integer.toString(i));
+		}
+		tchat_tab[19] = new Label("Bienvenue dans Monopoly !");
+	}
+
+	void actualiser_tchat() {
+		tchatVBox.getChildren().clear();
+		for(int i = 0; i<20; i++) {
+			tchatVBox.getChildren().add(tchat_tab[i]);
+		}
+	}
+	
+	void ajouter_tchat(Label nouveau) {
+		for(int i = 0; i<19;i++) {
+			tchat_tab[i] = tchat_tab[i+1];
+		}
+		tchat_tab[19] = nouveau;
+	}
+	
+	void gestion_tchat(Label nouveau) {
+		ajouter_tchat(nouveau);
+		actualiser_tchat();
 	}
 
 	//Reseau

@@ -353,6 +353,7 @@ public class Controleur extends Thread {
 		int curseur = jeu.getCurseur();
 		switch (action) {
 			case "message":
+				vue.gestion_tchat(new Label(info));
 				break;
 			case "carte":
 				Platform.runLater(() -> {
@@ -397,6 +398,7 @@ public class Controleur extends Thread {
 					vue.initialisation_boutons();
 
 					vue.creation_fenetreHistorique();
+					vue.creation_fenetreTchat();
 
 				});
 				break;
