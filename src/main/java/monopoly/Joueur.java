@@ -242,5 +242,11 @@ public class Joueur{
 	public void viderPropriete() {
         proprietes = new Proprietes[0];
     }
+	
+	public void AVenduCartePrison() {
+		carteLibPrison=false;
+		transaction(500);
+	}
+
 
 }

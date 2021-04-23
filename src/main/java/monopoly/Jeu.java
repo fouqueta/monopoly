@@ -367,7 +367,7 @@ public class Jeu {
     
     
     public boolean faillite_IG(Joueur j) {
-    	if (j.getArgent()<=0 && j.getProprietes().length == 0){
+    	if (j.getArgent()<=0 && j.getProprietes().length == 0 && !j.aCarteLibPrison()){
     		j.setFaillite(true);
     		return true;
     	}

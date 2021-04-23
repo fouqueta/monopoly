@@ -245,7 +245,7 @@ public class Controleur implements Runnable {
 
 	//Verifie si on doit revendre ses proprietes avant de payer, puis passe au paiement
 	public void verifPuisPaiement(int curseur, int sommeApayer, Cartes carteTiree) {
-		if (jeu.getJoueurs()[curseur].getArgent() < sommeApayer && jeu.getJoueurs()[curseur].getProprietes().length!=0) {
+		if (jeu.getJoueurs()[curseur].getArgent() < sommeApayer && (jeu.getJoueurs()[curseur].getProprietes().length!=0 || jeu.getJoueurs()[curseur].aCarteLibPrison())) {
 			if(!jeu.isReseau() || jeu.getJoueurReseau() == jeu.getJoueurs()[curseur]){
 				vue.affichage_revente_proprietes(curseur, sommeApayer, carteTiree);
 			}
@@ -325,6 +325,11 @@ public class Controleur implements Runnable {
     	}
     	return curseurSuivant;
 	}
+	
+	public void controleur_vendreCartePrison(int curseur) {
+		jeu.getJoueurs()[curseur].AVenduCartePrison();
+	}
+
 
 
 	@Override

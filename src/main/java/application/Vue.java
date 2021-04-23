@@ -582,17 +582,16 @@ public class Vue {
 		revente_pane.setLayoutX((panePlateau_x*20)/100);
 		revente_pane.setLayoutY((panePlateau_y*15)/100);
 		
-		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due \n s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
+		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
 		revente_pane.getChildren().add(texte);
 		
 		int taille = 60;
 		Proprietes [] proprietes_joueur_actuel= jeu.getJoueurs()[curseur].getProprietes();
+		Button vendreCartePrison = new Button ("Carte Libere de prison - Prix de vente: 500e");
+		nom_proprietes_button = new Button [proprietes_joueur_actuel.length+1];
 		
-		nom_proprietes_button = new Button [proprietes_joueur_actuel.length];
-
 		//initialiser les boutons
 		for (int i=0; i<proprietes_joueur_actuel.length; i++) {
-
 			nom_proprietes_button[i] = new Button (proprietes_joueur_actuel[i].getNom()+" - Prix de vente: "+proprietes_joueur_actuel[i].getPrix());
 			nom_proprietes_button[i].setLayoutY(taille);
 			taille+=30;
@@ -607,6 +606,24 @@ public class Vue {
 				}
 				changement_couleur_case_blanche(ancienne_position);
 				nom_proprietes_button[n].setVisible(false);
+				if (jeu.getJoueurs()[curseur].getArgent() < montant && (proprietes_joueur_actuel.length>1 || jeu.getJoueurs()[curseur].aCarteLibPrison())) {
+					changement_argent(curseur);
+					revente_pane.setVisible(false);
+					affichage_revente_proprietes(curseur, montant, carteTiree);
+				}
+				else {
+					panePlateau.getChildren().remove(revente_pane);
+					controleur.transactionSelonType(curseur, carteTiree);
+			 	}
+			});
+		}
+		if (jeu.getJoueurs()[curseur].aCarteLibPrison()) {
+			nom_proprietes_button[proprietes_joueur_actuel.length] = vendreCartePrison;
+			vendreCartePrison.setLayoutY(taille);
+			vendreCartePrison.setLayoutX(75);
+			revente_pane.getChildren().add(vendreCartePrison);
+			vendreCartePrison.setOnAction(actionEvent->{
+				controleur.controleur_vendreCartePrison(curseur);
 				if (jeu.getJoueurs()[curseur].getArgent() < montant && proprietes_joueur_actuel.length>1) {
 					changement_argent(curseur);
 					revente_pane.setVisible(false);
@@ -617,6 +634,7 @@ public class Vue {
 					controleur.transactionSelonType(curseur, carteTiree);
 			 	}
 			});
+		
 		}
 		panePlateau.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
