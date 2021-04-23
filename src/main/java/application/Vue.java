@@ -647,7 +647,6 @@ public class Vue {
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
 			achatBatiments_menu_tab[curseur].setDisable(true);
-			//achatBatiments_menu_tab[curseur].setVisible(false);
 			
 			controleur.controleur_faillite(curseur);
 			
@@ -688,18 +687,18 @@ public class Vue {
 	
 	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
 		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
 		for (Proprietes p : joueurSuivant.getProprietes()) {
-			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
-				System.out.println("je rentre dedans");
+			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
+				int nbMaisonsPlus1 = p.getNbMaisons()+1;
+				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
-				achatBatiments_menu_tab[curseurSuivant].setVisible(true);
-				MenuItem maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + p.getNbMaisons()+1 + " pour " + p.getPrixBatiment() + "e");
-				
-				//maison_menuItem = new MenuItem("Maison");
-				//achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem);
-				achatBatiments_menu_tab[curseurSuivant] = achatBatiments_menu;
-				achatBatiments_menu.getItems().addAll(maison_menuItem);
-				System.out.println("fin menu");
+			}
+			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
+				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(hotel_menuItem);
+				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 			}
 		}
 	}
@@ -734,13 +733,7 @@ public class Vue {
 			vente = new Button("Vente");
 			defis = new Button("Defis");
 			prison = new Button("Prison");
-			achatBatiments_menu = new MenuButton("Achats de tiplouf");
-			maison_menuItem = new MenuItem("Maison");
-			//hotel_menuItem = new MenuItem("Hotel");
-			//achatBatiments_menu = new MenuButton("Achats de batiments", null, maison_menuItem, hotel_menuItem);
-			
-			
-			//achatBatiments_menu.getItems().addAll(maison_menuItem, hotel_menuItem);
+			achatBatiments_menu = new MenuButton("Achats de batiments");
 			
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;

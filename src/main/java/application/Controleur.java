@@ -186,26 +186,27 @@ public class Controleur {
 	}
 	
 	public void transactionSelonType(int curseur, Cartes carteTiree) {
-		Joueur joueurJ = jeu.getJoueurs()[curseur];
-		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		Cases caseC = jeu.getPlateau().getCases(position);
-		
-		if (caseC instanceof Proprietes) {
-			jeu.loyer_IG((Proprietes) caseC);
-		}
-		else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
-			joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
-		}
-		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
-				(carteTiree.getTypeAction().equals("prelevement") || carteTiree.getTypeAction().equals("immo")) ) {
-			joueurJ.transaction(carteTiree.getParametres());
-		}
-		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) && (carteTiree.getTypeAction().equals("cadeau")) ) {
-			jeu.getJoueurs()[jeu.getCurseur()].thisRecoitDe(jeu.getJoueurs()[curseur], carteTiree.getParametres());
-		}
-		vue.changement_argent(curseur);
-		vue.changement_argent(vue.getTabProprietaires(position));
-	}
+        Joueur joueurJ = jeu.getJoueurs()[jeu.getCurseur()];
+        int position = joueurJ.getPion().getPosition();
+        Cases caseC = jeu.getPlateau().getCases(position);
+        
+        if (caseC instanceof Proprietes) {
+            jeu.loyer_IG((Proprietes) caseC);
+        }
+        else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
+            joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
+        }
+        else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
+                (carteTiree.getTypeAction().equals("prelevement") || carteTiree.getTypeAction().equals("immo")) ) {
+            joueurJ.transaction(carteTiree.getParametres());
+        }
+        else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
+                (carteTiree.getTypeAction().equals("cadeau")) ) {
+            joueurJ.thisRecoitDe(jeu.getJoueurs()[curseur], carteTiree.getParametres());
+        }
+        vue.changement_argent(curseur);
+        vue.changement_argent(vue.getTabProprietaires(position));
+    }
 
 	
 	void controleur_loyerIG(Proprietes propriete_actuelle) {
