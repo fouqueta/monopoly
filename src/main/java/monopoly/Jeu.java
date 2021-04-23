@@ -332,11 +332,17 @@ public class Jeu {
     
     public void vente_IG(Pion p) {
     	Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
-			Joueur proprietaire = pos_actuelle.getProprietaire();
-	            int prix = pos_actuelle.getPrix();
-	            joueurs[curseur].achat_effectue(prix,pos_actuelle);
-	            proprietaire.vente_effectuee(prix, pos_actuelle);
-	            pos_actuelle.setProprietaire(joueurs[curseur]);
+		Joueur proprietaire = pos_actuelle.getProprietaire();
+	    int prix = pos_actuelle.getPrix();
+	    
+	    while (pos_actuelle.getNbMaisons() != 0) { //Si on vend une propriete avec des batiments, on recupere l'argent des batiment et la propriete n'a plus de batiment pour le nouveau proprietaire
+	    	pos_actuelle.venteMaison();
+	    }
+	    if (pos_actuelle.aUnHotel()) { pos_actuelle.venteHotel(); }
+	    
+	    joueurs[curseur].achat_effectue(prix,pos_actuelle);
+	    proprietaire.vente_effectuee(prix, pos_actuelle);
+	    pos_actuelle.setProprietaire(joueurs[curseur]);
     }
     
     
