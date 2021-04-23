@@ -75,6 +75,7 @@ public class Proprietes extends Cases {
 		proprietaire.transaction(prixBatiment*5/2); //Le prix de vente d'un hotel est la moitie du prix d'achat (qui est 5 fois le prix d'une maison puisqu'on a donne toutes ses maisons)
 	}
 	
+	
 	//toString()
 	public String toString() {
 		return("Prix d'achat: " + this.prixAchat + " , Loyer actuel: " + this.loyer + " , Couleur: " + this.couleur + " , Nom: " + this.nom);

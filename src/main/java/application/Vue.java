@@ -802,11 +802,25 @@ public class Vue {
 				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+				
+				maison_menuItem.setOnAction(actionEvent -> {
+					p.achatMaison();
+					changement_argent(curseurSuivant);
+					System.out.println(p.getNbMaisons());
+					achatBatiments_bouton_fin_tour(curseurSuivant);
+				});
 			}
 			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
 				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(hotel_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+				
+				hotel_menuItem.setOnAction(actionEvent -> {
+					p.achatHotel();
+					changement_argent(curseurSuivant);
+					System.out.println( (p.aUnHotel())?"J'ai un hotel":"Je n'ai pas d'hotel");
+					achatBatiments_bouton_fin_tour(curseurSuivant);
+				});
 			}
 		}
 	}
