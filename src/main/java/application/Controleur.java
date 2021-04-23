@@ -353,7 +353,9 @@ public class Controleur extends Thread {
 		int curseur = jeu.getCurseur();
 		switch (action) {
 			case "message":
-				vue.gestion_tchat(new Label(info));
+				Platform.runLater(() -> {
+					vue.gestion_tchat(new Label(info));
+				});
 				break;
 			case "carte":
 				Platform.runLater(() -> {
