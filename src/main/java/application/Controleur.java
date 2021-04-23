@@ -9,13 +9,14 @@ import monopoly.*;
 import java.io.*;
 import java.net.Socket;
 
-public class Controleur extends Thread {
+public class Controleur implements Runnable {
 	private Vue vue;
 	private Jeu jeu;
 	//Reseau
 	private PrintWriter pw;
 	private Socket socket;
 	private Cartes carte = null;
+	boolean running;
 
 	Controleur() {
 	}
@@ -37,11 +38,11 @@ public class Controleur extends Thread {
 		if(jeu.isReseau()){
 
 			try {
+				running = false;
 				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 				sendMsg("close","");
-				pw.close();
-				socket.close();
 				jeu.setReseau(false);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -51,7 +52,7 @@ public class Controleur extends Thread {
 				socket = new Socket("176.144.217.163", 666);
 				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 				jeu.setReseau(true);
-				this.start();
+				running = true;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -328,7 +329,7 @@ public class Controleur extends Thread {
 
 	@Override
 	public void run() {
-		boolean running = true;
+
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			while (running) {
@@ -339,7 +340,7 @@ public class Controleur extends Thread {
 				action(action, info);
 			}
 		} catch (Exception e) {
-			this.interrupt();
+			//this.interrupt();
 			running = false;
 			System.out.println(e);
 			e.printStackTrace();
@@ -492,7 +493,16 @@ public class Controleur extends Thread {
 						vue.accueil_jeu(true);
 					}
 				});
+				break;
+			case "close":
+				try{
+					pw.close();
+					socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 
+				break;
 			default:
 				break;
 		}

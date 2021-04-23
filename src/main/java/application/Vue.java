@@ -100,6 +100,8 @@ public class Vue {
 	private Label historique_tab[];
 	private VBox historiqueVBox;
 
+	private Thread t;
+
 	Vue(Controleur controleur){
 		this.controleur = controleur;
 		
@@ -1103,11 +1105,19 @@ public class Vue {
 		}else{
 			reseau = new Button("Mode Reseau");
 			reseau.setStyle("-fx-background-color: #0000FF");
-			grid.add(reseau,0,8);
 		}
-
+		grid.add(reseau,0,8);
 		reseau.setOnAction(actionEvent->{
-			controleur.startSocket();
+			if(t==null){
+				t = new Thread(controleur, "controleur");
+				controleur.startSocket();
+				t.start();
+			}else{
+				t.interrupt();
+				controleur.startSocket();
+				t = null;
+			}
+
 			accueil_jeu(false);
 		});
 		if(b){
