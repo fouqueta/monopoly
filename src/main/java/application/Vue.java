@@ -52,6 +52,8 @@ public class Vue {
 	private Pane revente_pane;
 	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
+	private double casesPlateau_x;
+	private double casesPlateau_y;
 	private VBox colonne_gauche;
 	private VBox colonne_droite;
 	private HBox ligne_bas;
@@ -135,17 +137,20 @@ public class Vue {
 		panePlateau_x = panePlateau.getPrefWidth();
 		panePlateau_y = panePlateau.getPrefHeight();
 		
+		casesPlateau_x = (panePlateau_x*8)/100;
+		casesPlateau_y = (panePlateau_y*8)/100;
+		
 		colonne_gauche = new VBox();
 		AnchorPane.setLeftAnchor(colonne_gauche, (double) (panePlateau_x*2)/100);
 		AnchorPane.setTopAnchor(colonne_gauche, (double) (panePlateau_y*2)/100);
 		panePlateau.getChildren().add(colonne_gauche);
 		for(int i = 10; i>=0; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
+			casesPlateau[i].setPrefSize(casesPlateau_x, casesPlateau_y);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
-			numero.setLayoutX((panePlateau_x*0.5)/100);
+			numero.setLayoutX((casesPlateau_x*5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -153,7 +158,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX((panePlateau_x*1.5)/100);
+				prix.setLayoutX((casesPlateau_x*20)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}			
 			colonne_gauche.getChildren().add(casesPlateau[i]);
@@ -165,11 +170,11 @@ public class Vue {
 		panePlateau.getChildren().add(colonne_droite);
 		for(int i = 20; i<31; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
+			casesPlateau[i].setPrefSize(casesPlateau_x, casesPlateau_y);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
-			numero.setLayoutX((panePlateau_x*0.5)/100);
+			numero.setLayoutX((casesPlateau_x*5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -177,7 +182,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX((panePlateau_x*2.5)/100);
+				prix.setLayoutX((casesPlateau_x*30)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
@@ -190,11 +195,11 @@ public class Vue {
 		panePlateau.getChildren().add(ligne_haut);
 		for(int i = 11; i<20; i++) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
+			casesPlateau[i].setPrefSize(casesPlateau_x, casesPlateau_y);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
-			numero.setLayoutX((panePlateau_x*0.5)/100);
+			numero.setLayoutX((casesPlateau_x*5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -202,7 +207,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX((panePlateau_x*2.5)/100);
+				prix.setLayoutX((casesPlateau_x*30)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
@@ -215,11 +220,11 @@ public class Vue {
 		panePlateau.getChildren().add(ligne_bas);
 		for(int i = 39; i>30; i--) { 
 			casesPlateau[i] = new Pane();
-			casesPlateau[i].setPrefSize((panePlateau_x*8)/100, (panePlateau_y*8)/100);
+			casesPlateau[i].setPrefSize(casesPlateau_x, casesPlateau_y);
 			casesPlateau[i].setStyle("-fx-background-color: white; -fx-border-color: black");
 			
 			Label numero = new Label(String.valueOf(i));
-			numero.setLayoutX((panePlateau_x*0.5)/100);
+			numero.setLayoutX((casesPlateau_x*5)/100);
 			casesPlateau[i].getChildren().add(numero);
 			numero.setStyle("-fx-font-weight: bold");
 			
@@ -227,7 +232,7 @@ public class Vue {
 				Proprietes prop = (Proprietes) jeu.getPlateau().getCases(i);
 				int prix_prop = prop.getPrix();
 				Label prix = new Label(String.valueOf(prix_prop));
-				prix.setLayoutX((panePlateau_x*2.5)/100);
+				prix.setLayoutX((casesPlateau_x*30)/100);
 				casesPlateau[i].getChildren().add(prix);
 			}
 			
@@ -247,47 +252,47 @@ public class Vue {
 	
 	void initialisation_casesSpeciales() {
 		Label com1 = new Label("Commu.");
-		com1.setLayoutX((panePlateau_x*1.5)/100);
+		com1.setLayoutX((casesPlateau_x*20)/100);
 		casesPlateau[2].getChildren().add(com1);
 		
 		Label com2 = new Label("Commu.");
-		com2.setLayoutX((panePlateau_x*2.5)/100);
+		com2.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[17].getChildren().add(com2);
 		
 		Label com3 = new Label("Commu.");
-		com3.setLayoutX((panePlateau_x*2.5)/100);
+		com3.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[33].getChildren().add(com3);
 		
 		Label ch1 = new Label("Chance");
-		ch1.setLayoutX((panePlateau_x*1.5)/100);
+		ch1.setLayoutX((casesPlateau_x*20)/100);
 		casesPlateau[7].getChildren().add(ch1);
 		
 		Label ch2 = new Label("Chance");
-		ch2.setLayoutX((panePlateau_x*2.5)/100);
+		ch2.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[22].getChildren().add(ch2);
 		
 		Label ch3 = new Label("Chance");
-		ch3.setLayoutX((panePlateau_x*2.5)/100);
+		ch3.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[36].getChildren().add(ch3);
 		
 		Label imp1 = new Label("Impots");
-		imp1.setLayoutX((panePlateau_x*1.5)/100);
+		imp1.setLayoutX((casesPlateau_x*20)/100);
 		casesPlateau[4].getChildren().add(imp1);
 		
 		Label imp2 = new Label("Taxe");
-		imp2.setLayoutX((panePlateau_x*2.5)/100);
+		imp2.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[38].getChildren().add(imp2);
 		
 		Label prison = new Label("Prison");
-		prison.setLayoutX((panePlateau_x*2.5)/100);
+		prison.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[10].getChildren().add(prison);
 		
 		Label allerPrison = new Label("->Prison");
-		allerPrison.setLayoutX((panePlateau_x*2.5)/100);
+		allerPrison.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[30].getChildren().add(allerPrison);
 		
 		Label parc = new Label("Parc");
-		parc.setLayoutX((panePlateau_x*2.5)/100);
+		parc.setLayoutX((casesPlateau_x*30)/100);
 		casesPlateau[20].getChildren().add(parc);
 	}
 	
@@ -384,8 +389,8 @@ public class Vue {
 	Rectangle bordure(String couleur) {
 		Rectangle rec = new Rectangle();
 		rec.setLayoutX(1);
-		rec.setWidth((panePlateau_x*7.9)/100);
-		rec.setHeight((panePlateau_y*2)/100);
+		rec.setWidth((casesPlateau_x*98)/100);
+		rec.setHeight((casesPlateau_y*25)/100);
 		switch(couleur) {
 		case "violette":
 			rec.setFill(Color.rgb(125,122,188));
@@ -477,28 +482,28 @@ public class Vue {
 		for(int i = 0; i< jeu.getNbJ(); i++) {
 			pionLabel[i] = new Label("J" + String.valueOf(i+1));
 			if(i == 0) {
-				pionLabel[i].setLayoutY(15);
-				pionLabel[i].setLayoutX(5);
+				pionLabel[i].setLayoutY((casesPlateau_y*25)/100);
+				pionLabel[i].setLayoutX((casesPlateau_x*5)/100);
 			}
 			if(i == 1) {
-				pionLabel[i].setLayoutY(15); 
-				pionLabel[i].setLayoutX(20);
+				pionLabel[i].setLayoutY((casesPlateau_y*25)/100); 
+				pionLabel[i].setLayoutX((casesPlateau_x*25)/100);
 			}
 			if(i == 2) {
-				pionLabel[i].setLayoutY(15); 
-				pionLabel[i].setLayoutX(35);
+				pionLabel[i].setLayoutY((casesPlateau_y*25)/100); 
+				pionLabel[i].setLayoutX((casesPlateau_x*45)/100);
 			}
 			if(i == 3) {
-				pionLabel[i].setLayoutY(30);
-				pionLabel[i].setLayoutX(5);
+				pionLabel[i].setLayoutY((casesPlateau_y*50)/100);
+				pionLabel[i].setLayoutX((casesPlateau_x*5)/100);
 			}
 			if(i == 4) {
-				pionLabel[i].setLayoutY(30); 
-				pionLabel[i].setLayoutX(20);
+				pionLabel[i].setLayoutY((casesPlateau_y*50)/100); 
+				pionLabel[i].setLayoutX((casesPlateau_x*25)/100);
 			}
 			if(i == 5) {
-				pionLabel[i].setLayoutY(30); 
-				pionLabel[i].setLayoutX(35);
+				pionLabel[i].setLayoutY((casesPlateau_y*50)/100); 
+				pionLabel[i].setLayoutX((casesPlateau_x*45)/100);
 			}
 		}
 	}
@@ -955,7 +960,7 @@ public class Vue {
 			changement_argent(proprietaires[position]);
 			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			proprietaires[position]=curseur;
-			controleur.sendMsg("vente à joueur", "");
+			controleur.sendMsg("vente Ã  joueur", "");
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
 			}
@@ -1185,10 +1190,10 @@ public class Vue {
 		rootHisto = new AnchorPane();
 		rootHisto.setStyle("-fx-background-color: beige");
 
-		sceneHisto = new Scene(rootHisto, 400, tailleEcran.height);
+		sceneHisto = new Scene(rootHisto, 400, (tailleEcran.height*50)/100);
 		stageHisto.setScene(sceneHisto);
 
-		historiqueVBox = new VBox(8);
+		historiqueVBox = new VBox();
 		historique_tab = new Label[20];
 		rootHisto.getChildren().add(historiqueVBox);
 
@@ -1196,7 +1201,7 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	void creation_fenetreTchat() { //Mode réseau
+	void creation_fenetreTchat() { //Mode rÃ©seau
 		//TODO: VBOX (separation du tchat et de l'historique)
 	}
 
@@ -1265,7 +1270,9 @@ public class Vue {
 					joueur.getNom() + " a ameliore sa propriete pour " + variable + " euros.");
 				break;
 
-			case "faillite": //TODO
+			case "faillite":
+				nouveau = new Label(
+					joueur.getNom() + " a fait faillite.");
 				break;
 
 			//Case fin de jeu: Controleur
@@ -1323,7 +1330,8 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	//Actualise l'IG à la fin du tour en mode reseau
+	//Reseau
+	//Actualise l'IG a la fin du tour en mode reseau
 	void finDeTourReseau(){
 		int curseur = jeu.getCurseur();
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
@@ -1359,7 +1367,7 @@ public class Vue {
 		gestion_historique(unJoueur_historique("achat", jeu.getJoueurs()[curseur], null, position));
 	}
 
-	//Vend la propriété en reseau
+	//Vend la propriete en reseau
 	void vendPropReseau(int ancienne_position, int curseur){
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
@@ -1374,7 +1382,7 @@ public class Vue {
 		}
 	}
 
-	//Vend la propriété a un autre joueur
+	//Vend la propriete a un autre joueur
 	public void updateVenteReseau(int position, int curseur){
 		controleur.controleur_vente(curseur);
 		changement_argent(curseur);

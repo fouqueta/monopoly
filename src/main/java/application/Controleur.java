@@ -219,7 +219,10 @@ public class Controleur extends Thread {
 
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
-		boolean b = jeu.faillite_IG(joueur_actuel);
+		boolean faillite = jeu.faillite_IG(joueur_actuel);
+		if(faillite) {
+			vue.gestion_historique(vue.unJoueur_historique("faillite", jeu.getJoueurs()[curseur], null, 0));
+		}
 	}
 
 
@@ -406,7 +409,7 @@ public class Controleur extends Thread {
 					vue.gestion_historique(vue.deuxJoueurs_historique("achat", jeu.getJoueurs()[curseur], jeu.getJoueurs()[vue.getTabProprietaires(position)], null, position));
 				});
 				break;
-			case "vente à joueur":
+			case "vente Ã  joueur":
 				Platform.runLater(() -> {
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					vue.updateVenteReseau(position, curseur);
