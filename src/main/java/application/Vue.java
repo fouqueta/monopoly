@@ -603,8 +603,8 @@ public class Vue {
 		int nbPropSansBatiment = joueurJ.getProprietes().length - joueurJ.getNbPropAvecBatiments();
 		
 		Button vendreCartePrison = new Button ("Carte Libere de prison - Prix de vente : 500e");
-		nom_proprietes_button = new Button[nbPropSansBatiment];
-		menu_proprietesBat_revente = new MenuButton[joueurJ.getNbPropAvecBatiments()];		
+		nom_proprietes_button = new Button[nbPropSansBatiment];	
+		menu_proprietesBat_revente = new MenuButton[joueurJ.getNbPropAvecBatiments()];
 		
 		panePlateau.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
@@ -889,7 +889,6 @@ public class Vue {
 				
 				maison_menuItem.setOnAction(actionEvent -> {
 					controleur.controleur_achatBatiment(p, "maison");
-					System.out.println(p.getNbMaisons());
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
 				if(joueurSuivant.isRobot()){
@@ -903,7 +902,6 @@ public class Vue {
 				
 				hotel_menuItem.setOnAction(actionEvent -> {
 					controleur.controleur_achatBatiment(p, "hotel");
-					System.out.println( (p.aUnHotel())?"J'ai un hotel":"Je n'ai pas d'hotel");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
 				if(joueurSuivant.isRobot()){

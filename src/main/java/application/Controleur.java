@@ -179,7 +179,7 @@ public class Controleur implements Runnable {
 
 	//Gestion des robots
 	private void fin_only_robot(){
-		PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
+		PauseTransition wait = new PauseTransition(Duration.seconds(2));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
@@ -208,7 +208,7 @@ public class Controleur implements Runnable {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
 			if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
-				PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
+				PauseTransition wait = new PauseTransition(Duration.seconds(2));
 				wait.setOnFinished((e) -> {
 					vue.lancerRobot();
 				});
