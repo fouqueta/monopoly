@@ -662,10 +662,10 @@ public class Vue {
 		ScrollPane scrollPane = new ScrollPane();
 
 		scrollPane.setContent(regles_texte);
-		scrollPane.setPrefSize(panePlateau.getWidth()*78/100, 667);
-		regles_pane.setPrefSize(panePlateau.getWidth()*78/100, 680);
-		regles_pane.setLayoutX(panePlateau.getWidth()*5/100);
-		regles_pane.setLayoutY(panePlateau.getHeight()*5/100);
+		scrollPane.setPrefSize(panePlateau.getWidth()*72/100, 600);
+		regles_pane.setPrefSize(panePlateau.getWidth()*72/100, 600);
+		regles_pane.setLayoutX(panePlateau.getWidth()*10/100);
+		regles_pane.setLayoutY(panePlateau.getHeight()*10/100);
 		regles_pane.setStyle("-fx-background-color: white");
 		regles_pane.setTop(scrollPane);
 		regles_pane.setBottom(fermer);

@@ -425,7 +425,11 @@ public class Controleur implements Runnable {
 					vue.changement_couleur_case_blanche(ancienne_position);
 					vue.vendPropReseau(ancienne_position, curseur);
 				});
-
+				break;
+			case "vendre prison":
+				Platform.runLater(() -> {
+					controleur_vendreCartePrison(curseur);
+				});
 				break;
 			case "deco":
 				Platform.runLater(() -> {
