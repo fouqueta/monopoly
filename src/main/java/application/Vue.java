@@ -94,6 +94,7 @@ public class Vue {
 	private Button prison_tab[] = new Button[6];
 	private MenuButton[] achatBatiments_menu_tab = new MenuButton[6];
 	private Button nom_proprietes_button[];
+	private MenuButton menu_proprietesBat_revente[];
 	
 	private Button defis;
 	private Button defis_tab[] = new Button[6];
@@ -586,6 +587,8 @@ public class Vue {
 	
 	public void affichage_revente_proprietes(int curseur, int montant, Cartes carteTiree) {
 		achat_tab[curseur].setDisable(true);
+		achatBatiments_menu_tab[curseur].setDisable(true);
+		defis_tab[curseur].setDisable(true);
 		revente_pane = new Pane();
 		revente_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
 		revente_pane.setStyle("-fx-background-color: white");
@@ -595,46 +598,24 @@ public class Vue {
 		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
 		revente_pane.getChildren().add(texte);
 		
-		int taille = 60;
-		Proprietes [] proprietes_joueur_actuel= jeu.getJoueurs()[curseur].getProprietes();
-		Button vendreCartePrison = new Button ("Carte Libere de prison - Prix de vente: 500e");
-		nom_proprietes_button = new Button [proprietes_joueur_actuel.length+1];
+		int margeEspace = 60;
+		Joueur joueurJ = jeu.getJoueurs()[curseur];
+		int nbPropSansBatiment = joueurJ.getProprietes().length - joueurJ.getNbPropAvecBatiments();
 		
-		//initialiser les boutons
-		for (int i=0; i<proprietes_joueur_actuel.length; i++) {
-			nom_proprietes_button[i] = new Button (proprietes_joueur_actuel[i].getNom()+" - Prix de vente: "+proprietes_joueur_actuel[i].getPrix());
-			nom_proprietes_button[i].setLayoutY(taille);
-			taille+=30;
-			nom_proprietes_button[i].setLayoutX(75);
-			revente_pane.getChildren().add(nom_proprietes_button[i]);
-			int n = i;
-
-			nom_proprietes_button[n].setOnAction(actionEvent->{
-				int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
-				if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-					controleur.sendMsg("vendre", String.valueOf(n));
-				}
-				changement_couleur_case_blanche(ancienne_position);
-				nom_proprietes_button[n].setVisible(false);
-				if (jeu.getJoueurs()[curseur].getArgent() < montant && (proprietes_joueur_actuel.length>1 || jeu.getJoueurs()[curseur].aCarteLibPrison())) {
-					changement_argent(curseur);
-					revente_pane.setVisible(false);
-					affichage_revente_proprietes(curseur, montant, carteTiree);
-				}
-				else {
-					panePlateau.getChildren().remove(revente_pane);
-					controleur.transactionSelonType(curseur, carteTiree);
-			 	}
-			});
-		}
+		Button vendreCartePrison = new Button ("Carte Libere de prison - Prix de vente : 500e");
+		nom_proprietes_button = new Button[nbPropSansBatiment];
+		menu_proprietesBat_revente = new MenuButton[joueurJ.getNbPropAvecBatiments()];		
+			
+		affichageBoutons_revente_proprietes(curseur, montant, carteTiree, joueurJ, margeEspace);
+		
 		if (jeu.getJoueurs()[curseur].aCarteLibPrison()) {
-			nom_proprietes_button[proprietes_joueur_actuel.length] = vendreCartePrison;
-			vendreCartePrison.setLayoutY(taille);
+			//nom_proprietes_button[nom_proprietes_button.length-1] = vendreCartePrison;
+			vendreCartePrison.setLayoutY(margeEspace+30*joueurJ.getProprietes().length);
 			vendreCartePrison.setLayoutX(75);
 			revente_pane.getChildren().add(vendreCartePrison);
 			vendreCartePrison.setOnAction(actionEvent->{
 				controleur.controleur_vendreCartePrison(curseur);
-				if (jeu.getJoueurs()[curseur].getArgent() < montant && proprietes_joueur_actuel.length>1) {
+				if (jeu.getJoueurs()[curseur].getArgent() < montant && joueurJ.getProprietes().length>=1) {
 					changement_argent(curseur);
 					revente_pane.setVisible(false);
 					affichage_revente_proprietes(curseur, montant, carteTiree);
@@ -642,17 +623,123 @@ public class Vue {
 				else {
 					panePlateau.getChildren().remove(revente_pane);
 					controleur.transactionSelonType(curseur, carteTiree);
-			 	}
+				}
 			});
-		
 		}
+		
 		panePlateau.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
-
-		if(jeu.getJoueurs()[curseur].isRobot()){
+		
+		if(joueurJ.isRobot()){
 			nom_proprietes_button[0].fire();
+			vendreCartePrison.fire();
+		}		
+	}
+	
+	public void affichageBoutons_revente_proprietes(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace) {
+		int cptSansBat = 0;
+		int cptAvecBat = 0;
+		for (Proprietes p : joueurJ.getProprietes()) {
+			if (p.getNbMaisons()==0 && !p.aUnHotel()) { //Si la propriete n'a pas de batiment
+				nom_proprietes_button[cptSansBat] = new Button(p.getNom() + " - Prix de vente : " + p.getPrix());
+				nom_proprietes_button[cptSansBat].setLayoutX(75);
+				nom_proprietes_button[cptSansBat].setLayoutY(margeEspace);
+				margeEspace+=30;
+				
+				revente_propSansBat(curseur, montant, carteTiree, joueurJ, p, cptSansBat);
+				
+				cptSansBat++;
+			}
+			else { //Si la propriete a des batiments
+				menu_proprietesBat_revente[cptAvecBat] = new MenuButton(joueurJ.getProprietes()[cptSansBat+cptAvecBat].getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons()) 
+						+ " batiment(s) a vendre : ");
+				menu_proprietesBat_revente[cptAvecBat].setLayoutX(75);
+				menu_proprietesBat_revente[cptAvecBat].setLayoutY(margeEspace);
+				margeEspace+=30;
+				
+				revente_propAvecBat(curseur, montant, carteTiree, joueurJ, p, cptAvecBat);
+				
+				cptAvecBat++;
+			}
 		}
 	}
+	
+	public void revente_propSansBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, Proprietes p, int cptSansBat) {
+		int cptSansBatF = cptSansBat;
+		revente_pane.getChildren().add(nom_proprietes_button[cptSansBat]);
+		
+		nom_proprietes_button[cptSansBat].setOnAction(actionEvent->{
+			int ancienne_position = joueurJ.vendreLaPropriete_IG(p);
+			if(jeu.isReseau() && jeu.getJoueurReseau() == joueurJ) {
+				controleur.sendMsg("vendre", String.valueOf(cptSansBat));
+			}
+			changement_couleur_case_blanche(ancienne_position);
+			nom_proprietes_button[cptSansBatF].setVisible(false);
+			if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison()) {
+				changement_argent(curseur);
+				revente_pane.setVisible(false);
+				affichage_revente_proprietes(curseur, montant, carteTiree);
+			}
+			else { 
+				panePlateau.getChildren().remove(revente_pane);
+				controleur.transactionSelonType(curseur, carteTiree);
+			}
+		});
+		if(joueurJ.isRobot()){
+			nom_proprietes_button[0].fire();
+		}	
+	}
+	
+	public void revente_propAvecBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, Proprietes p, int cptAvecBat) {
+		if (p.aUnHotel()) { //Si la propriete a un hotel (donc 0 maison)
+			int prixReventeBat = p.getPrixBatiment()*5/2;
+			MenuItem venteHotel = new MenuItem("Vendre l'hotel pour " + prixReventeBat + "e");
+			menu_proprietesBat_revente[cptAvecBat].getItems().addAll(venteHotel);
+			
+			venteHotel.setOnAction(actionEvent -> {
+				controleur.controleur_reventeBatiment(p, "hotel", 1); //une seule revente d'hotel
+				if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
+					revente_pane.setVisible(false);
+					affichage_revente_proprietes(curseur, montant, carteTiree);
+				}
+				else { 
+					panePlateau.getChildren().remove(revente_pane);
+					controleur.transactionSelonType(curseur, carteTiree);
+				}
+			});
+			if(joueurJ.isRobot()){
+				venteHotel.fire();
+			}	
+		}
+		else { //Si la propriete n'a que des maisons
+			for (int i = 1; i <= p.getNbMaisons(); i++) {	
+				int prixReventeBat = p.getPrixBatiment()/2*i;
+				MenuItem venteMaison = new MenuItem("Vendre " + i + " maison(s) pour " + prixReventeBat + "e");
+				menu_proprietesBat_revente[cptAvecBat].getItems().addAll(venteMaison);
+				
+				int iF = i;
+				venteMaison.setOnAction(actionEvent -> {
+					controleur.controleur_reventeBatiment(p, "maison", iF); //i reventes de maisons
+					if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
+						revente_pane.setVisible(false);
+						affichage_revente_proprietes(curseur, montant, carteTiree);
+					}
+					else { 
+						panePlateau.getChildren().remove(revente_pane);
+						controleur.transactionSelonType(curseur, carteTiree);
+					}
+				});
+				if(joueurJ.isRobot()){
+					venteMaison.fire();
+				}
+			}
+		}
+		if (menu_proprietesBat_revente.length > cptAvecBat && menu_proprietesBat_revente[cptAvecBat]!=null 
+				&& !revente_pane.getChildren().contains(menu_proprietesBat_revente[cptAvecBat])) {
+			revente_pane.getChildren().add(menu_proprietesBat_revente[cptAvecBat]);
+		}
+	}
+
 
 	void afficherRegles() {
 		String texte="";
@@ -804,11 +891,13 @@ public class Vue {
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 				
 				maison_menuItem.setOnAction(actionEvent -> {
-					p.achatMaison();
-					changement_argent(curseurSuivant);
+					controleur.controleur_achatBatiment(p, "maison");
 					System.out.println(p.getNbMaisons());
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
+				if(joueurSuivant.isRobot()){
+					maison_menuItem.fire();
+				}
 			}
 			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
 				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
@@ -816,11 +905,13 @@ public class Vue {
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 				
 				hotel_menuItem.setOnAction(actionEvent -> {
-					p.achatHotel();
-					changement_argent(curseurSuivant);
+					controleur.controleur_achatBatiment(p, "hotel");
 					System.out.println( (p.aUnHotel())?"J'ai un hotel":"Je n'ai pas d'hotel");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
+				if(joueurSuivant.isRobot()){
+					hotel_menuItem.fire();
+				}
 			}
 		}
 	}

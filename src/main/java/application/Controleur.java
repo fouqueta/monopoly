@@ -277,6 +277,21 @@ public class Controleur implements Runnable {
         vue.changement_argent(curseur);
         vue.changement_argent(vue.getTabProprietaires(position));
     }
+	
+	
+	public void controleur_achatBatiment(Proprietes p, String typeBatiment) {
+		if (typeBatiment.equals("maison")) { p.achatMaison(); }
+		else if (typeBatiment.equals("hotel")) { p.achatHotel(); }
+		vue.changement_argent(jeu.getCurseur());
+	}
+	
+	public void controleur_reventeBatiment(Proprietes p, String typeBatiment, int nbVentesBat) {
+		for(int i = 0; i < nbVentesBat; i++) {
+			if (typeBatiment.equals("maison")) { p.venteMaison(); }
+			else if (typeBatiment.equals("hotel")) { p.venteHotel(); }
+		}
+		vue.changement_argent(jeu.getCurseur());
+	}
 
 	
 	void controleur_loyerIG(Proprietes propriete_actuelle) {

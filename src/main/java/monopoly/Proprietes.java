@@ -55,7 +55,7 @@ public class Proprietes extends Cases {
 	public void setProprietaire(Joueur nouveau_proprietaire) { this.proprietaire = nouveau_proprietaire; }
 	
 	public void achatMaison() {
-		this.nbMaisons+=1 ;
+		this.nbMaisons++ ;
 		proprietaire.transaction(-prixBatiment);
 	}
 	
@@ -66,8 +66,9 @@ public class Proprietes extends Cases {
 	}
 	
 	public void venteMaison() {
-		this.nbMaisons-=1;
+		this.nbMaisons--;
 		proprietaire.transaction(prixBatiment/2); //Le prix de vente d'une maison est la moitie du prix d'achat
+		System.out.println("J'ai vendu la maison !");
 	}
 	
 	public void venteHotel() {
@@ -97,10 +98,10 @@ public class Proprietes extends Cases {
 		return proprietaire.getNbPropCouleur(this.getCouleur()) == plateau.nbProprDansUneFamille(this.getCouleur());
 	}
 	
-	public boolean estUniforme(String typeBatiment) { //Pour acheter des maisons, il faut que le nombre de maisons sur chaque propriete d'une meme famille soit uniforme
+	public boolean estUniformeBIS(String typeBatiment) { //Pour acheter des maisons, il faut que le nombre de maisons sur chaque propriete d'une meme famille soit uniforme
 		if(typeBatiment.equals("maison")) { //Si on veut acheter une maison
 			for(Proprietes c : proprietaire.getProprietes()){
-				if(c.getCouleur().equals(this.couleur) && (this.nbMaisons+1 - c.getNbMaisons()) >= 2) { //Si quand on rajoute une maison a la propriete this, son nb de maisons devient superieur... 
+				if(c.getCouleur().equals(this.couleur) && (this.nbMaisons+1 - c.getNbMaisons()) >= 2 && !c.aUnHotel()) { //Si quand on rajoute une maison a la propriete this, son nb de maisons devient superieur... 
 					//...de 2 maisons au nb de maisons d'une des proprietes c, alors cela veut dire que l'achat de la maison sur this ne va pas respecter l'uniformite...
 					return false; //...donc l'achat de la maison ne sera pas propose pour respecter l'uniformite
 				}
@@ -114,6 +115,30 @@ public class Proprietes extends Cases {
 			}
 		}
 		return true;		
+	}
+	
+	public boolean estUniforme(String typeBatiment) {
+		if(typeBatiment.equals("maison")) { //Si on veut acheter une maison
+			int maxNbMaisons = this.nbMaisons;
+			int minNbMaisons = this.nbMaisons;
+			for(Proprietes c : proprietaire.getProprietes()) {
+				if (c.getCouleur().equals(this.couleur) && maxNbMaisons < c.getNbMaisons()) {
+					maxNbMaisons = c.getNbMaisons();
+				}
+				else if (c.getCouleur().equals(this.couleur) && minNbMaisons > c.getNbMaisons() && !c.aUnHotel()) {
+					minNbMaisons = c.getNbMaisons();
+				}
+			}
+			return (this.nbMaisons+1 <= maxNbMaisons || minNbMaisons == this.nbMaisons);			
+		}
+		else if(typeBatiment.equals("hotel")) { //Si on veut acheter un hotel
+			for(Proprietes c : proprietaire.getProprietes()){
+				if(c.getCouleur().equals(this.couleur) && (c.getNbMaisons()) != 4 && !c.aUnHotel()) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 	
 }
