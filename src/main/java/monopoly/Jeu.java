@@ -159,7 +159,7 @@ public class Jeu {
 		int alea = rand.nextInt(16);
 		Cartes carte = null;
 		if (caseC instanceof CasesChance) {
-			carte = plateau.getCartesChance()[alea];
+			carte = plateau.getCartesChance()[5];
 		}
 		else if (caseC instanceof CasesCommunaute) {
 			carte = plateau.getCartesCommu()[7];

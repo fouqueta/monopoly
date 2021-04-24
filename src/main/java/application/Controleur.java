@@ -118,7 +118,7 @@ public class Controleur {
 	}
 
 	private void fin_only_robot(){
-		PauseTransition wait = new PauseTransition(Duration.seconds(2));
+		PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
@@ -143,7 +143,7 @@ public class Controleur {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
 			if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
-				PauseTransition wait = new PauseTransition(Duration.seconds(2));
+				PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
 				wait.setOnFinished((e) -> {
 					vue.lancerRobot();
 				});
@@ -217,7 +217,7 @@ public class Controleur {
 	
 	public void controleur_reventeBatiment(Proprietes p, String typeBatiment, int nbVentesBat) {
 		for(int i = 0; i < nbVentesBat; i++) {
-			if (typeBatiment.equals("maison")) { p.venteMaison(); }
+			if (typeBatiment.equals("maison") && p.getNbMaisons()>0) { p.venteMaison(); }
 			else if (typeBatiment.equals("hotel")) { p.venteHotel(); }
 		}
 		vue.changement_argent(jeu.getCurseur());
