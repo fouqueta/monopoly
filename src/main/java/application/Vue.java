@@ -563,11 +563,12 @@ public class Vue {
 		
 		nom_proprietes_button = new Button[nbPropSansBatiment];
 		menu_proprietesBat_revente = new MenuButton[joueurJ.getNbPropAvecBatiments()];
-		System.out.println("1 : nbAvecBat = " + joueurJ.getNbPropAvecBatiments());
 		
-		affichageBoutons_revente_proprietes(curseur, montant, carteTiree, joueurJ, margeEspace);
 		panePlateau.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
+		
+		affichageBoutons_revente_proprietes(curseur, montant, carteTiree, joueurJ, margeEspace);
+		
 		if (joueurJ.isRobot()) { panePlateau.getChildren().remove(revente_pane); }
 	}
 	
@@ -575,30 +576,22 @@ public class Vue {
 		int cptSansBat = 0;
 		int cptAvecBat = 0;
 		for (Proprietes p : joueurJ.getProprietes()) {
-			System.out.println("2 : cptAvecBat = " + cptAvecBat);
-			System.out.println("3 : cptSansBat = " + cptSansBat);
 			if (p.getNbMaisons()==0 && !p.aUnHotel() && joueurJ.getProprietes().length!=0) { //Si la propriete n'a pas de batiment
-				System.out.println("QUAND J'AI PAS DE BAT :J'ai " + joueurJ.getProprietes().length + " prop");
 				nom_proprietes_button[cptSansBat] = new Button(p.getNom() + " - Prix de vente : " + p.getPrix());
 				nom_proprietes_button[cptSansBat].setLayoutX(75);
 				nom_proprietes_button[cptSansBat].setLayoutY(margeEspace);
 				margeEspace+=30;
-				
 				revente_propSansBat(curseur, montant, carteTiree, joueurJ, p, cptSansBat);
-				
 				cptSansBat++;
 			}
 			else { //Si la propriete a des batiments
-				if (joueurJ.getProprietes().length==0) { return; }
-				System.out.println("LA PROPR A DES BAT !!!!!");
+				if (joueurJ.getProprietes().length==0 || joueurJ.getProprietes().length <= cptSansBat+cptAvecBat) { return; }
 				menu_proprietesBat_revente[cptAvecBat] = new MenuButton(joueurJ.getProprietes()[cptSansBat+cptAvecBat].getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons()) 
 						+ " batiment(s) a vendre : ");
 				menu_proprietesBat_revente[cptAvecBat].setLayoutX(75);
 				menu_proprietesBat_revente[cptAvecBat].setLayoutY(margeEspace);
 				margeEspace+=30;
-				System.out.println("2BIS : cptAvecBat = " + cptAvecBat);
 				revente_propAvecBat(curseur, montant, carteTiree, joueurJ, p, cptAvecBat);
-				
 				cptAvecBat++;
 			}
 		}
@@ -607,22 +600,17 @@ public class Vue {
 	public void revente_propSansBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, Proprietes p, int cptSansBat) {
 		int cptSansBatF = cptSansBat;
 		revente_pane.getChildren().add(nom_proprietes_button[cptSansBat]);
-		System.out.println("JE SUIS AU DEBUT DE REVENTE PROPSANSBAT");
 		
 		nom_proprietes_button[cptSansBat].setOnAction(actionEvent->{
-			System.out.println("JE SUIS DANS LE BOUTON PROPR NORMAL AVANT LA REVENTE");
 			int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(p);
 			changement_couleur_case_blanche(ancienne_position);
 			nom_proprietes_button[cptSansBatF].setVisible(false);
 			if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
-				System.out.println("JE SUIS DANS LE BOUTON PROPR NORMAL APRES LA REVENTE");
 				changement_argent(curseur);
-				//panePlateau.getChildren().remove(revente_pane);
 				revente_pane.setVisible(false);
 				affichage_revente_proprietes(curseur, montant, carteTiree);
 			}
 			else { 
-				System.out.println("JE SUIS DANS LE ELSE");
 				panePlateau.getChildren().remove(revente_pane);
 				controleur.transactionSelonType(curseur, carteTiree);
 			}
@@ -633,7 +621,6 @@ public class Vue {
 	}
 	
 	public void revente_propAvecBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, Proprietes p, int cptAvecBat) {
-		System.out.println("2TER : cptAvecBat = " + cptAvecBat);
 		if (p.aUnHotel()) { //Si la propriete a un hotel (donc 0 maison)
 			int prixReventeBat = p.getPrixBatiment()*5/2;
 			MenuItem venteHotel = new MenuItem("Vendre l'hotel pour " + prixReventeBat + "e");
@@ -642,7 +629,6 @@ public class Vue {
 			venteHotel.setOnAction(actionEvent -> {
 				controleur.controleur_reventeBatiment(p, "hotel", 1); //une seule revente d'hotel
 				if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
-					//panePlateau.getChildren().remove(revente_pane);
 					revente_pane.setVisible(false);
 					affichage_revente_proprietes(curseur, montant, carteTiree);
 				}
@@ -665,8 +651,6 @@ public class Vue {
 				venteMaison.setOnAction(actionEvent -> {
 					controleur.controleur_reventeBatiment(p, "maison", iF); //i reventes de maisons
 					if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
-						System.out.println("JE SUIS DANS LE BOUTON VENTE MAISON");
-						//panePlateau.getChildren().remove(revente_pane);
 						revente_pane.setVisible(false);
 						affichage_revente_proprietes(curseur, montant, carteTiree);
 					}
@@ -680,7 +664,10 @@ public class Vue {
 				}
 			}
 		}
-		if (menu_proprietesBat_revente.length > cptAvecBat) {revente_pane.getChildren().add(menu_proprietesBat_revente[cptAvecBat]);}
+		if (menu_proprietesBat_revente.length > cptAvecBat && menu_proprietesBat_revente[cptAvecBat]!=null 
+				&& !revente_pane.getChildren().contains(menu_proprietesBat_revente[cptAvecBat])) {
+			revente_pane.getChildren().add(menu_proprietesBat_revente[cptAvecBat]);
+		}
 	}
 	
 
@@ -787,7 +774,6 @@ public class Vue {
 				
 				maison_menuItem.setOnAction(actionEvent -> {
 					controleur.controleur_achatBatiment(p, "maison");
-					System.out.println(p.getNbMaisons());
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
 				if(joueurSuivant.isRobot()){
@@ -801,7 +787,6 @@ public class Vue {
 				
 				hotel_menuItem.setOnAction(actionEvent -> {
 					controleur.controleur_achatBatiment(p, "hotel");
-					System.out.println( (p.aUnHotel())?"J'ai un hotel":"Je n'ai pas d'hotel");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
 				if(joueurSuivant.isRobot()){

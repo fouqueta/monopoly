@@ -159,10 +159,10 @@ public class Jeu {
 		int alea = rand.nextInt(16);
 		Cartes carte = null;
 		if (caseC instanceof CasesChance) {
-			carte = plateau.getCartesChance()[5];
+			carte = plateau.getCartesChance()[alea];
 		}
 		else if (caseC instanceof CasesCommunaute) {
-			carte = plateau.getCartesCommu()[7];
+			carte = plateau.getCartesCommu()[alea];
 		}
 		return carte;
     }
@@ -276,7 +276,7 @@ public class Jeu {
     public void deplace_IG(Pion pion, int[] des) {
     	int nbCases = des[0] + des[1]; 
     	passeParDepart((pion.getPosition() + nbCases) % 40);
-    	pion.setPosition((pion.getPosition() + 1) % 40);
+    	pion.setPosition((pion.getPosition() + nbCases) % 40);
     }
     
     public void surCaseChanceCommu_IG(Pion pion, Cartes carte) {
