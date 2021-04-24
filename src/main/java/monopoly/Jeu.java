@@ -185,7 +185,7 @@ public class Jeu {
 		Cartes carte = null;
 		System.out.println(alea);
 		if (caseC instanceof CasesChance) {
-			carte = plateau.getCartesChance()[alea];
+			carte = plateau.getCartesChance()[5];
 		}
 		else if (caseC instanceof CasesCommunaute) {
 			carte = plateau.getCartesCommu()[7];

@@ -66,12 +66,15 @@ public class Proprietes extends Cases {
 	}
 	
 	public void venteMaison() {
+		System.out.println("Nombre de maisons avant la vente : " + this.nbMaisons);
 		this.nbMaisons--;
+		System.out.println("Nombre de maisons APRES la vente : " + this.nbMaisons);
 		proprietaire.transaction(prixBatiment/2); //Le prix de vente d'une maison est la moitie du prix d'achat
 		System.out.println("J'ai vendu la maison !");
 	}
 	
 	public void venteHotel() {
+		if (aHotel) {System.out.println("Nombre d'hotel : 1"); }
 		this.aHotel = false;
 		proprietaire.transaction(prixBatiment*5/2); //Le prix de vente d'un hotel est la moitie du prix d'achat (qui est 5 fois le prix d'une maison puisqu'on a donne toutes ses maisons)
 	}
