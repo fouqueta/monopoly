@@ -26,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import monopoly.Cartes;
@@ -248,7 +249,7 @@ public class Vue {
 		}
 		
 		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*39)/100);
 		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 		panePlateau.getChildren().add(joueur_actuel);
@@ -568,7 +569,7 @@ public class Vue {
 	public void changement_joueur_actuel() {
 		panePlateau.getChildren().remove(joueur_actuel);
 		joueur_actuel = new Label("Au tour de J"+ String.valueOf(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*39)/100);
 		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 
@@ -591,14 +592,16 @@ public class Vue {
 		defis_tab[curseur].setDisable(true);
 		revente_pane = new Pane();
 		revente_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
-		revente_pane.setStyle("-fx-background-color: white");
+		revente_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 		revente_pane.setLayoutX((panePlateau_x*20)/100);
 		revente_pane.setLayoutY((panePlateau_y*15)/100);
 		
-		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
+		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\nVendez une/des propriete(s) :");
+		texte.setFont(new Font("Arial", 16));
+		texte.setPadding(new Insets(15, 15, 15, 15));
 		revente_pane.getChildren().add(texte);
 		
-		int margeEspace = 60;
+		int margeEspace = 70;
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		int nbPropSansBatiment = joueurJ.getProprietes().length - joueurJ.getNbPropAvecBatiments();
 		
@@ -639,7 +642,7 @@ public class Vue {
 		int cptSansBat = 0;
 		int cptAvecBat = 0;
 		for (Proprietes p : joueurJ.getProprietes()) {
-			if (p.getNbMaisons()==0 && !p.aUnHotel() && joueurJ.getProprietes().length!=0) { //Si la propriete n'a pas de batiment
+			if (p.getNbMaisons()==0 && !p.aUnHotel() && joueurJ.getProprietes().length!=0 && nom_proprietes_button.length>cptSansBat) { //Si la propriete n'a pas de batiment
 				nom_proprietes_button[cptSansBat] = new Button(p.getNom() + " - Prix de vente : " + p.getPrix());
 				nom_proprietes_button[cptSansBat].setLayoutX(75);
 				nom_proprietes_button[cptSansBat].setLayoutY(margeEspace);
@@ -775,7 +778,7 @@ public class Vue {
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
-		lancer.setLayoutX((panePlateau_x*40)/100);
+		lancer.setLayoutX((panePlateau_x*42)/100);
 		lancer.setLayoutY((panePlateau_y*20)/100);
 		lancer.setPrefSize(100, 100);
 		panePlateau.getChildren().add(lancer);
@@ -798,7 +801,7 @@ public class Vue {
 		desLabel = new Label("0 - 0");
 		
 		desLabel.setFont(new Font("Arial", 40));
-		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutX((panePlateau_x*43)/100);
 		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
 		panePlateau.getChildren().add(desLabel);
@@ -809,7 +812,7 @@ public class Vue {
 		
 		desLabel = new Label(des[0] + " - " + des[1]);
 		desLabel.setFont(new Font("Arial", 40));
-		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutX((panePlateau_x*43)/100);
 		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
 		panePlateau.getChildren().add(desLabel);
@@ -817,7 +820,7 @@ public class Vue {
 	
 	void bouton_fin_de_tour() {
 		fin = new Button("Fin");
-		fin.setLayoutX((panePlateau_x*40)/100);
+		fin.setLayoutX((panePlateau_x*42)/100);
 		fin.setLayoutY((panePlateau_y*55)/100);
 		fin.setPrefSize(100, 20);
 		panePlateau.getChildren().add(fin);
@@ -911,32 +914,14 @@ public class Vue {
 		}
 	}
 	
-	public void creationMenuAchatBatiments(int curseur) {
-		BorderPane test = new BorderPane();	
-		test.setStyle("-fx-background-color: white; -fx-border-color: black");
-		test.setPrefSize(500, 500);
-		test.toFront();
-		
-		achatBatiments_menu = new MenuButton("Achats de tiplouf");
-		achatBatiments_menu_tab[curseur] = achatBatiments_menu;
-		
-		achatBatiments_menu.setLayoutY(65);
-		//test.getChildren().add(achatBatiments_menu);
-		test.getChildren().add(achatBatiments_menu_tab[curseur]);
-		//joueur_boutons.getChildren().add(achatBatiments_menu);
-		boutonsJoueurs.getChildren().add(test);
-		achatBatiments_menu_tab[curseur].setDisable(false);
-		achatBatiments_menu_tab[curseur].setVisible(true);
-	}
-
-
+	
 	void boutons_jeu() {
 		boutons_box = new HBox();
 		regles_button = new Button("Regles");
 		quitter_button = new Button("Quitter");
 		historique_button = new Button("Historique");
 		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button);
-		boutons_box.setLayoutX((panePlateau_x*35)/100);
+		boutons_box.setLayoutX((panePlateau_x*39)/100);
 		boutons_box.setLayoutY((panePlateau_y*70)/100);
 		panePlateau.getChildren().add(boutons_box);
 		regles_button.setOnAction(actionEvent -> {
@@ -977,7 +962,7 @@ public class Vue {
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
 			prison_tab[i] = prison;
-			//achatBatiments_menu_tab[i] = achatBatiments_menu;
+			achatBatiments_menu_tab[i] = achatBatiments_menu;
 			
 			achat.setDisable(true);
 			vente.setDisable(true);
@@ -1006,18 +991,19 @@ public class Vue {
 		Label contenu_carte = new Label(carteTiree.getContenu());
 		Button bouton_fermer = new Button("Fermer");
 		
-		type_carte.setFont(new Font("Arial", 17));
-		contenu_carte.setFont(new Font("Arial", 15));
+		type_carte.setFont(new Font("Arial", 23));
+		contenu_carte.setFont(new Font("Arial", 18));
+		contenu_carte.setTextAlignment(TextAlignment.CENTER);
 		
 		carte_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
 		carte_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
-		carte_pane.setLayoutX((panePlateau_x*20)/100);
+		carte_pane.setLayoutX((panePlateau_x*21)/100);
 		carte_pane.setLayoutY((panePlateau_y*15)/100);
 		  
 		carte_pane.setTop(type_carte);
 		carte_pane.setCenter(contenu_carte);
 		carte_pane.setBottom(bouton_fermer);
-		type_carte.setPadding(new Insets(15,0,0,0));
+		type_carte.setPadding(new Insets(20,0,0,0));
 		BorderPane.setAlignment(type_carte, Pos.TOP_CENTER);
 		BorderPane.setAlignment(contenu_carte, Pos.CENTER);
 		BorderPane.setAlignment(bouton_fermer, Pos.BOTTOM_CENTER);
@@ -1332,8 +1318,8 @@ public class Vue {
 		Label l1 = new Label ("VICTOIRE DU JOUEUR");
 		Label l2 = new Label (nom);
 		victoire_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
-		victoire_pane.setStyle("-fx-background-color: white");
-		victoire_pane.setLayoutX((panePlateau_x*20)/100);
+		victoire_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
+		victoire_pane.setLayoutX((panePlateau_x*21)/100);
 		victoire_pane.setLayoutY((panePlateau_y*15)/100);
 		l1.setFont(new Font(30));
 		l2.setFont(new Font(30));
