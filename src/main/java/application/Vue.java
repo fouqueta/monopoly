@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -41,7 +42,7 @@ public class Vue {
 	private double panePlateau_y;
 
 	//Accueil
-	private AnchorPane scene_accueil;
+	private AnchorPane accueil_pane;
 		
 	//Scene de jeu
 	private Scene scene_jeu;
@@ -63,6 +64,7 @@ public class Vue {
 	private int[] proprietaires = new int[40];
 	
 		//Joueurs
+	private int nbJoueurs;
 	private AnchorPane paneJoueurs; //joueurs_pane
 	private Label[] pionLabel = new Label[6]; //pseudo_tab
 	private Pane[] infoJoueurs = new Pane[6]; //joueursPane_tab
@@ -113,7 +115,7 @@ public class Vue {
 		jeu = controleur.getJeu();
 		
 		initilisation_scene_jeu();
-		accueil_jeu(false);
+		accueil_jeu();
 		
 		stage.show();
 	}
@@ -1019,9 +1021,6 @@ public class Vue {
 
 	void bouton_prison(int curseur) {
 		prison_tab[curseur].setDisable(false);
-		/*if(jeu.getJoueurs()[curseur].isRobot()){
-			prison_tab[curseur].fire();
-		}*/
 		prison_tab[curseur].setOnAction(actionEvent ->{
 			prison_tab[curseur].setDisable(true);
 			controleur.controleur_libererPrison(curseur);
@@ -1034,41 +1033,120 @@ public class Vue {
 
 
 	//Interface graphique : Accueil
-	void accueil_jeu(boolean b) {
-		scene_accueil = new AnchorPane();
-		scene_accueil.setPrefSize(tailleEcran.width, tailleEcran.height);
-		scene_accueil.setStyle("-fx-background-color: #BAEEB4");
+	void accueil_jeu() {
+		accueil_pane = new AnchorPane();
+		accueil_pane.setPrefSize(tailleEcran.width, tailleEcran.height);
+		accueil_pane.setStyle("-fx-background-color: #BAEEB4");
 		Label titre = new Label("Monopoly");
 		titre.setFont(new Font("Arial", 50));
 		titre.setLayoutX((tailleEcran.width*40)/100);
 		titre.setLayoutY((tailleEcran.height*10)/100);
-		scene_accueil.getChildren().add(titre);
+		accueil_pane.getChildren().add(titre);
+		root.getChildren().add(accueil_pane);
+		accueil_nbPseudo_reseau(false);
+	}
+	
+	void accueil_nbPseudo_reseau(boolean b) {
+		GridPane grid = new GridPane ();
+		grid.setVgap(10);
+		grid.setPadding(new Insets((tailleEcran.height*40)/100, (tailleEcran.width*40)/100, (tailleEcran.height*40)/100, (tailleEcran.width*40)/100));
 
+		Label consigne = new Label ("Nombre de joueur");
+		GridPane.setConstraints(consigne, 0, 1);
+		TextField tf = new TextField();
+		tf.setPromptText("Nombre de joueur");
+		GridPane.setConstraints(tf, 0, 2);
+		Button suivant = new Button ("Suivant");
+		GridPane.setConstraints(suivant, 0, 3);
+		accueil_pane.getChildren().add(grid);
+		
+		/*if(jeu.isReseau()){
+			tf = new TextField();
+			bt = new Button[1];
+			flags = new boolean[1];
+		}*/
+		Button reseau;
+		if(jeu.isReseau()){
+			reseau = new Button("Mode hors-ligne");
+			reseau.setStyle("-fx-background-color: #FF0000");
+		}else{
+			reseau = new Button("Mode Reseau");
+			reseau.setStyle("-fx-background-color: #0000FF");
+		}
+		reseau.setOnAction(actionEvent->{
+			if(t==null){
+				t = new Thread(controleur, "controleur");
+				controleur.startSocket();
+				t.start();
+			}else{
+				t.interrupt();
+				controleur.startSocket();
+				t = null;
+			}
+
+			accueil_nbPseudo_reseau(false);
+		});
+		GridPane.setConstraints(reseau, 0, 4);
+		if(b){
+			Label erreur = new Label("Pseudo invalide ou deja pris.");
+			erreur.setFont(new Font("Arial", 10));
+			erreur.setLayoutX((tailleEcran.width*40)/100);
+			erreur.setLayoutY((tailleEcran.height*60)/100);
+			GridPane.setConstraints(erreur, 0, 5);
+			grid.getChildren().add(erreur);
+		}
+
+		suivant.setOnAction(actionEvent->{
+			if(tf.getText().length()!=1 || !Character.isDigit(tf.getText().charAt(0)) || Integer.parseInt(tf.getText())<2 || Integer.parseInt(tf.getText())>6){
+				Label erreur = new Label("Choisissez un nombre entre 2 et 6");
+				erreur.setFont(new Font("Arial", 10));
+				erreur.setLayoutX((tailleEcran.width*40)/100);
+				erreur.setLayoutY((tailleEcran.height*60)/100);
+				GridPane.setConstraints(erreur, 0, 6);
+				grid.getChildren().add(erreur);
+				
+			}else {
+				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+				transition.setToX(grid.getTranslateX() - 400);
+				transition.play();
+				transition.setOnFinished(evt -> {
+	                	accueil_pane.getChildren().remove(grid);
+	                    nbJoueurs=Integer.parseInt(tf.getText());
+	                    accueil_pseudo(false);
+	                });
+				
+			}
+		});
+		grid.getChildren().addAll(consigne, tf,suivant,reseau);	
+	}
+
+	void accueil_pseudo(boolean b) {
 		GridPane grid = new GridPane();
 		grid.setVgap(10);
-		grid.setPadding(new Insets((tailleEcran.height*35)/100, (tailleEcran.width*40)/100, (tailleEcran.height*35)/100, (tailleEcran.width*40)/100));
+		grid.setPadding(new Insets((tailleEcran.height*40)/100, (tailleEcran.width*40)/100, (tailleEcran.height*40)/100, (tailleEcran.width*40)/100));
 
 		TextField[] tf;
 		Button[] bt;
 		boolean[] flags;
 
 		if(!jeu.isReseau()){
-			tf = new TextField[6];
-			bt = new Button[6];
-			flags = new boolean[6];
+			tf = new TextField[nbJoueurs];
+			bt = new Button[nbJoueurs];
+			flags = new boolean[nbJoueurs];
 		}else{
 			tf = new TextField[1];
 			bt = new Button[1];
 			flags = new boolean[1];
 		}
 
-		for(int i=0;i<tf.length;i++){
+		for(int i=0;i<nbJoueurs;i++){
 			tf[i] = new TextField ();
 			tf[i].setPromptText("Pseudo du joueur " + (i+1));
 			GridPane.setConstraints(tf[i], 0, i);
 
 			bt[i] = new Button("Mode robot pour joueur " + (i+1));
 			GridPane.setConstraints(bt[i], 1, i);
+			bt[i].setLayoutX(400);
 			int finalI = i;
 			bt[i].setOnAction(actionEvent->{
 				Color color = (Color)bt[finalI].getBackground().getFills().get(0).getFill();
@@ -1076,15 +1154,14 @@ public class Vue {
 				else { bt[finalI].setStyle(null); }
 				flags[finalI] = !flags[finalI];
 			});
-
 		}
 
 		grid.getChildren().addAll(tf);
 		if(!jeu.isReseau()) grid.getChildren().addAll(bt);
-
+		accueil_pane.getChildren().add(grid);
 
 		Button valider = new Button("Valider");
-		grid.add(valider,0,7);
+		grid.add(valider,0,nbJoueurs+1);
 		valider.setOnAction(actionEvent->{
 			String[] noms = fieldToString(tf);
 			if(jeu.isReseau()){
@@ -1092,7 +1169,20 @@ public class Vue {
 					jeu.setJoueurReseau(new Joueur(tf[0].getText()));
 					controleur.sendMsg("start", jeu.getJoueurReseau().getNom());
 				}
-			}else if(noms.length>1) {
+			}else if(noms.length<nbJoueurs) {
+				Label erreur = new Label("Veuillez remplir tous les champs");
+				erreur.setFont(new Font("Arial", 10));
+				erreur.setLayoutX((tailleEcran.width*40)/100);
+				erreur.setLayoutY((tailleEcran.height*60)/100);
+				grid.add(erreur,0,nbJoueurs+2);
+			} else if (meme_pseudo(noms)) {
+				Label erreur = new Label("Choisissez des pseudos differents");
+				erreur.setFont(new Font("Arial", 10));
+				erreur.setLayoutX((tailleEcran.width*40)/100);
+				erreur.setLayoutY((tailleEcran.height*60)/100);
+				grid.add(erreur,0,nbJoueurs+3);
+			}else {
+				root.getChildren().remove(accueil_pane);
 				jeu.initialisation_joueurs(noms, flags);
 
 				initialisation_plateau();
@@ -1115,38 +1205,30 @@ public class Vue {
 				}
 			}
 		});
+		
+		Button retour = new Button("Retour");
+		grid.add(retour,1,nbJoueurs+1);
+		retour.setOnAction(actionEvent->{
+			TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+			transition.setToX(grid.getTranslateX() + 400);
+			transition.play();
+			transition.setOnFinished(evt -> {
+                accueil_pane.getChildren().remove(grid);
+                accueil_nbPseudo_reseau(false);	
+			});
 
-		Button reseau;
-		if(jeu.isReseau()){
-			reseau = new Button("Mode hors-ligne");
-			reseau.setStyle("-fx-background-color: #FF0000");
-		}else{
-			reseau = new Button("Mode Reseau");
-			reseau.setStyle("-fx-background-color: #0000FF");
-		}
-		grid.add(reseau,0,8);
-		reseau.setOnAction(actionEvent->{
-			if(t==null){
-				t = new Thread(controleur, "controleur");
-				controleur.startSocket();
-				t.start();
-			}else{
-				t.interrupt();
-				controleur.startSocket();
-				t = null;
-			}
-
-			accueil_jeu(false);
 		});
-		if(b){
-			Label erreur = new Label("Pseudo invalide ou deja pris.");
-			erreur.setFont(new Font("Arial", 10));
-			erreur.setLayoutX((tailleEcran.width*40)/100);
-			erreur.setLayoutY((tailleEcran.height*60)/100);
-			grid.add(erreur,0,9);
+	}
+
+	boolean meme_pseudo(String [] noms) {
+		for (int i=0; i<nbJoueurs-1; i++) {
+			for (int j=i+1; j<nbJoueurs; j++) {
+				if (noms[i].equals(noms[j])){
+					return true;
+				}
+			}
 		}
-		scene_accueil.getChildren().add(grid);
-		root.getChildren().add(scene_accueil);
+		return false;
 	}
 
 	private String[] fieldToString(TextField[] tf){
