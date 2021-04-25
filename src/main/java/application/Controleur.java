@@ -437,7 +437,8 @@ public class Controleur implements Runnable {
 			case "vendre":
 				Platform.runLater(() -> {
 					int n = Integer.parseInt(info);
-					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
+					Proprietes p = jeu.getJoueurs()[curseur].getProprietes()[n];
+					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(p);
 					vue.changement_couleur_case_blanche(ancienne_position);
 					vue.vendPropReseau(ancienne_position, curseur);
 				});
