@@ -1043,10 +1043,10 @@ public class Vue {
 		titre.setLayoutY((tailleEcran.height*10)/100);
 		accueil_pane.getChildren().add(titre);
 		root.getChildren().add(accueil_pane);
-		accueil_nbPseudo_reseau(false);
+		accueil_nbPseudo_reseau();
 	}
 	
-	void accueil_nbPseudo_reseau(boolean b) {
+	void accueil_nbPseudo_reseau() {
 		GridPane grid = new GridPane ();
 		grid.setVgap(10);
 		grid.setPadding(new Insets((tailleEcran.height*40)/100, (tailleEcran.width*40)/100, (tailleEcran.height*40)/100, (tailleEcran.width*40)/100));
@@ -1059,12 +1059,7 @@ public class Vue {
 		Button suivant = new Button ("Suivant");
 		GridPane.setConstraints(suivant, 0, 3);
 		accueil_pane.getChildren().add(grid);
-		
-		/*if(jeu.isReseau()){
-			tf = new TextField();
-			bt = new Button[1];
-			flags = new boolean[1];
-		}*/
+	
 		Button reseau;
 		if(jeu.isReseau()){
 			reseau = new Button("Mode hors-ligne");
@@ -1084,18 +1079,10 @@ public class Vue {
 				t = null;
 			}
 
-			accueil_nbPseudo_reseau(false);
+			accueil_pseudo(false);
 		});
 		GridPane.setConstraints(reseau, 0, 4);
-		if(b){
-			Label erreur = new Label("Pseudo invalide ou deja pris.");
-			erreur.setFont(new Font("Arial", 10));
-			erreur.setLayoutX((tailleEcran.width*40)/100);
-			erreur.setLayoutY((tailleEcran.height*60)/100);
-			GridPane.setConstraints(erreur, 0, 5);
-			grid.getChildren().add(erreur);
-		}
-
+		
 		suivant.setOnAction(actionEvent->{
 			if(tf.getText().length()!=1 || !Character.isDigit(tf.getText().charAt(0)) || Integer.parseInt(tf.getText())<2 || Integer.parseInt(tf.getText())>6){
 				Label erreur = new Label("Choisissez un nombre entre 2 et 6");
@@ -1159,6 +1146,15 @@ public class Vue {
 		grid.getChildren().addAll(tf);
 		if(!jeu.isReseau()) grid.getChildren().addAll(bt);
 		accueil_pane.getChildren().add(grid);
+		
+		if(b){
+			Label erreur = new Label("Pseudo invalide ou deja pris.");
+			erreur.setFont(new Font("Arial", 10));
+			erreur.setLayoutX((tailleEcran.width*40)/100);
+			erreur.setLayoutY((tailleEcran.height*60)/100);
+			GridPane.setConstraints(erreur, 0, 5);
+			grid.getChildren().add(erreur);
+		}
 
 		Button valider = new Button("Valider");
 		grid.add(valider,0,nbJoueurs+1);
@@ -1206,18 +1202,19 @@ public class Vue {
 			}
 		});
 		
-		Button retour = new Button("Retour");
-		grid.add(retour,1,nbJoueurs+1);
-		retour.setOnAction(actionEvent->{
-			TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
-			transition.setToX(grid.getTranslateX() + 400);
-			transition.play();
-			transition.setOnFinished(evt -> {
-                accueil_pane.getChildren().remove(grid);
-                accueil_nbPseudo_reseau(false);	
+		if(!jeu.isReseau()) {
+			Button retour = new Button("Retour");
+			grid.add(retour,1,nbJoueurs+1);
+			retour.setOnAction(actionEvent->{
+				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+				transition.setToX(grid.getTranslateX() + 400);
+				transition.play();
+				transition.setOnFinished(evt -> {
+	                accueil_pane.getChildren().remove(grid);
+	                accueil_nbPseudo_reseau();	
+				});
 			});
-
-		});
+		}
 	}
 
 	boolean meme_pseudo(String [] noms) {
