@@ -11,7 +11,7 @@ public class Joueur{
     private boolean enPrison;
     private int nbToursPrison;
     private boolean carteLibPrison;
-    Scanner reponse;
+    private Scanner reponse;
     private boolean faillite;
 	private boolean robot = false;
     
@@ -46,13 +46,22 @@ public class Joueur{
 		}
     	return cpt;
 	}
+	
+	public int getNbPropAvecBatiments() {
+		int cpt = 0;
+		for (Proprietes p : proprietes) {
+			if (p.getNbMaisons()!=0 || p.aUnHotel()) {
+				cpt++;
+			}
+		}
+		return cpt;
+	}
 
 	public boolean isEnPrison() { return enPrison; }
 
 	public boolean isRobot(){
 		return robot;
 	}
-
 
 	public int getNbToursPrison() { return nbToursPrison; }
 	
@@ -211,7 +220,7 @@ public class Joueur{
 		}
 		receveur.transaction(montant);
 		transaction(-montant);
-		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + "." +
+		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + ". " +
 				receveur.getNom() + " a maintenant " + receveur.getArgent() + "e." );
 	}
 	
@@ -227,10 +236,10 @@ public class Joueur{
 	
 	
 	//Interface graphique
-	public int vendreLaPropriete_IG(int n) {
-		int position_ancienne_propriete = proprietes[n].getPosition();
-		proprietes[n].setProprietaire(null);
-		vente_effectuee(proprietes[n].getPrix(), proprietes[n]);
+	public int vendreLaPropriete_IG(Proprietes p) {
+		int position_ancienne_propriete = p.getPosition();
+		p.setProprietaire(null);
+		vente_effectuee(p.getPrix(), p);
 		return position_ancienne_propriete;
 	}
 	

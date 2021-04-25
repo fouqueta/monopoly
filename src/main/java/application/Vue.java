@@ -7,18 +7,17 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import javafx.animation.PauseTransition;
-import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -27,9 +26,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import monopoly.*;
+import monopoly.Cartes;
+import monopoly.Cases;
+import monopoly.Jeu;
+import monopoly.Joueur;
+import monopoly.Proprietes;
 
 public class Vue {
 	
@@ -50,6 +54,7 @@ public class Vue {
 		//Plateau
 	private AnchorPane panePlateau; //jeu_pane
 	private Pane revente_pane;
+	//private Pane joueur_boutons;
 	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
 	private VBox colonne_gauche;
@@ -75,6 +80,11 @@ public class Vue {
 	private Button achat;
 	private Button vente;
 	private Button prison;
+	
+	private MenuItem maison_menuItem;
+	private MenuItem hotel_menuItem;
+	private MenuButton achatBatiments_menu;
+     
 	private HBox boutons_box;
 	private Button regles_button;
 	private Button quitter_button;
@@ -83,7 +93,9 @@ public class Vue {
 	private Button achat_tab[] = new Button[6];
 	private Button vente_tab[] = new Button[6];
 	private Button prison_tab[] = new Button[6];
+	private MenuButton[] achatBatiments_menu_tab = new MenuButton[6];
 	private Button nom_proprietes_button[];
+	private MenuButton menu_proprietesBat_revente[];
 	
 	private Button defis;
 	private Button defis_tab[] = new Button[6];
@@ -102,7 +114,7 @@ public class Vue {
 
 	private Thread t;
 
-	Vue(Controleur controleur){
+	public Vue(Controleur controleur){
 		this.controleur = controleur;
 		
 		stage = new Stage();
@@ -237,7 +249,7 @@ public class Vue {
 		}
 		
 		joueur_actuel = new Label("Au tour de J"+ Integer.toString(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*39)/100);
 		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 		panePlateau.getChildren().add(joueur_actuel);
@@ -557,7 +569,7 @@ public class Vue {
 	public void changement_joueur_actuel() {
 		panePlateau.getChildren().remove(joueur_actuel);
 		joueur_actuel = new Label("Au tour de J"+ String.valueOf(jeu.getCurseur()+1));
-		joueur_actuel.setLayoutX((panePlateau_x*35)/100);
+		joueur_actuel.setLayoutX((panePlateau_x*39)/100);
 		joueur_actuel.setLayoutY((panePlateau_y*75)/100);
 		joueur_actuel.setFont(new Font("Arial", 30));
 
@@ -576,55 +588,40 @@ public class Vue {
 	
 	public void affichage_revente_proprietes(int curseur, int montant, Cartes carteTiree) {
 		achat_tab[curseur].setDisable(true);
+		achatBatiments_menu_tab[curseur].setDisable(true);
+		defis_tab[curseur].setDisable(true);
 		revente_pane = new Pane();
 		revente_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
-		revente_pane.setStyle("-fx-background-color: white");
+		revente_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 		revente_pane.setLayoutX((panePlateau_x*20)/100);
 		revente_pane.setLayoutY((panePlateau_y*15)/100);
 		
-		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\n Vendez une/des propriete(s) :");
+		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\nVendez une/des propriete(s) :");
+		texte.setFont(new Font("Arial", 16));
+		texte.setPadding(new Insets(15, 15, 15, 15));
 		revente_pane.getChildren().add(texte);
 		
-		int taille = 60;
-		Proprietes [] proprietes_joueur_actuel= jeu.getJoueurs()[curseur].getProprietes();
-		Button vendreCartePrison = new Button ("Carte Libere de prison - Prix de vente: 500e");
-		nom_proprietes_button = new Button [proprietes_joueur_actuel.length+1];
+		int margeEspace = 70;
+		Joueur joueurJ = jeu.getJoueurs()[curseur];
+		int nbPropSansBatiment = joueurJ.getProprietes().length - joueurJ.getNbPropAvecBatiments();
 		
-		//initialiser les boutons
-		for (int i=0; i<proprietes_joueur_actuel.length; i++) {
-			nom_proprietes_button[i] = new Button (proprietes_joueur_actuel[i].getNom()+" - Prix de vente: "+proprietes_joueur_actuel[i].getPrix());
-			nom_proprietes_button[i].setLayoutY(taille);
-			taille+=30;
-			nom_proprietes_button[i].setLayoutX(75);
-			revente_pane.getChildren().add(nom_proprietes_button[i]);
-			int n = i;
+		Button vendreCartePrison = new Button ("Carte Libere de prison - Prix de vente : 500e");
+		nom_proprietes_button = new Button[nbPropSansBatiment];	
+		menu_proprietesBat_revente = new MenuButton[joueurJ.getNbPropAvecBatiments()];
+		
+		panePlateau.getChildren().add(revente_pane);
+		revente_pane.setVisible(true);
+		
+		affichageBoutons_revente_proprietes(curseur, montant, carteTiree, joueurJ, margeEspace);
 
-			nom_proprietes_button[n].setOnAction(actionEvent->{
-				int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
-				if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-					controleur.sendMsg("vendre", String.valueOf(n));
-				}
-				changement_couleur_case_blanche(ancienne_position);
-				nom_proprietes_button[n].setVisible(false);
-				if (jeu.getJoueurs()[curseur].getArgent() < montant && (proprietes_joueur_actuel.length>1 || jeu.getJoueurs()[curseur].aCarteLibPrison())) {
-					changement_argent(curseur);
-					revente_pane.setVisible(false);
-					affichage_revente_proprietes(curseur, montant, carteTiree);
-				}
-				else {
-					panePlateau.getChildren().remove(revente_pane);
-					controleur.transactionSelonType(curseur, carteTiree);
-			 	}
-			});
-		}
 		if (jeu.getJoueurs()[curseur].aCarteLibPrison()) {
-			nom_proprietes_button[proprietes_joueur_actuel.length] = vendreCartePrison;
-			vendreCartePrison.setLayoutY(taille);
+			//nom_proprietes_button[nom_proprietes_button.length-1] = vendreCartePrison;
+			vendreCartePrison.setLayoutY(margeEspace+30*joueurJ.getProprietes().length);
 			vendreCartePrison.setLayoutX(75);
 			revente_pane.getChildren().add(vendreCartePrison);
 			vendreCartePrison.setOnAction(actionEvent->{
 				controleur.controleur_vendreCartePrison(curseur);
-				if (jeu.getJoueurs()[curseur].getArgent() < montant && proprietes_joueur_actuel.length>1) {
+				if (jeu.getJoueurs()[curseur].getArgent() < montant && joueurJ.getProprietes().length>=1) {
 					changement_argent(curseur);
 					revente_pane.setVisible(false);
 					affichage_revente_proprietes(curseur, montant, carteTiree);
@@ -632,17 +629,117 @@ public class Vue {
 				else {
 					panePlateau.getChildren().remove(revente_pane);
 					controleur.transactionSelonType(curseur, carteTiree);
-			 	}
+				}
 			});
-		
 		}
-		panePlateau.getChildren().add(revente_pane);
-		revente_pane.setVisible(true);
-
-		if(jeu.getJoueurs()[curseur].isRobot()){
-			nom_proprietes_button[0].fire();
+		if (joueurJ.isRobot()) { 
+			vendreCartePrison.fire(); 
+			panePlateau.getChildren().remove(revente_pane);
+		}		
+	}
+	
+	public void affichageBoutons_revente_proprietes(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace) {
+		int cptSansBat = 0;
+		int cptAvecBat = 0;
+		for (Proprietes p : joueurJ.getProprietes()) {
+			if (p.getNbMaisons()==0 && !p.aUnHotel() && joueurJ.getProprietes().length!=0 && nom_proprietes_button.length>cptSansBat) { //Si la propriete n'a pas de batiment
+				nom_proprietes_button[cptSansBat] = new Button(p.getNom() + " - Prix de vente : " + p.getPrix());
+				nom_proprietes_button[cptSansBat].setLayoutX(75);
+				nom_proprietes_button[cptSansBat].setLayoutY(margeEspace);
+				margeEspace+=30;
+				revente_propSansBat(curseur, montant, carteTiree, joueurJ, p, cptSansBat);
+				cptSansBat++;
+			}
+			else { //Si la propriete a des batiments
+				if (joueurJ.getProprietes().length==0 || joueurJ.getProprietes().length <= cptSansBat+cptAvecBat) { return; }
+				menu_proprietesBat_revente[cptAvecBat] = new MenuButton(joueurJ.getProprietes()[cptSansBat+cptAvecBat].getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons()) 
+						+ " batiment(s) a vendre : ");
+				menu_proprietesBat_revente[cptAvecBat].setLayoutX(75);
+				menu_proprietesBat_revente[cptAvecBat].setLayoutY(margeEspace);
+				margeEspace+=30;
+				revente_propAvecBat(curseur, montant, carteTiree, joueurJ, p, cptAvecBat);
+				cptAvecBat++;
+			}
 		}
 	}
+
+	
+	public void revente_propSansBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, Proprietes p, int cptSansBat) {
+		int cptSansBatF = cptSansBat;
+		revente_pane.getChildren().add(nom_proprietes_button[cptSansBat]);
+		
+		nom_proprietes_button[cptSansBat].setOnAction(actionEvent->{
+			int ancienne_position = joueurJ.vendreLaPropriete_IG(p);
+			if(jeu.isReseau() && jeu.getJoueurReseau() == joueurJ) {
+				controleur.sendMsg("vendre", String.valueOf(cptSansBat));
+			}
+			changement_couleur_case_blanche(ancienne_position);
+			nom_proprietes_button[cptSansBatF].setVisible(false);
+			if (joueurJ.getArgent() < montant && (joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison())) {
+				changement_argent(curseur);
+				revente_pane.setVisible(false);
+				affichage_revente_proprietes(curseur, montant, carteTiree);
+			}
+			else { 
+				panePlateau.getChildren().remove(revente_pane);
+				controleur.transactionSelonType(curseur, carteTiree);
+			}
+		});
+		if(joueurJ.isRobot()){
+			nom_proprietes_button[0].fire();
+		}	
+	}
+	
+	public void revente_propAvecBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, Proprietes p, int cptAvecBat) {
+		if (p.aUnHotel()) { //Si la propriete a un hotel (donc 0 maison)
+			int prixReventeBat = p.getPrixBatiment()*5/2;
+			MenuItem venteHotel = new MenuItem("Vendre l'hotel pour " + prixReventeBat + "e");
+			menu_proprietesBat_revente[cptAvecBat].getItems().addAll(venteHotel);
+			
+			venteHotel.setOnAction(actionEvent -> {
+				controleur.controleur_reventeBatiment(p, "hotel", 1); //une seule revente d'hotel
+				if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
+					revente_pane.setVisible(false);
+					affichage_revente_proprietes(curseur, montant, carteTiree);
+				}
+				else { 
+					panePlateau.getChildren().remove(revente_pane);
+					controleur.transactionSelonType(curseur, carteTiree);
+				}
+			});
+			if(joueurJ.isRobot()){
+				venteHotel.fire();
+			}	
+		}
+		else { //Si la propriete n'a que des maisons
+			for (int i = 1; i <= p.getNbMaisons(); i++) {	
+				int prixReventeBat = p.getPrixBatiment()/2*i;
+				MenuItem venteMaison = new MenuItem("Vendre " + i + " maison(s) pour " + prixReventeBat + "e");
+				menu_proprietesBat_revente[cptAvecBat].getItems().addAll(venteMaison);
+				
+				int iF = i;
+				venteMaison.setOnAction(actionEvent -> {
+					controleur.controleur_reventeBatiment(p, "maison", iF); //i reventes de maisons
+					if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
+						revente_pane.setVisible(false);
+						affichage_revente_proprietes(curseur, montant, carteTiree);
+					}
+					else { 
+						panePlateau.getChildren().remove(revente_pane);
+						controleur.transactionSelonType(curseur, carteTiree);
+					}
+				});
+				if(joueurJ.isRobot()){
+					venteMaison.fire();
+				}
+			}
+		}
+		if (menu_proprietesBat_revente.length > cptAvecBat && menu_proprietesBat_revente[cptAvecBat]!=null 
+				&& !revente_pane.getChildren().contains(menu_proprietesBat_revente[cptAvecBat])) {
+			revente_pane.getChildren().add(menu_proprietesBat_revente[cptAvecBat]);
+		}
+	}
+
 
 	void afficherRegles() {
 		String texte="";
@@ -681,7 +778,7 @@ public class Vue {
 	//Interface graphique : Boutons
 	void bouton_lancer_de_des() {
 		lancer = new Button("Lancer");
-		lancer.setLayoutX((panePlateau_x*40)/100);
+		lancer.setLayoutX((panePlateau_x*42)/100);
 		lancer.setLayoutY((panePlateau_y*20)/100);
 		lancer.setPrefSize(100, 100);
 		panePlateau.getChildren().add(lancer);
@@ -704,7 +801,7 @@ public class Vue {
 		desLabel = new Label("0 - 0");
 		
 		desLabel.setFont(new Font("Arial", 40));
-		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutX((panePlateau_x*43)/100);
 		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
 		panePlateau.getChildren().add(desLabel);
@@ -715,7 +812,7 @@ public class Vue {
 		
 		desLabel = new Label(des[0] + " - " + des[1]);
 		desLabel.setFont(new Font("Arial", 40));
-		desLabel.setLayoutX((panePlateau_x*41)/100);
+		desLabel.setLayoutX((panePlateau_x*43)/100);
 		desLabel.setLayoutY((panePlateau_y*40)/100);
 		
 		panePlateau.getChildren().add(desLabel);
@@ -723,7 +820,7 @@ public class Vue {
 	
 	void bouton_fin_de_tour() {
 		fin = new Button("Fin");
-		fin.setLayoutX((panePlateau_x*40)/100);
+		fin.setLayoutX((panePlateau_x*42)/100);
 		fin.setLayoutY((panePlateau_y*55)/100);
 		fin.setPrefSize(100, 20);
 		panePlateau.getChildren().add(fin);
@@ -737,34 +834,22 @@ public class Vue {
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
 			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+			
 			achat_tab[curseur].setDisable(true);
 			vente_tab[proprietaires[position]].setDisable(true);
 			lancer.setDisable(false);
 
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
-
+			achatBatiments_menu_tab[curseur].setDisable(true);
+			
 			controleur.controleur_faillite(curseur);
+
 			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
-			if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
-				controleur.controleur_fin();
-				if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
-					if(!jeu.isReseau() || jeu.getJoueurs()[curseurSuivant] == jeu.getJoueurReseau()) {
-						bouton_prison(curseurSuivant);
-						prison_tab[curseur].setDisable(true);
-						System.out.println();
-					}
-				}else {
-					prison_tab[curseur].setDisable(true);
-				}
-	        }
-			if (jeu.onlyRobot()) {
-	        	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
-	        	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
-					bouton_prison(curseurSuivant);
-					prison_tab[curseur].setDisable(true);
-	        	}
-	        }
+			
+			actions_bouton_fin_tour(curseur, curseurSuivant);
+	        achatBatiments_bouton_fin_tour(curseurSuivant);
+	        
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 	        	lancer.setVisible(false);
 	        	fin.setVisible(false);
@@ -775,15 +860,68 @@ public class Vue {
 	        }
 		});
 	}
-
-
+	
+	public void actions_bouton_fin_tour(int curseur, int curseurSuivant) {
+		if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
+			controleur.controleur_fin();
+			if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
+				bouton_prison(curseurSuivant);
+				prison_tab[curseur].setDisable(true);
+			}else {
+				prison_tab[curseur].setDisable(true);
+			}
+        }
+		if (jeu.onlyRobot()) { 
+        	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+        	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
+				bouton_prison(curseurSuivant);
+				prison_tab[curseur].setDisable(true);
+        	}
+        }
+	}
+	
+	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
+		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
+		for (Proprietes p : joueurSuivant.getProprietes()) {
+			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
+				int nbMaisonsPlus1 = p.getNbMaisons()+1;
+				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
+				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+				
+				maison_menuItem.setOnAction(actionEvent -> {
+					controleur.controleur_achatBatiment(p, "maison");
+					achatBatiments_bouton_fin_tour(curseurSuivant);
+				});
+				if(joueurSuivant.isRobot()){
+					maison_menuItem.fire();
+				}
+			}
+			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
+				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
+				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(hotel_menuItem);
+				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
+				
+				hotel_menuItem.setOnAction(actionEvent -> {
+					controleur.controleur_achatBatiment(p, "hotel");
+					achatBatiments_bouton_fin_tour(curseurSuivant);
+				});
+				if(joueurSuivant.isRobot()){
+					hotel_menuItem.fire();
+				}
+			}
+		}
+	}
+	
+	
 	void boutons_jeu() {
 		boutons_box = new HBox();
 		regles_button = new Button("Regles");
 		quitter_button = new Button("Quitter");
 		historique_button = new Button("Historique");
 		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button);
-		boutons_box.setLayoutX((panePlateau_x*35)/100);
+		boutons_box.setLayoutX((panePlateau_x*39)/100);
 		boutons_box.setLayoutY((panePlateau_y*70)/100);
 		panePlateau.getChildren().add(boutons_box);
 		regles_button.setOnAction(actionEvent -> {
@@ -818,17 +956,20 @@ public class Vue {
 			vente = new Button("Vente");
 			defis = new Button("Defis");
 			prison = new Button("Prison");
-
+			achatBatiments_menu = new MenuButton("Achats de batiments");
+			
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
 			prison_tab[i] = prison;
-
+			achatBatiments_menu_tab[i] = achatBatiments_menu;
+			
 			achat.setDisable(true);
 			vente.setDisable(true);
 			defis.setDisable(true);
 			prison.setDisable(true);
-
+			achatBatiments_menu.setDisable(true);
+			
 			achat.setLayoutY(5);
 			vente.setLayoutY(35);
 
@@ -836,17 +977,13 @@ public class Vue {
 			defis.setLayoutX(50);
 			prison.setLayoutX(50);
 			prison.setLayoutY(35);
-
-			joueur_boutons.getChildren().add(achat);
-			joueur_boutons.getChildren().add(vente);
-			joueur_boutons.getChildren().add(defis);
-			joueur_boutons.getChildren().add(prison);
-
+			achatBatiments_menu.setLayoutY(65);
+			
+			joueur_boutons.getChildren().addAll(achat, vente, defis, prison, achatBatiments_menu);
+			
 			boutonsJoueurs.getChildren().add(joueur_boutons);
 		}
 	}
-
-
 	
 	void caseChanceCommu(int curseur, Cartes carteTiree) {
 		BorderPane carte_pane = new BorderPane();
@@ -854,18 +991,19 @@ public class Vue {
 		Label contenu_carte = new Label(carteTiree.getContenu());
 		Button bouton_fermer = new Button("Fermer");
 		
-		type_carte.setFont(new Font("Arial", 17));
-		contenu_carte.setFont(new Font("Arial", 15));
+		type_carte.setFont(new Font("Arial", 23));
+		contenu_carte.setFont(new Font("Arial", 18));
+		contenu_carte.setTextAlignment(TextAlignment.CENTER);
 		
 		carte_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
-		carte_pane.setStyle("-fx-background-color: white");
-		carte_pane.setLayoutX((panePlateau_x*20)/100);
+		carte_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
+		carte_pane.setLayoutX((panePlateau_x*21)/100);
 		carte_pane.setLayoutY((panePlateau_y*15)/100);
 		  
 		carte_pane.setTop(type_carte);
 		carte_pane.setCenter(contenu_carte);
 		carte_pane.setBottom(bouton_fermer);
-		type_carte.setPadding(new Insets(15,0,0,0));
+		type_carte.setPadding(new Insets(20,0,0,0));
 		BorderPane.setAlignment(type_carte, Pos.TOP_CENTER);
 		BorderPane.setAlignment(contenu_carte, Pos.CENTER);
 		BorderPane.setAlignment(bouton_fermer, Pos.BOTTOM_CENTER);
@@ -1019,9 +1157,6 @@ public class Vue {
 
 	void bouton_prison(int curseur) {
 		prison_tab[curseur].setDisable(false);
-		/*if(jeu.getJoueurs()[curseur].isRobot()){
-			prison_tab[curseur].fire();
-		}*/
 		prison_tab[curseur].setOnAction(actionEvent ->{
 			prison_tab[curseur].setDisable(true);
 			controleur.controleur_libererPrison(curseur);
@@ -1032,7 +1167,7 @@ public class Vue {
 		}
 	}
 
-
+	
 	//Interface graphique : Accueil
 	void accueil_jeu(boolean b) {
 		scene_accueil = new AnchorPane();
@@ -1183,8 +1318,8 @@ public class Vue {
 		Label l1 = new Label ("VICTOIRE DU JOUEUR");
 		Label l2 = new Label (nom);
 		victoire_pane.setPrefSize((panePlateau_x*50)/100, (panePlateau_y*50)/100);
-		victoire_pane.setStyle("-fx-background-color: white");
-		victoire_pane.setLayoutX((panePlateau_x*20)/100);
+		victoire_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
+		victoire_pane.setLayoutX((panePlateau_x*21)/100);
 		victoire_pane.setLayoutY((panePlateau_y*15)/100);
 		l1.setFont(new Font(30));
 		l2.setFont(new Font(30));

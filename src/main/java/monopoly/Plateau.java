@@ -33,6 +33,16 @@ public class Plateau {
 	public Cartes[] getCartesCommu() {
 		return cartesCommu;
 	}
+	
+	public int nbProprDansUneFamille(String couleur) { //renvoie le nombre de proprietes qu'il y a dans la famille couleur
+		int cpt = 0;
+		for (Cases c : grille) {
+			if ( c instanceof Proprietes && couleur.equals(((Proprietes) c).getCouleur()) ) {
+				cpt++;
+			}
+		}
+		return cpt;
+	}
 
 	//Initilisation du plateau
 	public void init_plateau() {
@@ -46,7 +56,7 @@ public class Plateau {
         	String[] attributs = casePlateau.split(";"); //tab de taille 6, voir cases.csv
             switch (attributs[1]) {
             	case "Proprietes": 
-            		grille[i] = new Proprietes(Integer.parseInt(attributs[0]), attributs[2], attributs[3], Integer.parseInt(attributs[4]), attributs[5].split("-"));
+            		grille[i] = new Proprietes(Integer.parseInt(attributs[0]), attributs[2], attributs[3], Integer.parseInt(attributs[4]), attributs[5].split("-"), Integer.parseInt(attributs[6]));
             		break;
             	case "CasesSpeciales":
             		grille[i] = new CasesSpeciales(Integer.parseInt(attributs[0]), attributs[2], Integer.parseInt(attributs[6]));
