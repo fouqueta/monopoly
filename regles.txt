@@ -18,9 +18,12 @@
 	
 		DEROULEMENT D'UN TOUR:
 	Cliquez sur le bouton "Lancer" et vos pions se deplaceront suivant le nombre obtenu au lancement des des. Vous avez la possibilite de tomber sur une case:
-		- Proprietes: si cette propriete n'est pas encore achetee, vous pouvez choisir de l'acheter. Au contraire, si cette propriete appartient deja a un autre joueur, 
-				      vous devez lui verser un loyer ou vous avez la possibilite de lui lancer un defi si vous refusez ce loyer. S'il s'avere que votre argent n'excede 
-				      pas le montant du loyer, vous devrez vendre autant de bien que possible jusqu'a atteindre cette somme.
+		- Proprietes: si cette propriete n'est pas encore achetee, vous pouvez choisir de l'acheter. Plus vous avez de proprietes appartenant au meme groupe
+                                      de couleur, plus le loyer est grand. En revanche, si cette propriete appartient deja a un autre joueur, vous devez lui verser un
+                                      loyer ou vous avez la possibilite de lui lancer un defi si vous refusez ce loyer. S'il s'avere que votre argent n'excede pas le
+                                      montant du loyer, vous devez vendre autant de vos biens que necessaire jusqu'a atteindre cette somme. De plus, si vous avez assez
+                                      d'argent, vous pouvez demander a racheter la propriete. Si le proprietaire accepte le rachat et qu'il y a des batiments sur le 
+                                      terrain, il recoit l'argent du prix d'achat de la propriete plus la moitie du prix d'achat de ses batiments.
 		- Chance/Caisse de communaute: a l'arrivee d'une de ses cases, vous piocherez une carte contenant une indication que vous devrez suivre. Si vous tirez
 					       une carte "Vous etes libere de prison", vous pouvez la garder jusqu'a ce que vous decidiez de l'utiliser.
 					       Une carte peut vous demander de vous rendre a une autre case. Si vous passez par la case depart, recevez 2000e. Vous ne 
@@ -34,15 +37,21 @@
 	La partie se termine lorsqu'il ne reste plus qu'un joueur en jeu.
 	
 		OPTIONS:
-	Robot: Vous pouvez jouer contre des robots ou de faire une partie essentiellement composee de robots.
-	Defi: En tombant sur la propriete d'un autre joueur, vous avez la possibilite de lui lancer un defi si vous ne souhaitez pas lui verser un loyer. Ce dernier pourra 
-	      alors accepter ou refuser ce defi. S'il accepte, vous lancerez tous les deux les des et le joueur ayant obtenu le plus grand nombre gagne. Le perdant repart 
-	      avec un malus.
-	Maison/hotel: Si vous possedez toutes les proprietes d'une meme famille/couleur, vous pourrez transformer chaque propriete en une/des maison(s) (pouvant 
-		      aller jusqu'a 4 maisons par terrain) puis en un hotel une fois que vous possederez le nombre maximal de maison. Chaque propriete transformee 
-		      en maison ou hotel fait augmenter son loyer.
-	Prison: Pour sortir de la prison, vous devez soit posseder une carte "Vous etes libere de prison" soit faire un double au lancer de des (A noter que les cartes 
-			"Libere de prison ne sont pas cumulables.)
+	Robot: Vous pouvez jouer contre des robots ou faire une partie uniquement composee de robots.
+	Defi: En tombant sur la propriete d'un autre joueur, vous payez le loyer mais vous avez la possibilite de lancer un defi au proprietaire. Si ce dernier
+              l'accepte, vous lancez tous les deux les des et le joueur ayant obtenu le plus grand nombre gagne. Si vous etes le gagnant, le proprietaire vous
+              rembourse le loyer que vous avez paye. Si vous perdez, vous devez repayer le loyer et s'il y a egalite, rien ne se passe (vous aurez donc tout de
+              meme paye le loyer une fois).
+	Maisons/hotels: - Vous devez posseder tous les terrains d'un meme groupe de couleur pour pouvoir acheter des maisons. 
+		        - Vous devez construire uniformement: vous ne pouvez pas construire de deuxieme maison sur un terrain tant que vous n'avez pas construit une 
+                          maison sur chaque terrain du meme groupe de couleur.
+                        - Vous pouvez construire jusqu'a 4 maisons sur un meme terrain.
+                        - Une fois que vous avez 4 maisons sur une propriete, vous pouvez les echanger contre un hotel. Vous devez payer en plus le prix de l'hotel.
+                        - Vous ne pouvez construire qu'un seul hotel par terrain et vous ne pouvez pas construire de maison sur un terrain disposant deja d'un hotel.
+			- Il n'y a pas d'uniformite a respecter dans la revente des batiments. Si la revente casse l'uniformite, vous pouvez tout de meme acheter des
+                          batiments sur la propriete pour rattraper le retard que la revente a cause.
+                        - Le prix de revente d'un batiment est la moitie de son prix d'achat. Si vous vendez un hotel, il n'y a plus de batiments sur le terrain.
+                        - Chaque propriete possedant des maisons ou un hotel augmente son loyer.
 	Historique: Pour suivre le deroulement des actions en cours en detail, cliquez sur le bouton "Historique" et une fenetre s'ouvrira, decrivant les actions du jeu en 
 				temps reel.
 	Tchat: Le tchat est une zone de communication ou vous pouvez discuter avec vos adversaires.
