@@ -614,7 +614,9 @@ public class Vue {
 			nom_proprietes_button[n].setOnAction(actionEvent->{
 				int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
 				if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-					controleur.sendMsg("vendre", String.valueOf(n));
+					Proprietes pos_actuelle = (Proprietes) jeu.getPlateau().getCases(ancienne_position);
+					int prix = pos_actuelle.getPrix();
+					controleur.sendMsg("vendre", n + "-" + prix + "-" + ancienne_position);
 				}
 				changement_couleur_case_blanche(ancienne_position);
 				nom_proprietes_button[n].setVisible(false);
@@ -684,8 +686,14 @@ public class Vue {
 
 		lancer.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();
-			int[] des = jeu.lancer_de_des();
-			controleur.controleur_lancer(des, curseur);
+			if(jeu.isReseau()){
+				controleur.sendMsg("lancer des", "");
+			}else{
+
+				int[] des = jeu.lancer_de_des();
+				controleur.controleur_lancer(des, curseur);
+
+			}
 			lancer.setDisable(true);
 
 			bouton_defis(curseur);
@@ -981,7 +989,12 @@ public class Vue {
 			changement_argent(proprietaires[position]);
 			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			proprietaires[position]=curseur;
-			controleur.sendMsg("vente Ã  joueur", "");
+
+			Proprietes pos_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+			int prix = pos_actuelle.getPrix();
+
+			controleur.sendMsg("vente a joueur", position + "-" + jeu.getJoueurs()[curseur].getNom() + "-" + prix);
+
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
 			}
@@ -1457,7 +1470,6 @@ public class Vue {
 		changement_argent(curseur);
 		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
 			controleur.controleur_loyerIG(propriete_actuelle);
-			//FIXME: update l'argent de l'ancien proprio une fois que le joueur a assez d'argent pour payer le loyer
 			changement_argent(proprietaires[position]);
 			changement_argent(curseur);
 		}

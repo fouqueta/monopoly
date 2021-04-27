@@ -205,7 +205,7 @@ public class Joueur{
     	if (argent < 0) { argent = 0; }
 	}
 	
-	public void thisPayeA(Joueur receveur, int montant) {
+	public int thisPayeA(Joueur receveur, int montant) {
 		if(argent < montant){
 			montant = argent;
 		}
@@ -213,6 +213,7 @@ public class Joueur{
 		transaction(-montant);
 		System.out.println("Vous avez donne " + montant + "e a " + receveur.getNom() + "." +
 				receveur.getNom() + " a maintenant " + receveur.getArgent() + "e." );
+		return montant;
 	}
 	
 	public void thisRecoitDe(Joueur payeur, int montant) {

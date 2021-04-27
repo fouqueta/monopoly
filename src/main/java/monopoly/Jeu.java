@@ -384,8 +384,8 @@ public class Jeu {
     	return nbFaillite==joueurs.length-1;
     }
      
-    public void loyer_IG(Proprietes p) {
-    	joueurs[curseur].thisPayeA(p.getProprietaire(), p.getLoyer());
+    public int loyer_IG(Proprietes p) {
+    	return joueurs[curseur].thisPayeA(p.getProprietaire(), p.getLoyer());
     }
 
 	public boolean onlyRobot(){

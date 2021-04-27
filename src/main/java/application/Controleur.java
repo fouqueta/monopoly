@@ -67,8 +67,17 @@ public class Controleur extends Thread {
 		controleur_deplacement(des, curseur);
 		controleur_loyer(des, curseur);
 		vue.changement_argent(curseur);
-		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
-			sendMsg("deplace", des[0] + "," + des[1]);
+		if(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
+			Joueur j = jeu.getJoueurs()[curseur];
+			sendMsg("deplace",
+					des[0] + "-"
+					+ des[1] + "-"
+					+ j.getPion().getPosition() + "-"
+					+ j.getArgent() + "-"
+					+ j.isEnPrison() + "-"
+					+ j.getNbToursPrison() + "-"
+					+ j.getFaillite() + "-"
+					+ j.aCarteLibPrison());
 		}
 
 	}
@@ -147,7 +156,7 @@ public class Controleur extends Thread {
 		}
 
 		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-			sendMsg("carte", String.valueOf(jeu.numCase(carteTiree)));
+			sendMsg("carte", jeu.numCase(carteTiree) + "-" + joueurJ.getArgent());
 		}
 	}
 
@@ -202,7 +211,7 @@ public class Controleur extends Thread {
 			vue.gestion_historique(new Label("La partie est terminee."));
 		} else {
 			if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
-				sendMsg("fin tour", "");
+				sendMsg("fin tour", String.valueOf(controleur_curseurSuivant(jeu.getCurseur())));
 			}
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
@@ -233,7 +242,9 @@ public class Controleur extends Thread {
 		jeu.achat_IG(p);
 		vue.changement_couleur_case(curseur, position);
 		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-			sendMsg("achat", "");
+			Proprietes pos_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+			int prix = pos_actuelle.getPrix();
+			sendMsg("achat", String.valueOf(prix));
 		}
 	}
 	
@@ -281,7 +292,10 @@ public class Controleur extends Thread {
 
 	
 	void controleur_loyerIG(Proprietes propriete_actuelle) {
-		jeu.loyer_IG(propriete_actuelle);
+		int montant = jeu.loyer_IG(propriete_actuelle);
+		if(jeu.isReseau()){
+			sendMsg("loyer", String.valueOf(montant));
+		}
 	}
 
 	//Systeme de defis
@@ -299,14 +313,14 @@ public class Controleur extends Thread {
 
 		if(sommeJoueur > sommeProprio) { //Rembourse le loyer au joueur gagnant.
 			joueur.thisRecoitDe(proprio, loyerEnJeu);
-			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio);
+			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
-			joueur.thisPayeA(proprio, loyerEnJeu);
-			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio);
+			int montant = joueur.thisPayeA(proprio, loyerEnJeu);
+			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + proprio.getNom());
 		}
 		else {
-			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite-" + sommeJoueur + "-" + sommeProprio);
+			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);
 		}
 		int tab_histo[] = {sommeJoueur, sommeProprio};
 		vue.gestion_historique(vue.deuxJoueurs_historique("accepterDefi", joueur, proprio, tab_histo, 0));
@@ -374,9 +388,20 @@ public class Controleur extends Thread {
 					controleur_fin();
 				});
 				break;
+			case "lancer des":
+				Platform.runLater(() -> {
+					String[] temp = info.split("-");
+					int[] des = new int[2];
+					des[0] = Integer.valueOf(temp[0]);
+					des[1] = Integer.valueOf(temp[1]);
+					controleur_lancer(des, curseur);
+					vue.bouton_defis(curseur);
+					vue.bouton_achat(curseur);
+				});
+				break;
 			case "deplace":
 				Platform.runLater(() -> {
-					String[] temp = info.split(",");
+					String[] temp = info.split("-");
 					int[] des = new int[2];
 					des[0] = Integer.valueOf(temp[0]);
 					des[1] = Integer.valueOf(temp[1]);
@@ -413,7 +438,7 @@ public class Controleur extends Thread {
 					vue.gestion_historique(vue.deuxJoueurs_historique("achat", jeu.getJoueurs()[curseur], jeu.getJoueurs()[vue.getTabProprietaires(position)], null, position));
 				});
 				break;
-			case "vente Ã  joueur":
+			case "vente a joueur":
 				Platform.runLater(() -> {
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					vue.updateVenteReseau(position, curseur);
@@ -482,6 +507,7 @@ public class Controleur extends Thread {
 						joueur.thisPayeA(proprio, loyerEnJeu);
 					}
 					vue.changement_argent(curseur);
+					vue.changement_argent(vue.getTabProprietaires(position));
 
 					int tab_histo[] = {Integer.parseInt(t[1]), Integer.parseInt(t[2])};
 					vue.gestion_historique(vue.deuxJoueurs_historique("accepterDefi", joueur, proprio, tab_histo, 0));
