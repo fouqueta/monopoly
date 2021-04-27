@@ -663,7 +663,7 @@ public class Vue {
 				}
 				else {
 					panePlateau.getChildren().remove(revente_pane);
-					controleur.transactionSelonType(curseur, carteTiree);
+					controleur.transactionSelonType(curseur, carteTiree, montant);
 				}
 			});	
 			i++;
@@ -694,7 +694,7 @@ public class Vue {
 						}
 						else { 
 							panePlateau.getChildren().remove(revente_pane);
-							controleur.transactionSelonType(curseur, carteTiree);
+							controleur.transactionSelonType(curseur, carteTiree, montant);
 						}
 					});
 				}
@@ -712,7 +712,7 @@ public class Vue {
 					}
 					else { 
 						panePlateau.getChildren().remove(revente_pane);
-						controleur.transactionSelonType(curseur, carteTiree);
+						controleur.transactionSelonType(curseur, carteTiree, montant);
 					}
 				});	
 			}
@@ -735,7 +735,7 @@ public class Vue {
 				}
 				else {
 					panePlateau.getChildren().remove(revente_pane);
-					controleur.transactionSelonType(curseur, carteTiree);
+					controleur.transactionSelonType(curseur, carteTiree, montant);
 				}
 			});
 		}	
@@ -885,6 +885,7 @@ public class Vue {
 		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
 		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
 		for (Proprietes p : joueurSuivant.getProprietes()) {
+			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
 				int nbMaisonsPlus1 = p.getNbMaisons()+1;
 				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
@@ -1531,7 +1532,8 @@ public class Vue {
 		changement_couleur_case_blanche(ancienne_position);
 		changement_argent(curseur);
 		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
-			controleur.controleur_loyerIG(propriete_actuelle);
+			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
+			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
 			//FIXME: update l'argent de l'ancien proprio une fois que le joueur a assez d'argent pour payer le loyer
 			changement_argent(proprietaires[position]);
 			changement_argent(curseur);

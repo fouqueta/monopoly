@@ -8,6 +8,7 @@ public class Jeu {
     private Plateau plateau;
     private int curseur;
     private int nbJ;
+    private int[] des;
     private Joueur joueurReseau;
     private boolean reseau;
 
@@ -45,6 +46,10 @@ public class Jeu {
 
 	public int getNbJ(){
 		return nbJ;
+	}
+	
+	public int getSommeDes() {
+		return des[0] + des[1];
 	}
 
 	public Joueur getJoueurReseau(){
@@ -216,7 +221,7 @@ public class Jeu {
     	while (!jeuFini()) {
     		System.out.println("\nJoueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
         	joueurs[curseur].questionDes();
-        	int[] des = lancer_de_des();
+        	des = lancer_de_des();
         	deplace(joueurs[curseur].getPion(), des);
     		System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
         	achat_ou_vente(joueurs[curseur].getPion());
@@ -389,8 +394,8 @@ public class Jeu {
     	return nbFaillite==joueurs.length-1;
     }
      
-    public void loyer_IG(Proprietes p) {
-    	joueurs[curseur].thisPayeA(p.getProprietaire(), p.getLoyer());
+    public void loyer_IG(Proprietes p, int loyer) { //parametre loyer necessaire car pour les compagnies, loyer a payer = p.getLoyer*somme des des
+    	joueurs[curseur].thisPayeA(p.getProprietaire(), loyer);
     }
 
 	public boolean onlyRobot(){

@@ -46,6 +46,7 @@
 		        - Vous devez construire uniformement: vous ne pouvez pas construire de deuxieme maison sur un terrain tant que vous n'avez pas construit une 
                           maison sur chaque terrain du meme groupe de couleur.
                         - Vous pouvez construire jusqu'a 4 maisons sur un meme terrain.
+			- Vous ne pouvez pas construire de batiments sur les gares ni sur les compagnies
                         - Une fois que vous avez 4 maisons sur une propriete, vous pouvez les echanger contre un hotel. Vous devez payer en plus le prix de l'hotel.
                         - Vous ne pouvez construire qu'un seul hotel par terrain et vous ne pouvez pas construire de maison sur un terrain disposant deja d'un hotel.
 			- Il n'y a pas d'uniformite a respecter dans la revente des batiments. Si la revente casse l'uniformite, vous pouvez tout de meme acheter des

@@ -87,9 +87,8 @@ public class Proprietes extends Cases {
 		return false;
 	}
 	
-	public boolean coloree() {
-		if(this.couleur.equals("compagnie")) { return false; }
-		return true;
+	public boolean estCompagnie() {
+		return this.couleur.equals("compagnie");
 	}
 	
 	public boolean familleComplete() {

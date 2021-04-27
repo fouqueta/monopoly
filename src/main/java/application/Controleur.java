@@ -66,7 +66,7 @@ public class Controleur implements Runnable {
 	void controleur_lancer(int[] des, int curseur) {
 		vue.changement_labelDes(des);
 		controleur_deplacement(des, curseur);
-		controleur_loyer(curseur);
+		controleur_loyer(curseur, des);
 		vue.changement_argent(curseur);
 		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
 			sendMsg("deplace", des[0] + "," + des[1]);
@@ -157,21 +157,28 @@ public class Controleur implements Runnable {
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		jeu.surCaseSpeciale_IG(joueurJ.getPion(), case_actuelle);
 		if (case_actuelle.getNom().equals("Impots revenu") || case_actuelle.getNom().equals("Taxe de luxe")) {
-			verifPuisPaiement(curseur, -((CasesSpeciales)case_actuelle).getTransaction(), null );
+			verifPuisPaiement(curseur, -((CasesSpeciales)case_actuelle).getTransaction(), null);
 		}
 	}
 
 
 	//Paie le loyer si besoin
-	void controleur_loyer(int curseur) {
+	void controleur_loyer(int curseur, int[] des) {
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Cases case_actuelle = jeu.getPlateau().getCases(position);
 		if(case_actuelle instanceof Proprietes) {
 			Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
-				&& propriete_actuelle.coloree()){
+				&& !propriete_actuelle.estCompagnie()){
 				verifPuisPaiement(curseur, propriete_actuelle.getLoyer(), null);
 				vue.gestion_historique(vue.deuxJoueurs_historique("loyer", jeu.getJoueurs()[curseur], propriete_actuelle.getProprietaire(), null, propriete_actuelle.getLoyer()));
+				vue.changement_argent(vue.getTabProprietaires(position));
+			}
+			else if (!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
+				&& propriete_actuelle.estCompagnie()){
+				int sommeDes = des[0] + des[1];
+				verifPuisPaiement(curseur, sommeDes*propriete_actuelle.getLoyer(), null);
+				vue.gestion_historique(vue.deuxJoueurs_historique("loyer", jeu.getJoueurs()[curseur], propriete_actuelle.getProprietaire(), null, sommeDes*propriete_actuelle.getLoyer()));
 				vue.changement_argent(vue.getTabProprietaires(position));
 			}
 		}
@@ -251,17 +258,17 @@ public class Controleur implements Runnable {
 			}
 		}
 		else {
-			transactionSelonType(curseur, carteTiree);
+			transactionSelonType(curseur, carteTiree, sommeApayer);
 		}
 	}
 
-	public void transactionSelonType(int curseur, Cartes carteTiree) {
+	public void transactionSelonType(int curseur, Cartes carteTiree, int loyer) {
         Joueur joueurJ = jeu.getJoueurs()[jeu.getCurseur()];
         int position = joueurJ.getPion().getPosition();
         Cases caseC = jeu.getPlateau().getCases(position);
         
         if (caseC instanceof Proprietes) {
-            jeu.loyer_IG((Proprietes) caseC);
+            jeu.loyer_IG((Proprietes) caseC, loyer);
         }
         else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
             joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
@@ -299,8 +306,8 @@ public class Controleur implements Runnable {
 	}
 
 	
-	void controleur_loyerIG(Proprietes propriete_actuelle) {
-		jeu.loyer_IG(propriete_actuelle);
+	void controleur_loyerIG(Proprietes propriete_actuelle, int loyer) {
+		jeu.loyer_IG(propriete_actuelle, loyer);
 	}
 
 	//Systeme de defis
