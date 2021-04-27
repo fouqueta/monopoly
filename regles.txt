@@ -19,7 +19,8 @@
 		DEROULEMENT D'UN TOUR:
 	Cliquez sur le bouton "Lancer" et vos pions se deplaceront suivant le nombre obtenu au lancement des des. Vous avez la possibilite de tomber sur une case:
 		- Proprietes: si cette propriete n'est pas encore achetee, vous pouvez choisir de l'acheter. Plus vous avez de proprietes appartenant au meme groupe
-                                      de couleur, plus le loyer est grand. En revanche, si cette propriete appartient deja a un autre joueur, vous devez lui verser un
+                                      de couleur, plus le loyer est grand (pour les compagnies, le loyer est la somme que vous avez obtenu au lancer de des, fois le
+                                      palier de loyer marque sur la carte). En revanche, si cette propriete appartient deja a un autre joueur, vous devez lui verser un
                                       loyer ou vous avez la possibilite de lui lancer un defi si vous refusez ce loyer. S'il s'avere que votre argent n'excede pas le
                                       montant du loyer, vous devez vendre autant de vos biens que necessaire jusqu'a atteindre cette somme. De plus, si vous avez assez
                                       d'argent, vous pouvez demander a racheter la propriete. Si le proprietaire accepte le rachat et qu'il y a des batiments sur le 

@@ -80,6 +80,24 @@ public class Joueur{
 		}
 		return cpt;
 	}
+	
+	public int getNbTotalMaisons() {
+		int cpt = 0;
+		for (Proprietes p : proprietes) {
+			cpt += p.getNbMaisons();
+		}
+		return cpt;
+	}
+	
+	public int getNbTotalHotels() {
+		int cpt = 0;
+		for (Proprietes p : proprietes) {
+			if (p.aUnHotel()) {
+				cpt++;
+			}
+		}
+		return cpt;
+	}
 
 	public boolean isEnPrison() { return enPrison; }
 

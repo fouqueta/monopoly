@@ -129,8 +129,11 @@ public class Controleur implements Runnable {
 
 		switch (carteTiree.getTypeAction()) {
 			case "prelevement" :
+				verifPuisPaiement(curseur, carteTiree.getParametres(), carteTiree);
+				break;
 			case "immo" :
-				verifPuisPaiement(curseur, -carteTiree.getParametres(), carteTiree);
+				int sommeApayer = joueurJ.getNbTotalMaisons()*carteTiree.getParametres() + joueurJ.getNbTotalHotels()*4*carteTiree.getParametres();
+				verifPuisPaiement(curseur, sommeApayer, carteTiree);
 				break;
 			case "trajet" :
 			case "reculer" :
@@ -157,7 +160,7 @@ public class Controleur implements Runnable {
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		jeu.surCaseSpeciale_IG(joueurJ.getPion(), case_actuelle);
 		if (case_actuelle.getNom().equals("Impots revenu") || case_actuelle.getNom().equals("Taxe de luxe")) {
-			verifPuisPaiement(curseur, -((CasesSpeciales)case_actuelle).getTransaction(), null);
+			verifPuisPaiement(curseur, ((CasesSpeciales)case_actuelle).getTransaction(), null);
 		}
 	}
 
@@ -258,28 +261,28 @@ public class Controleur implements Runnable {
 			}
 		}
 		else {
-			transactionSelonType(curseur, carteTiree, sommeApayer);
+			transactionSelonType(curseur, sommeApayer, carteTiree);
 		}
 	}
 
-	public void transactionSelonType(int curseur, Cartes carteTiree, int loyer) {
+	public void transactionSelonType(int curseur,  int sommeApayer, Cartes carteTiree) {
         Joueur joueurJ = jeu.getJoueurs()[jeu.getCurseur()];
         int position = joueurJ.getPion().getPosition();
         Cases caseC = jeu.getPlateau().getCases(position);
         
         if (caseC instanceof Proprietes) {
-            jeu.loyer_IG((Proprietes) caseC, loyer);
+            jeu.loyer_IG((Proprietes) caseC, sommeApayer);
         }
         else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
-            joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
+            joueurJ.transaction(-sommeApayer);
         }
         else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
                 (carteTiree.getTypeAction().equals("prelevement") || carteTiree.getTypeAction().equals("immo")) ) {
-            joueurJ.transaction(carteTiree.getParametres());
+            joueurJ.transaction(-sommeApayer);
         }
         else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
                 (carteTiree.getTypeAction().equals("cadeau")) ) {
-            joueurJ.thisRecoitDe(jeu.getJoueurs()[curseur], carteTiree.getParametres());
+            joueurJ.thisRecoitDe(jeu.getJoueurs()[curseur], sommeApayer);
         }
         vue.changement_argent(curseur);
         vue.changement_argent(vue.getTabProprietaires(position));

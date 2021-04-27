@@ -663,7 +663,7 @@ public class Vue {
 				}
 				else {
 					panePlateau.getChildren().remove(revente_pane);
-					controleur.transactionSelonType(curseur, carteTiree, montant);
+					controleur.transactionSelonType(curseur, montant, carteTiree);
 				}
 			});	
 			i++;
@@ -694,7 +694,7 @@ public class Vue {
 						}
 						else { 
 							panePlateau.getChildren().remove(revente_pane);
-							controleur.transactionSelonType(curseur, carteTiree, montant);
+							controleur.transactionSelonType(curseur, montant, carteTiree);
 						}
 					});
 				}
@@ -712,7 +712,7 @@ public class Vue {
 					}
 					else { 
 						panePlateau.getChildren().remove(revente_pane);
-						controleur.transactionSelonType(curseur, carteTiree, montant);
+						controleur.transactionSelonType(curseur, montant, carteTiree);
 					}
 				});	
 			}
@@ -735,7 +735,7 @@ public class Vue {
 				}
 				else {
 					panePlateau.getChildren().remove(revente_pane);
-					controleur.transactionSelonType(curseur, carteTiree, montant);
+					controleur.transactionSelonType(curseur, montant, carteTiree);
 				}
 			});
 		}	
@@ -1488,7 +1488,7 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	//Actualise l'IG à la fin du tour en mode reseau
+	//Actualise l'IG a� la fin du tour en mode reseau
 	void finDeTourReseau(){
 		int curseur = jeu.getCurseur();
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
@@ -1524,7 +1524,7 @@ public class Vue {
 		gestion_historique(unJoueur_historique("achat", jeu.getJoueurs()[curseur], null, position));
 	}
 
-	//Vend la propriété en reseau
+	//Vend la propriete en reseau
 	void vendPropReseau(int ancienne_position, int curseur){
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
@@ -1540,7 +1540,7 @@ public class Vue {
 		}
 	}
 
-	//Vend la propriété a un autre joueur
+	//Vend la propriete a un autre joueur
 	public void updateVenteReseau(int position, int curseur){
 		controleur.controleur_vente(curseur);
 		changement_argent(curseur);

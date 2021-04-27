@@ -128,8 +128,8 @@ public class Jeu {
     	switch (caseC.getNom()) {
 			case "Impots revenu" :
 			case "Taxe de luxe" :
-				joueurs[curseur].transaction( ((CasesSpeciales)caseC).getTransaction() );
-				System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
+				joueurs[curseur].transaction( -((CasesSpeciales)caseC).getTransaction() );
+				System.out.println("Vous avez paye " + ((CasesSpeciales)caseC).getTransaction() + "e.");
 				break;
 			case "Aller prison" :
 				System.out.println("Vous etes en prison.");
@@ -146,11 +146,13 @@ public class Jeu {
 		System.out.println(carte.getContenu());
 		switch (carte.getTypeAction()) {
 			case "prelevement" :
+				joueurs[curseur].transaction(-carte.getParametres());
+				break;
 			case "recette" :
 				joueurs[curseur].transaction(carte.getParametres());
 				break;
 			case "immo" :
-				//TODO : cas immo quand il y aura les maisons et hotels (ne pas oublier de modifier cartes.csv pour mettre plusieurs parametres de prix)
+				joueurs[curseur].transaction(-(joueurs[curseur].getNbTotalMaisons()*carte.getParametres() + joueurs[curseur].getNbTotalHotels()*4*carte.getParametres()));
 				break;
 			case "trajet" :
 				if ( carte.getParametres() != 30 ) {

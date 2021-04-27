@@ -3,7 +3,7 @@ POSITION;TYPE;NOM;COULEUR;PRIXACHAT;LOYER;PARAMETRE/PRIXBATIMENT
 1;Proprietes;Belleville;violet;600;4000-5000-100-300-900-1600-2500;500
 2;CasesCommunaute;Communaute;;;;
 3;Proprietes;Lecourbe;violet;600;3000-4000-200-600-1800-3200-4500;500
-4;CasesSpeciales;Impots revenu;;;;-2000
+4;CasesSpeciales;Impots revenu;;;;2000
 5;Proprietes;G Montparnasse;gare;2000;3500-5000-7500-10000;0
 6;Proprietes;Vaugirard;ciel;1000;3600-3800-4100-300-900-2700-4000-5500;500
 7;CasesChance;Chance;;;;
@@ -37,5 +37,5 @@ POSITION;TYPE;NOM;COULEUR;PRIXACHAT;LOYER;PARAMETRE/PRIXBATIMENT
 35;Proprietes;G. St-Lazare;gare;2000;3250-3500-3750-4000;0
 36;CasesChance;Chance;;;;
 37;Proprietes;Champs-Elysees;bleu;3500;3350-3500-1750-5000-11000-13000-15000;2000
-38;CasesSpeciales;Taxe de luxe;;;;-1000
+38;CasesSpeciales;Taxe de luxe;;;;1000
 39;Proprietes;Rue de la Paix;bleu;4000;4500-4750-2000-6000-14000-17000-20000;2000
