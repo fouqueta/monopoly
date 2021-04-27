@@ -325,13 +325,17 @@ public class Controleur implements Runnable {
 		int loyerEnJeu = propriete_actuelle.getLoyer();
 		Joueur joueur = jeu.getJoueurs()[curseur];
 		Joueur proprio = propriete_actuelle.getProprietaire();
-
+		
 		if(sommeJoueur > sommeProprio) { //Rembourse le loyer au joueur gagnant.
 			joueur.thisRecoitDe(proprio, loyerEnJeu);
 			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio);
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
-			joueur.thisPayeA(proprio, loyerEnJeu);
+			if(joueur.getArgent()<loyerEnJeu) {
+				vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
+			}else {
+				joueur.thisPayeA(proprio, loyerEnJeu);
+			}
 			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio);
 		}
 		else {
@@ -343,6 +347,7 @@ public class Controleur implements Runnable {
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}
+
 
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
