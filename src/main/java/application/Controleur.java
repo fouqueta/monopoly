@@ -246,9 +246,12 @@ public class Controleur implements Runnable {
 	}
 	
 	void controleur_vente(int curseur) {
-		Pion p = jeu.getJoueurs()[curseur].getPion();
-		int position = p.getPosition();
-		jeu.vente_IG(p);
+		Pion pion = jeu.getJoueurs()[curseur].getPion();
+		int position = pion.getPosition();
+		Proprietes propP = (Proprietes) jeu.getPlateau().getCases(position);
+		jeu.vente_IG(pion);
+		vue.actualisation_HBoxImagesMaisons(propP);
+		vue.actualisation_HBoxImageHotel(propP);
 		vue.changement_couleur_case(curseur, position);
 	}
 
@@ -290,15 +293,27 @@ public class Controleur implements Runnable {
 	
 	
 	public void controleur_achatBatiment(Proprietes p, String typeBatiment) {
-		if (typeBatiment.equals("maison")) { p.achatMaison(); }
-		else if (typeBatiment.equals("hotel")) { p.achatHotel(); }
+		if (typeBatiment.equals("maison")) { 
+			p.achatMaison(); 
+			vue.actualisation_HBoxImagesMaisons(p);
+		}
+		else if (typeBatiment.equals("hotel")) { 
+			p.achatHotel(); 
+			vue.actualisation_HBoxImageHotel(p);
+		}
 		vue.changement_argent(jeu.getCurseur());
 	}
 	
 	public void controleur_venteBatiment(Proprietes p, String typeBatiment, int nbVentesBat) {
 		for(int i = 0; i < nbVentesBat; i++) {
-			if (typeBatiment.equals("maison") && p.getNbMaisons()>0) { p.venteMaison(); }
-			else if (typeBatiment.equals("hotel")) { p.venteHotel(); }
+			if (typeBatiment.equals("maison") && p.getNbMaisons()>0) { 
+				p.venteMaison(); 
+				vue.actualisation_HBoxImagesMaisons(p);
+			}
+			else if (typeBatiment.equals("hotel")) { 
+				p.venteHotel(); 
+				vue.actualisation_HBoxImageHotel(p);
+			}
 		}
 		vue.changement_argent(jeu.getCurseur());
 	}

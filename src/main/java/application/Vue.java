@@ -3,6 +3,7 @@ package application;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -16,6 +17,8 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -61,6 +64,10 @@ public class Vue {
 	private VBox colonne_droite;
 	private HBox ligne_bas;
 	private HBox ligne_haut;
+	private HBox[] maisonsPlateau_tab = new HBox[40];
+	private HBox[] hotelsPlateau_tab = new HBox[40];
+	private Image maison_image;
+	private Image hotel_image;
 	
 	private Label desLabel = new Label();
 
@@ -259,6 +266,7 @@ public class Vue {
 		initialisation_familles();
 		initialisation_casesSpeciales();
 		initialisation_labelDes();
+		initialisation_batiments();
 	}
 	
 	void initialisation_casesSpeciales() {
@@ -430,6 +438,77 @@ public class Vue {
 		}
 		return rec;
 	}
+	
+	public void initialisation_batiments() {
+		try {
+			FileInputStream inputstreamM = new FileInputStream("maison.png");
+			FileInputStream inputstreamH = new FileInputStream("hotel.png"); 
+			maison_image = new Image(inputstreamM);
+			hotel_image = new Image(inputstreamH);
+		}
+    	catch(Exception e) {
+    		System.out.println("Erreur lors d ouverture fichier:");
+    		e.printStackTrace();
+    		System.exit(1);
+    	}
+//		for (int i=0; i<40; i++) {
+//			Cases caseC = jeu.getPlateau().getGrille()[i];
+//			if (caseC instanceof Proprietes) {
+//				if ( !((Proprietes) caseC).getCouleur().equals("gare") && !((Proprietes) caseC).getCouleur().equals("compagnie") ) {
+////					HBox batiments = new HBox();
+////					batiments.setLayoutX(2);
+////					batiments.setLayoutY(52);
+////					batiments.getChildren().addAll(maison, hotel);
+//					maisonsPlateau_tab[i] = new HBox();
+//					hotelsPlateau_tab[i] = new HBox();
+//					casesPlateau[i].getChildren().addAll(maisonsPlateau_tab[i], hotelsPlateau_tab[i]);
+//					maisonsPlateau_tab[i].setVisible(false);
+//					hotelsPlateau_tab[i].setVisible(false);
+//				}
+//			}
+//		}
+	}
+	
+	public void actualisation_HBoxImagesMaisons(Proprietes p) {
+		casesPlateau[p.getPosition()].getChildren().remove(maisonsPlateau_tab[p.getPosition()]);
+		if (p.getNbMaisons()==0) { return; } //Si on vend toutes les maisons d'un coup, il faut juste remove l'ancienne HBox
+		casesPlateau[p.getPosition()].getChildren().remove(hotelsPlateau_tab[p.getPosition()]);
+		HBox maisons = new HBox();
+		maisons.setLayoutX(panePlateau_y*0.6/100);
+		maisons.setLayoutY(panePlateau_y*6.5/100);
+		for (int i=0; i<p.getNbMaisons(); i++) {
+			maisons.getChildren().add(newImageViewMaison());
+		}
+		maisonsPlateau_tab[p.getPosition()] = maisons;
+		casesPlateau[p.getPosition()].getChildren().add(maisons);
+	}
+	
+	public void actualisation_HBoxImageHotel(Proprietes p) {
+		casesPlateau[p.getPosition()].getChildren().remove(hotelsPlateau_tab[p.getPosition()]);
+		if (!p.aUnHotel()) { return; } //Si on vend un hotel, il faut juste remove l'ancienne HBox hotelsPlateau_tab[p.getPosition()]
+		casesPlateau[p.getPosition()].getChildren().remove(maisonsPlateau_tab[p.getPosition()]);
+		HBox hotel = new HBox();
+		hotel.setLayoutX(panePlateau_y*0.6/100);
+		hotel.setLayoutY(panePlateau_y*6.5/100);
+		hotel.getChildren().add(newImageViewHotel());
+		hotelsPlateau_tab[p.getPosition()] = hotel;
+		casesPlateau[p.getPosition()].getChildren().add(hotel);
+	}
+	
+	public ImageView newImageViewMaison() {
+		ImageView maison = new ImageView(maison_image);	
+		maison.setFitHeight(panePlateau_y*1.4/100);
+		maison.setPreserveRatio(true);
+		return maison;
+	}
+	
+	public ImageView newImageViewHotel()  {
+		ImageView hotel = new ImageView(hotel_image);
+		hotel.setFitHeight(panePlateau_y*1.4/100);
+		hotel.setPreserveRatio(true);
+		return hotel;
+	}
+	
 	
 	//Interface graphique : Informations des joueurs
 	void affichage_joueurs() {
@@ -884,6 +963,8 @@ public class Vue {
 	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
 		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
 		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
+		maison_menuItem = null;
+		hotel_menuItem = null;
 		for (Proprietes p : joueurSuivant.getProprietes()) {
 			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
@@ -896,9 +977,6 @@ public class Vue {
 					controleur.controleur_achatBatiment(p, "maison");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
-				if(joueurSuivant.isRobot()){
-					maison_menuItem.fire();
-				}
 			}
 			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
 				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
@@ -909,10 +987,19 @@ public class Vue {
 					controleur.controleur_achatBatiment(p, "hotel");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
 				});
-				if(joueurSuivant.isRobot()){
+			}
+		}
+		if(joueurSuivant.isRobot()){
+			PauseTransition wait = new PauseTransition(Duration.seconds(0.15));
+			wait.setOnFinished((e) -> {
+				if (maison_menuItem!=null) { 
+					maison_menuItem.fire();
+				}
+				else if (hotel_menuItem!=null) {
 					hotel_menuItem.fire();
 				}
-			}
+			});
+			wait.play();
 		}
 	}
 	
