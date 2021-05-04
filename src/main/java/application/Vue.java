@@ -969,7 +969,7 @@ public class Vue {
 			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
 				int nbMaisonsPlus1 = p.getNbMaisons()+1;
-				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n�" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 				
@@ -1202,7 +1202,7 @@ public class Vue {
 			changement_argent(proprietaires[position]);
 			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			proprietaires[position]=curseur;
-			controleur.sendMsg("vente à joueur", "");
+			controleur.sendMsg("vente Ã  joueur", "");
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
 			}
@@ -1448,7 +1448,7 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	void creation_fenetreTchat() { //Mode réseau
+	void creation_fenetreTchat() { //Mode rÃ©seau
 		//TODO: VBOX (separation du tchat et de l'historique)
 	}
 
@@ -1474,7 +1474,7 @@ public class Vue {
 	}
 
 	//Creation d'un message d'evenement (action concernant un seul joueur)
-	Label unJoueur_historique(String type, Joueur joueur, int des[], int variable) { //TODO
+	Label unJoueur_historique(String type, Joueur joueur, int des[], int variable) {
 		Label nouveau = new Label();
 		switch(type) {
 			case "lancer":
@@ -1512,12 +1512,19 @@ public class Vue {
 					joueur.getNom() + " a utilise une carte de liberation.");
 				break;
 
-			case "amelioration": //TODO
+			case "achatMaison":
 				nouveau = new Label(
-					joueur.getNom() + " a ameliore sa propriete pour " + variable + " euros.");
+					joueur.getNom() + " a achete une maison à la position " + variable + ".");
+				break;
+				
+			case "achatHotel":
+				nouveau = new Label(
+					joueur.getNom() + " a achete un hotel à la position " + variable + ".");
 				break;
 
-			case "faillite": //TODO
+			case "faillite":
+				nouveau = new Label(
+					joueur.getNom() + " a fait faillite.");
 				break;
 
 			//Case fin de jeu: Controleur
@@ -1575,7 +1582,7 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	//Actualise l'IG a� la fin du tour en mode reseau
+	//Actualise l'IG a  la fin du tour en mode reseau
 	void finDeTourReseau(){
 		int curseur = jeu.getCurseur();
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();

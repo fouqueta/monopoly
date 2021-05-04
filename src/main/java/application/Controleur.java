@@ -230,7 +230,10 @@ public class Controleur implements Runnable {
 
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
-		boolean b = jeu.faillite_IG(joueur_actuel);
+		boolean faillite = jeu.faillite_IG(joueur_actuel);
+		if(faillite) {
+			vue.gestion_historique(vue.unJoueur_historique("faillite", jeu.getJoueurs()[curseur], null, 0));
+		}
 	}
 
 
@@ -296,10 +299,12 @@ public class Controleur implements Runnable {
 		if (typeBatiment.equals("maison")) { 
 			p.achatMaison(); 
 			vue.actualisation_HBoxImagesMaisons(p);
+			vue.gestion_historique(vue.unJoueur_historique("achatMaison", p.getProprietaire(), null, p.getPosition()));
 		}
 		else if (typeBatiment.equals("hotel")) { 
 			p.achatHotel(); 
 			vue.actualisation_HBoxImageHotel(p);
+			vue.gestion_historique(vue.unJoueur_historique("achatHotel", p.getProprietaire(), null, p.getPosition()));
 		}
 		vue.changement_argent(jeu.getCurseur());
 	}
@@ -458,7 +463,7 @@ public class Controleur implements Runnable {
 					vue.gestion_historique(vue.deuxJoueurs_historique("achat", jeu.getJoueurs()[curseur], jeu.getJoueurs()[vue.getTabProprietaires(position)], null, position));
 				});
 				break;
-			case "vente à joueur":
+			case "vente Ã  joueur":
 				Platform.runLater(() -> {
 					int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 					vue.updateVenteReseau(position, curseur);
