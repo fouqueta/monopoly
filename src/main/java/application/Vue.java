@@ -910,6 +910,7 @@ public class Vue {
 		}
 		//sans proprietaire
 		if(libre && argent_suffisant && position_valide) {
+			achat_tab[curseur].setDisable(true);
 			achat_tab[curseur].setDisable(false);
 			achat_tab[curseur].setOnAction(actionEvent ->{
 				proprietaires[position]=curseur;
@@ -1051,7 +1052,7 @@ public class Vue {
 		grid.setVgap(10);
 		grid.setPadding(new Insets((tailleEcran.height*40)/100, (tailleEcran.width*40)/100, (tailleEcran.height*40)/100, (tailleEcran.width*40)/100));
 
-		Label consigne = new Label ("Nombre de joueur");
+		Label consigne = new Label ("Nombre de joueur (entre 2 et 6)");
 		GridPane.setConstraints(consigne, 0, 1);
 		TextField tf = new TextField();
 		tf.setPromptText("Nombre de joueur");
@@ -1073,13 +1074,18 @@ public class Vue {
 				t = new Thread(controleur, "controleur");
 				controleur.startSocket();
 				t.start();
+				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+				transition.setToX(grid.getTranslateX() + 400);
+				transition.play();
+				transition.setOnFinished(evt -> {
+					accueil_pseudo(false);
+	                accueil_pane.getChildren().remove(grid);
+				});	
 			}else{
 				t.interrupt();
 				controleur.startSocket();
 				t = null;
 			}
-
-			accueil_pseudo(false);
 		});
 		GridPane.setConstraints(reseau, 0, 4);
 		
@@ -1101,7 +1107,6 @@ public class Vue {
 	                    nbJoueurs=Integer.parseInt(tf.getText());
 	                    accueil_pseudo(false);
 	                });
-				
 			}
 		});
 		grid.getChildren().addAll(consigne, tf,suivant,reseau);	
@@ -1115,6 +1120,12 @@ public class Vue {
 		TextField[] tf;
 		Button[] bt;
 		boolean[] flags;
+		
+		Label consigne = new Label("Entrez votre pseudo");
+		consigne.setFont(new Font("Arial", 10));
+		consigne.setLayoutX((tailleEcran.width*40)/100);
+		consigne.setLayoutY((tailleEcran.height*35)/100);
+		consigne.setFont(new Font("Arial", 20));
 
 		if(!jeu.isReseau()){
 			tf = new TextField[nbJoueurs];
@@ -1124,6 +1135,7 @@ public class Vue {
 			tf = new TextField[1];
 			bt = new Button[1];
 			flags = new boolean[1];
+			nbJoueurs=1;
 		}
 
 		for(int i=0;i<nbJoueurs;i++){
@@ -1142,9 +1154,9 @@ public class Vue {
 				flags[finalI] = !flags[finalI];
 			});
 		}
-
 		grid.getChildren().addAll(tf);
 		if(!jeu.isReseau()) grid.getChildren().addAll(bt);
+		accueil_pane.getChildren().add(consigne);
 		accueil_pane.getChildren().add(grid);
 		
 		if(b){
@@ -1206,6 +1218,7 @@ public class Vue {
 			Button retour = new Button("Retour");
 			grid.add(retour,1,nbJoueurs+1);
 			retour.setOnAction(actionEvent->{
+				accueil_pane.getChildren().remove(consigne);
 				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
 				transition.setToX(grid.getTranslateX() + 400);
 				transition.play();
