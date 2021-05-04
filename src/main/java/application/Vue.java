@@ -910,7 +910,6 @@ public class Vue {
 		}
 		//sans proprietaire
 		if(libre && argent_suffisant && position_valide) {
-			achat_tab[curseur].setDisable(true);
 			achat_tab[curseur].setDisable(false);
 			achat_tab[curseur].setOnAction(actionEvent ->{
 				proprietaires[position]=curseur;
