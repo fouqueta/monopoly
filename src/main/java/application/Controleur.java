@@ -198,12 +198,14 @@ public class Controleur implements Runnable {
 
 	//Gestion des robots
 	private void fin_only_robot(){
-		PauseTransition wait = new PauseTransition(Duration.seconds(2));
+		PauseTransition wait = new PauseTransition(Duration.seconds(4));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
 				vue.gestion_historique(new Label("La partie est terminee (onlyRobot)."));
 			} else {
+				Joueur j = jeu.getJoueurs()[jeu.getCurseur()];
+				System.out.println(j.getNom() + " : " + j.getArgent() + "e");
 				jeu.finTour_IG();
 				vue.changement_joueur_actuel();
 				vue.lancerRobot();

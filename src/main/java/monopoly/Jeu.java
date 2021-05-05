@@ -396,8 +396,8 @@ public class Jeu {
     	return nbFaillite==joueurs.length-1;
     }
      
-    public void loyer_IG(Proprietes p, int loyer) { //parametre loyer necessaire car pour les compagnies, loyer a payer = p.getLoyer*somme des des
-    	joueurs[curseur].thisPayeA(p.getProprietaire(), loyer);
+    public int loyer_IG(Proprietes p, int loyer) { //parametre loyer necessaire car pour les compagnies, loyer a payer = p.getLoyer*somme des des
+    	return joueurs[curseur].thisPayeA(p.getProprietaire(), loyer);
     }
 
 	public boolean onlyRobot(){
