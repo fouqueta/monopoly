@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
+import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -48,7 +50,7 @@ public class Vue {
 	private double panePlateau_y;
 
 	//Accueil
-	private AnchorPane scene_accueil;
+	private AnchorPane accueil_pane;
 		
 	//Scene de jeu
 	private Scene scene_jeu;
@@ -58,7 +60,7 @@ public class Vue {
 	private AnchorPane panePlateau; //jeu_pane
 	private Pane revente_pane;
 	//private Pane joueur_boutons;
-	
+
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
 	private VBox colonne_gauche;
 	private VBox colonne_droite;
@@ -68,13 +70,14 @@ public class Vue {
 	private HBox[] hotelsPlateau_tab = new HBox[40];
 	private Image maison_image;
 	private Image hotel_image;
-	
+
 	private Label desLabel = new Label();
 
 		//Proprietaires
 	private int[] proprietaires = new int[40];
 	
 		//Joueurs
+	private int nbJoueurs;
 	private AnchorPane paneJoueurs; //joueurs_pane
 	private Label[] pionLabel = new Label[6]; //pseudo_tab
 	private Pane[] infoJoueurs = new Pane[6]; //joueursPane_tab
@@ -87,11 +90,11 @@ public class Vue {
 	private Button achat;
 	private Button vente;
 	private Button prison;
-	
+
 	private MenuItem maison_menuItem;
 	private MenuItem hotel_menuItem;
 	private MenuButton achatBatiments_menu;
-     
+
 	private HBox boutons_box;
 	private Button regles_button;
 	private Button quitter_button;
@@ -106,7 +109,7 @@ public class Vue {
 	private MenuItem venteMaison;
 	private MenuItem venteHotel;
 	private Button venteCartePrison;
-	
+
 	private Button defis;
 	private Button defis_tab[] = new Button[6];
 
@@ -115,7 +118,7 @@ public class Vue {
 	
 	//Revente
 	private boolean bool_revente = false;
-	
+
 	
 	//Historique(Local) - Tchat(Reseau)
 	private AnchorPane rootHisto;
@@ -137,7 +140,7 @@ public class Vue {
 		jeu = controleur.getJeu();
 		
 		initilisation_scene_jeu();
-		accueil_jeu(false);
+		accueil_jeu();
 		
 		stage.show();
 	}
@@ -445,7 +448,7 @@ public class Vue {
 	public void initialisation_batiments() {
 		try {
 			FileInputStream inputstreamM = new FileInputStream("maison.png");
-			FileInputStream inputstreamH = new FileInputStream("hotel.png"); 
+			FileInputStream inputstreamH = new FileInputStream("hotel.png");
 			maison_image = new Image(inputstreamM);
 			hotel_image = new Image(inputstreamH);
 		}
@@ -471,7 +474,7 @@ public class Vue {
 //			}
 //		}
 	}
-	
+
 	public void actualisation_HBoxImagesMaisons(Proprietes p) {
 		casesPlateau[p.getPosition()].getChildren().remove(maisonsPlateau_tab[p.getPosition()]);
 		if (p.getNbMaisons()==0) { return; } //Si on vend toutes les maisons d'un coup, il faut juste remove l'ancienne HBox
@@ -485,7 +488,7 @@ public class Vue {
 		maisonsPlateau_tab[p.getPosition()] = maisons;
 		casesPlateau[p.getPosition()].getChildren().add(maisons);
 	}
-	
+
 	public void actualisation_HBoxImageHotel(Proprietes p) {
 		casesPlateau[p.getPosition()].getChildren().remove(hotelsPlateau_tab[p.getPosition()]);
 		if (!p.aUnHotel()) { return; } //Si on vend un hotel, il faut juste remove l'ancienne HBox hotelsPlateau_tab[p.getPosition()]
@@ -497,22 +500,22 @@ public class Vue {
 		hotelsPlateau_tab[p.getPosition()] = hotel;
 		casesPlateau[p.getPosition()].getChildren().add(hotel);
 	}
-	
+
 	public ImageView newImageViewMaison() {
-		ImageView maison = new ImageView(maison_image);	
+		ImageView maison = new ImageView(maison_image);
 		maison.setFitHeight(panePlateau_y*1.4/100);
 		maison.setPreserveRatio(true);
 		return maison;
 	}
-	
+
 	public ImageView newImageViewHotel()  {
 		ImageView hotel = new ImageView(hotel_image);
 		hotel.setFitHeight(panePlateau_y*1.4/100);
 		hotel.setPreserveRatio(true);
 		return hotel;
 	}
-	
-	
+
+
 	//Interface graphique : Informations des joueurs
 	void affichage_joueurs() {
 		paneJoueurs = new AnchorPane();
@@ -679,7 +682,7 @@ public class Vue {
 		venteMaison = null;
 		venteCartePrison = null;
 	}
-	
+
 	public void affichage_revente_proprietes(int curseur, int montant, Cartes carteTiree) {
 		bool_revente = true;
 		raz(curseur);
@@ -697,9 +700,9 @@ public class Vue {
 		int margeEspace = 70;
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		int nbPropSansBatiment = joueurJ.getProprietes().length - joueurJ.getNbPropAvecBatiments();
-		nom_proprietes_button = new Button[nbPropSansBatiment];	
+		nom_proprietes_button = new Button[nbPropSansBatiment];
 		menu_proprietesBat_revente = new MenuButton[joueurJ.getNbPropAvecBatiments()];
-		
+
 		panePlateau.getChildren().add(revente_pane);
 		revente_pane.setVisible(true);
 		
@@ -711,23 +714,23 @@ public class Vue {
 			affichageMenus_revente_propAvecBat(curseur, montant, carteTiree, joueurJ, margeEspace+30*nbPropSansBatiment, prop_curseur);
 			affichageBouton_revente_carteLibPrison(curseur, montant, carteTiree, joueurJ, margeEspace+30*joueurJ.getProprietes().length, prop_curseur);
 		}
-	
+
 		if (joueurJ.isRobot()) {
-			if (nbPropSansBatiment!=0) { 
+			if (nbPropSansBatiment!=0) {
 				nom_proprietes_button[0].fire();
 			}
-			else if (venteMaison!=null) { 
-				venteMaison.fire(); 
+			else if (venteMaison!=null) {
+				venteMaison.fire();
 			}
 			else if (venteHotel!=null) {
-				venteHotel.fire(); 
+				venteHotel.fire();
 			}
 			else if (venteCartePrison!=null) {
-				venteCartePrison.fire(); 
+				venteCartePrison.fire();
 			}
 		}
 	}
-	
+
 	public void affichageBoutons_revente_propSansBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace, Proprietes prop_curseur) {
 		int i = 0;
 		for (Proprietes p : joueurJ.getProprietesSansBat()) {
@@ -736,7 +739,7 @@ public class Vue {
 			nom_proprietes_button[i].setLayoutY(margeEspace);
 			margeEspace+=30;
 			revente_pane.getChildren().add(nom_proprietes_button[i]);
-			
+
 			int iF = i;
 			nom_proprietes_button[i].setOnAction(actionEvent->{
 				int ancienne_position = joueurJ.vendreLaPropriete_IG(p);
@@ -757,26 +760,26 @@ public class Vue {
 						achat_tab[curseur].setDisable(false);
 					}
 				}
-			});	
+			});
 			i++;
 		}
 	}
-	
+
 	public void affichageMenus_revente_propAvecBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace, Proprietes prop_curseur) {
 		int i = 0;
 		for (Proprietes p : joueurJ.getProprietesAvecBat()) {
-			menu_proprietesBat_revente[i] = new MenuButton(p.getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons()) 
+			menu_proprietesBat_revente[i] = new MenuButton(p.getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons())
 					+ " batiment(s) a vendre : ");
 			menu_proprietesBat_revente[i].setLayoutX(75);
 			menu_proprietesBat_revente[i].setLayoutY(margeEspace);
 			margeEspace+=30;
-			
+
 			if (!p.aUnHotel()) { //Si la propriete n'a que des maisons
-				for (int j = 1; j <= p.getNbMaisons(); j++) {	
+				for (int j = 1; j <= p.getNbMaisons(); j++) {
 					int prixReventeBat = p.getPrixBatiment()/2*j;
 					venteMaison = new MenuItem("Vendre " + j + " maison(s) pour " + prixReventeBat + "e");
 					menu_proprietesBat_revente[i].getItems().addAll(venteMaison);
-					
+
 					int jF = j;
 					venteMaison.setOnAction(actionEvent -> {
 						controleur.controleur_venteBatiment(p, "maison", jF); //i reventes de maisons
@@ -784,7 +787,7 @@ public class Vue {
 							revente_pane.setVisible(false);
 							affichage_revente_proprietes(curseur, montant, carteTiree);
 						}
-						else { 
+						else {
 							panePlateau.getChildren().remove(revente_pane);
 							bool_revente=false;
 							controleur.transactionSelonType(curseur, montant, carteTiree);
@@ -799,14 +802,14 @@ public class Vue {
 				int prixReventeBat = p.getPrixBatiment()*5/2;
 				venteHotel = new MenuItem("Vendre l'hotel pour " + prixReventeBat + "e");
 				menu_proprietesBat_revente[i].getItems().addAll(venteHotel);
-				
+
 				venteHotel.setOnAction(actionEvent -> {
 					controleur.controleur_venteBatiment(p, "hotel", 1); //une seule revente d'hotel
 					if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
 						revente_pane.setVisible(false);
 						affichage_revente_proprietes(curseur, montant, carteTiree);
 					}
-					else { 
+					else {
 						panePlateau.getChildren().remove(revente_pane);
 						bool_revente=false;
 						controleur.transactionSelonType(curseur, montant, carteTiree);
@@ -814,13 +817,13 @@ public class Vue {
 							achat_tab[curseur].setDisable(false);
 						}
 					}
-				});	
+				});
 			}
 			revente_pane.getChildren().add(menu_proprietesBat_revente[i]);
 			i++;
 		}
 	}
-	
+
 	public void affichageBouton_revente_carteLibPrison(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace, Proprietes prop_curseur) {
 		if (jeu.getJoueurs()[curseur].aCarteLibPrison()) {
 			venteCartePrison = new Button ("Carte Libere de prison - Prix de vente : 500e");
@@ -842,7 +845,7 @@ public class Vue {
 					}
 				}
 			});
-		}	
+		}
 	}
 
 
@@ -939,7 +942,7 @@ public class Vue {
 		fin.setOnAction(actionEvent -> {
 			int curseur = jeu.getCurseur();	
 			int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-			
+
 			achat_tab[curseur].setDisable(true);
 			vente_tab[proprietaires[position]].setDisable(true);
 			lancer.setDisable(false);
@@ -947,14 +950,14 @@ public class Vue {
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
 			achatBatiments_menu_tab[curseur].setDisable(true);
-			
+
 			controleur.controleur_faillite(curseur);
 
 			int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
-			
+
 			actions_bouton_fin_tour(curseur, curseurSuivant);
 	        achatBatiments_bouton_fin_tour(curseurSuivant);
-	        
+
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 	        	lancer.setVisible(false);
 	        	fin.setVisible(false);
@@ -965,7 +968,7 @@ public class Vue {
 	        }
 		});
 	}
-	
+
 	public void actions_bouton_fin_tour(int curseur, int curseurSuivant) {
 		if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
 			controleur.controleur_fin();
@@ -976,7 +979,7 @@ public class Vue {
 				prison_tab[curseur].setDisable(true);
 			}
         }
-		if (jeu.onlyRobot()) { 
+		if (jeu.onlyRobot()) {
         	Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
         	if (joueurSuivant.isEnPrison() && joueurSuivant.aCarteLibPrison()){
 				bouton_prison(curseurSuivant);
@@ -984,7 +987,7 @@ public class Vue {
         	}
         }
 	}
-	
+
 	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
 		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
 		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
@@ -992,12 +995,12 @@ public class Vue {
 		hotel_menuItem = null;
 		for (Proprietes p : joueurSuivant.getProprietes()) {
 			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
-			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {			
+			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				int nbMaisonsPlus1 = p.getNbMaisons()+1;
 				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
-				
+
 				maison_menuItem.setOnAction(actionEvent -> {
 					controleur.controleur_achatBatiment(p, "maison");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
@@ -1007,7 +1010,7 @@ public class Vue {
 				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(hotel_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
-				
+
 				hotel_menuItem.setOnAction(actionEvent -> {
 					controleur.controleur_achatBatiment(p, "hotel");
 					achatBatiments_bouton_fin_tour(curseurSuivant);
@@ -1017,7 +1020,7 @@ public class Vue {
 		if(joueurSuivant.isRobot()){
 			PauseTransition wait = new PauseTransition(Duration.seconds(0.15));
 			wait.setOnFinished((e) -> {
-				if (maison_menuItem!=null) { 
+				if (maison_menuItem!=null) {
 					maison_menuItem.fire();
 				}
 				else if (hotel_menuItem!=null) {
@@ -1027,8 +1030,8 @@ public class Vue {
 			wait.play();
 		}
 	}
-	
-	
+
+
 	void boutons_jeu() {
 		boutons_box = new HBox();
 		regles_button = new Button("Regles");
@@ -1071,19 +1074,19 @@ public class Vue {
 			defis = new Button("Defis");
 			prison = new Button("Prison");
 			achatBatiments_menu = new MenuButton("Achats de batiments");
-			
+
 			achat_tab[i] = achat;
 			vente_tab[i] = vente;
 			defis_tab[i] = defis;
 			prison_tab[i] = prison;
 			achatBatiments_menu_tab[i] = achatBatiments_menu;
-			
+
 			achat.setDisable(true);
 			vente.setDisable(true);
 			defis.setDisable(true);
 			prison.setDisable(true);
 			achatBatiments_menu.setDisable(true);
-			
+
 			achat.setLayoutY(5);
 			vente.setLayoutY(35);
 
@@ -1092,9 +1095,9 @@ public class Vue {
 			prison.setLayoutX(50);
 			prison.setLayoutY(35);
 			achatBatiments_menu.setLayoutY(65);
-			
+
 			joueur_boutons.getChildren().addAll(achat, vente, defis, prison, achatBatiments_menu);
-			
+
 			boutonsJoueurs.getChildren().add(joueur_boutons);
 		}
 	}
@@ -1289,43 +1292,120 @@ public class Vue {
 		}
 	}
 
-	
+
 	//Interface graphique : Accueil
-	void accueil_jeu(boolean b) {
-		scene_accueil = new AnchorPane();
-		scene_accueil.setPrefSize(tailleEcran.width, tailleEcran.height);
-		scene_accueil.setStyle("-fx-background-color: #BAEEB4");
+	void accueil_jeu() {
+		accueil_pane = new AnchorPane();
+		accueil_pane.setPrefSize(tailleEcran.width, tailleEcran.height);
+		accueil_pane.setStyle("-fx-background-color: #BAEEB4");
 		Label titre = new Label("Monopoly");
 		titre.setFont(new Font("Arial", 50));
 		titre.setLayoutX((tailleEcran.width*40)/100);
 		titre.setLayoutY((tailleEcran.height*10)/100);
-		scene_accueil.getChildren().add(titre);
+		accueil_pane.getChildren().add(titre);
+		root.getChildren().add(accueil_pane);
+		accueil_nbPseudo_reseau();
+	}
 
+	void accueil_nbPseudo_reseau() {
+		GridPane grid = new GridPane ();
+		grid.setVgap(10);
+		grid.setPadding(new Insets((tailleEcran.height*40)/100, (tailleEcran.width*40)/100, (tailleEcran.height*40)/100, (tailleEcran.width*40)/100));
+
+		Label consigne = new Label ("Nombre de joueur (entre 2 et 6)");
+		GridPane.setConstraints(consigne, 0, 1);
+		TextField tf = new TextField();
+		tf.setPromptText("Nombre de joueur");
+		GridPane.setConstraints(tf, 0, 2);
+		Button suivant = new Button ("Suivant");
+		GridPane.setConstraints(suivant, 0, 3);
+		accueil_pane.getChildren().add(grid);
+
+		Button reseau;
+		if(jeu.isReseau()){
+			reseau = new Button("Mode hors-ligne");
+			reseau.setStyle("-fx-background-color: #FF0000");
+		}else{
+			reseau = new Button("Mode Reseau");
+			reseau.setStyle("-fx-background-color: #0000FF");
+		}
+		reseau.setOnAction(actionEvent->{
+			if(t==null){
+				t = new Thread(controleur, "controleur");
+				controleur.startSocket();
+				t.start();
+				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+				transition.setToX(grid.getTranslateX() + 400);
+				transition.play();
+				transition.setOnFinished(evt -> {
+					accueil_pseudo(false);
+	                accueil_pane.getChildren().remove(grid);
+				});
+			}else{
+				t.interrupt();
+				controleur.startSocket();
+				t = null;
+			}
+		});
+		GridPane.setConstraints(reseau, 0, 4);
+
+		suivant.setOnAction(actionEvent->{
+			if(tf.getText().length()!=1 || !Character.isDigit(tf.getText().charAt(0)) || Integer.parseInt(tf.getText())<2 || Integer.parseInt(tf.getText())>6){
+				Label erreur = new Label("Choisissez un nombre entre 2 et 6");
+				erreur.setFont(new Font("Arial", 10));
+				erreur.setLayoutX((tailleEcran.width*40)/100);
+				erreur.setLayoutY((tailleEcran.height*60)/100);
+				GridPane.setConstraints(erreur, 0, 6);
+				grid.getChildren().add(erreur);
+
+			}else {
+				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+				transition.setToX(grid.getTranslateX() - 400);
+				transition.play();
+				transition.setOnFinished(evt -> {
+	                	accueil_pane.getChildren().remove(grid);
+	                    nbJoueurs=Integer.parseInt(tf.getText());
+	                    accueil_pseudo(false);
+	                });
+			}
+		});
+		grid.getChildren().addAll(consigne, tf,suivant,reseau);
+	}
+
+	void accueil_pseudo(boolean b) {
 		GridPane grid = new GridPane();
 		grid.setVgap(10);
-		grid.setPadding(new Insets((tailleEcran.height*35)/100, (tailleEcran.width*40)/100, (tailleEcran.height*35)/100, (tailleEcran.width*40)/100));
+		grid.setPadding(new Insets((tailleEcran.height*40)/100, (tailleEcran.width*40)/100, (tailleEcran.height*40)/100, (tailleEcran.width*40)/100));
 
 		TextField[] tf;
 		Button[] bt;
 		boolean[] flags;
 
+		Label consigne = new Label("Entrez votre pseudo");
+		consigne.setFont(new Font("Arial", 10));
+		consigne.setLayoutX((tailleEcran.width*40)/100);
+		consigne.setLayoutY((tailleEcran.height*35)/100);
+		consigne.setFont(new Font("Arial", 20));
+
 		if(!jeu.isReseau()){
-			tf = new TextField[6];
-			bt = new Button[6];
-			flags = new boolean[6];
+			tf = new TextField[nbJoueurs];
+			bt = new Button[nbJoueurs];
+			flags = new boolean[nbJoueurs];
 		}else{
 			tf = new TextField[1];
 			bt = new Button[1];
 			flags = new boolean[1];
+			nbJoueurs=1;
 		}
 
-		for(int i=0;i<tf.length;i++){
+		for(int i=0;i<nbJoueurs;i++){
 			tf[i] = new TextField ();
 			tf[i].setPromptText("Pseudo du joueur " + (i+1));
 			GridPane.setConstraints(tf[i], 0, i);
 
 			bt[i] = new Button("Mode robot pour joueur " + (i+1));
 			GridPane.setConstraints(bt[i], 1, i);
+			bt[i].setLayoutX(400);
 			int finalI = i;
 			bt[i].setOnAction(actionEvent->{
 				Color color = (Color)bt[finalI].getBackground().getFills().get(0).getFill();
@@ -1333,15 +1413,23 @@ public class Vue {
 				else { bt[finalI].setStyle(null); }
 				flags[finalI] = !flags[finalI];
 			});
-
 		}
-
 		grid.getChildren().addAll(tf);
 		if(!jeu.isReseau()) grid.getChildren().addAll(bt);
+		accueil_pane.getChildren().add(consigne);
+		accueil_pane.getChildren().add(grid);
 
+		if(b){
+			Label erreur = new Label("Pseudo invalide ou deja pris.");
+			erreur.setFont(new Font("Arial", 10));
+			erreur.setLayoutX((tailleEcran.width*40)/100);
+			erreur.setLayoutY((tailleEcran.height*60)/100);
+			GridPane.setConstraints(erreur, 0, 5);
+			grid.getChildren().add(erreur);
+		}
 
 		Button valider = new Button("Valider");
-		grid.add(valider,0,7);
+		grid.add(valider,0,nbJoueurs+1);
 		valider.setOnAction(actionEvent->{
 			String[] noms = fieldToString(tf);
 			if(jeu.isReseau()){
@@ -1349,7 +1437,20 @@ public class Vue {
 					jeu.setJoueurReseau(new Joueur(tf[0].getText()));
 					controleur.sendMsg("start", jeu.getJoueurReseau().getNom());
 				}
-			}else if(noms.length>1) {
+			}else if(noms.length<nbJoueurs) {
+				Label erreur = new Label("Veuillez remplir tous les champs");
+				erreur.setFont(new Font("Arial", 10));
+				erreur.setLayoutX((tailleEcran.width*40)/100);
+				erreur.setLayoutY((tailleEcran.height*60)/100);
+				grid.add(erreur,0,nbJoueurs+2);
+			} else if (meme_pseudo(noms)) {
+				Label erreur = new Label("Choisissez des pseudos differents");
+				erreur.setFont(new Font("Arial", 10));
+				erreur.setLayoutX((tailleEcran.width*40)/100);
+				erreur.setLayoutY((tailleEcran.height*60)/100);
+				grid.add(erreur,0,nbJoueurs+3);
+			}else {
+				root.getChildren().remove(accueil_pane);
 				jeu.initialisation_joueurs(noms, flags);
 
 				initialisation_plateau();
@@ -1373,37 +1474,31 @@ public class Vue {
 			}
 		});
 
-		Button reseau;
-		if(jeu.isReseau()){
-			reseau = new Button("Mode hors-ligne");
-			reseau.setStyle("-fx-background-color: #FF0000");
-		}else{
-			reseau = new Button("Mode Reseau");
-			reseau.setStyle("-fx-background-color: #0000FF");
+		if(!jeu.isReseau()) {
+			Button retour = new Button("Retour");
+			grid.add(retour,1,nbJoueurs+1);
+			retour.setOnAction(actionEvent->{
+				accueil_pane.getChildren().remove(consigne);
+				TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+				transition.setToX(grid.getTranslateX() + 400);
+				transition.play();
+				transition.setOnFinished(evt -> {
+	                accueil_pane.getChildren().remove(grid);
+	                accueil_nbPseudo_reseau();
+				});
+			});
 		}
-		grid.add(reseau,0,8);
-		reseau.setOnAction(actionEvent->{
-			if(t==null){
-				t = new Thread(controleur, "controleur");
-				controleur.startSocket();
-				t.start();
-			}else{
-				t.interrupt();
-				controleur.startSocket();
-				t = null;
-			}
+	}
 
-			accueil_jeu(false);
-		});
-		if(b){
-			Label erreur = new Label("Pseudo invalide ou deja pris.");
-			erreur.setFont(new Font("Arial", 10));
-			erreur.setLayoutX((tailleEcran.width*40)/100);
-			erreur.setLayoutY((tailleEcran.height*60)/100);
-			grid.add(erreur,0,9);
+	boolean meme_pseudo(String [] noms) {
+		for (int i=0; i<nbJoueurs-1; i++) {
+			for (int j=i+1; j<nbJoueurs; j++) {
+				if (noms[i].equals(noms[j])){
+					return true;
+				}
+			}
 		}
-		scene_accueil.getChildren().add(grid);
-		root.getChildren().add(scene_accueil);
+		return false;
 	}
 
 	private String[] fieldToString(TextField[] tf){
@@ -1481,7 +1576,7 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	void creation_fenetreTchat() { //Mode rÃ©seau
+	void creation_fenetreTchat() { //Mode reseau
 		//TODO: VBOX (separation du tchat et de l'historique)
 	}
 
@@ -1549,7 +1644,7 @@ public class Vue {
 				nouveau = new Label(
 					joueur.getNom() + " a achete une maison à la position " + variable + ".");
 				break;
-				
+
 			case "achatHotel":
 				nouveau = new Label(
 					joueur.getNom() + " a achete un hotel à la position " + variable + ".");
@@ -1615,7 +1710,7 @@ public class Vue {
 		actualiser_historique();
 	}
 
-	//Actualise l'IG a  la fin du tour en mode reseau
+	//Actualise l'IG a la fin du tour en mode reseau
 	void finDeTourReseau(){
 		int curseur = jeu.getCurseur();
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
