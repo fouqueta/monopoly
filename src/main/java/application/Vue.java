@@ -704,11 +704,13 @@ public class Vue {
 		revente_pane.setVisible(true);
 		
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		Proprietes prop_curseur = (Proprietes) jeu.getPlateau().getGrille()[position];
-		
-		affichageBoutons_revente_propSansBat(curseur, montant, carteTiree, joueurJ, margeEspace, prop_curseur);
-		affichageMenus_revente_propAvecBat(curseur, montant, carteTiree, joueurJ, margeEspace+30*nbPropSansBatiment, prop_curseur);
-		affichageBouton_revente_carteLibPrison(curseur, montant, carteTiree, joueurJ, margeEspace+30*joueurJ.getProprietes().length, prop_curseur);
+		Cases case_curseur = jeu.getPlateau().getGrille()[position];
+		if(case_curseur.getType().equals("Propriete")) {
+			Proprietes prop_curseur = (Proprietes) jeu.getPlateau().getGrille()[position];
+			affichageBoutons_revente_propSansBat(curseur, montant, carteTiree, joueurJ, margeEspace, prop_curseur);
+			affichageMenus_revente_propAvecBat(curseur, montant, carteTiree, joueurJ, margeEspace+30*nbPropSansBatiment, prop_curseur);
+			affichageBouton_revente_carteLibPrison(curseur, montant, carteTiree, joueurJ, margeEspace+30*joueurJ.getProprietes().length, prop_curseur);
+		}
 	
 		if (joueurJ.isRobot()) {
 			if (nbPropSansBatiment!=0) { 
