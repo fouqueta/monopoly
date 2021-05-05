@@ -6,7 +6,6 @@ import java.util.Scanner;
 public class Plateau {
 
     private Cases[] grille;
-    private int banque;
     private String[] posJoueurs;
     private Cartes[] cartesChance;
     private Cartes[] cartesCommu;
@@ -33,6 +32,16 @@ public class Plateau {
 	public Cartes[] getCartesCommu() {
 		return cartesCommu;
 	}
+	
+	public int nbProprDansUneFamille(String couleur) { //renvoie le nombre de proprietes qu'il y a dans la famille couleur
+		int cpt = 0;
+		for (Cases c : grille) {
+			if ( c instanceof Proprietes && couleur.equals(((Proprietes) c).getCouleur()) ) {
+				cpt++;
+			}
+		}
+		return cpt;
+	}
 
 	//Initilisation du plateau
 	public void init_plateau() {
@@ -43,10 +52,10 @@ public class Plateau {
         scan.nextLine(); //Pour sauter la ligne des titres des categories
         while (scan.hasNextLine()) {
         	String casePlateau = scan.nextLine();
-        	String[] attributs = casePlateau.split(";"); //tab de taille 6, voir cases.csv
+        	String[] attributs = casePlateau.split(";");
             switch (attributs[1]) {
             	case "Proprietes": 
-            		grille[i] = new Proprietes(Integer.parseInt(attributs[0]), attributs[2], attributs[3], Integer.parseInt(attributs[4]), attributs[5].split("-"));
+            		grille[i] = new Proprietes(Integer.parseInt(attributs[0]), attributs[2], attributs[3], Integer.parseInt(attributs[4]), attributs[5].split("-"), Integer.parseInt(attributs[6]));
             		break;
             	case "CasesSpeciales":
             		grille[i] = new CasesSpeciales(Integer.parseInt(attributs[0]), attributs[2], Integer.parseInt(attributs[6]));
@@ -74,7 +83,7 @@ public class Plateau {
         scan.nextLine(); //Pour sauter la ligne des titres des categories
         while (scan.hasNextLine()) {
         	String cartes = scan.nextLine();
-        	String[] attributs = cartes.split(";"); //tab de taille 4, voir cartes.csv
+        	String[] attributs = cartes.split(";");
         	attributs[1] = attributs[1].replace("\\n", "\n");
             switch (attributs[0]) {
             	case "chance":

@@ -8,6 +8,7 @@ public class Jeu {
     private Plateau plateau;
     private int curseur;
     private int nbJ;
+    private int[] des;
     private Joueur joueurReseau;
     private boolean reseau;
 
@@ -45,6 +46,10 @@ public class Jeu {
 
 	public int getNbJ(){
 		return nbJ;
+	}
+
+	public int getSommeDes() {
+		return des[0] + des[1];
 	}
 
 	public Joueur getJoueurReseau(){
@@ -123,8 +128,8 @@ public class Jeu {
     	switch (caseC.getNom()) {
 			case "Impots revenu" :
 			case "Taxe de luxe" :
-				joueurs[curseur].transaction( ((CasesSpeciales)caseC).getTransaction() );
-				System.out.println("Vous avez paye " + Math.abs(((CasesSpeciales)caseC).getTransaction()) + "e.");
+				joueurs[curseur].transaction( -((CasesSpeciales)caseC).getTransaction() );
+				System.out.println("Vous avez paye " + ((CasesSpeciales)caseC).getTransaction() + "e.");
 				break;
 			case "Aller prison" :
 				System.out.println("Vous etes en prison.");
@@ -141,14 +146,16 @@ public class Jeu {
 		System.out.println(carte.getContenu());
 		switch (carte.getTypeAction()) {
 			case "prelevement" :
+				joueurs[curseur].transaction(-carte.getParametres());
+				break;
 			case "recette" :
 				joueurs[curseur].transaction(carte.getParametres());
 				break;
 			case "immo" :
-				//TODO : cas immo quand il y aura les maisons et hotels (ne pas oublier de modifier cartes.csv pour mettre plusieurs parametres de prix)
+				joueurs[curseur].transaction(-(joueurs[curseur].getNbTotalMaisons()*carte.getParametres() + joueurs[curseur].getNbTotalHotels()*4*carte.getParametres()));
 				break;
-			case "trajet" : //Demander pour le cas prison : direct en prison (donc rajouter un cas if) ou passer par aller en prison (moins de code)
-				if ( carte.getParametres() != 30 ) { //Seul moyen de savoir si on va en case prison ou pas
+			case "trajet" :
+				if ( carte.getParametres() != 30 ) {
 					passeParDepart(carte.getParametres()); 
 				}
 				pion.setPosition(carte.getParametres());
@@ -165,10 +172,10 @@ public class Jeu {
 				affiche();
 				surCaseParticuliere(pion);
 				break;
-			case "bonus" : //Faire la possibilite de vendre sa carte
+			case "bonus" :
 				joueurs[curseur].setCarteLibPrison(true);
 				break;
-			case "cadeau" : //Faire le cas si apres avoir donne le cadeau un joueur est en faillite ou non
+			case "cadeau" :
 				for(Joueur j : joueurs) {
 					if(j != joueurs[curseur] && !j.getFaillite()) {
 						joueurs[curseur].thisRecoitDe(j, carte.getParametres());
@@ -183,7 +190,6 @@ public class Jeu {
     	Random rand = new Random();
 		int alea = rand.nextInt(16);
 		Cartes carte = null;
-		System.out.println(alea);
 		if (caseC instanceof CasesChance) {
 			carte = plateau.getCartesChance()[alea];
 		}
@@ -197,8 +203,8 @@ public class Jeu {
     public void passeParDepart(int posFinale) {
     	Cases caseDepart = plateau.getCases(0);
     	if (joueurs[curseur].getPion().getPosition() > posFinale) { //Comme 0 <= position <= 39, si posInit > posFinale, alors cela veut dire qu'on passe par la case depart, sinon non
-    		joueurs[curseur].transaction( ((CasesSpeciales) caseDepart).getTransaction() ); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart / on est en case 10, on va en case 5 -> on passe par depart
-    	}
+    		joueurs[curseur].transaction( ((CasesSpeciales) caseDepart).getTransaction() ); //Exemple : on est en case 10, on va en case 20 -> on ne passe pas par depart
+    	} // on est en case 10, on va en case 5 -> on passe par depart
     }
 
 	//Gestion de lancement de des
@@ -217,7 +223,7 @@ public class Jeu {
     	while (!jeuFini()) {
     		System.out.println("\nJoueur " + joueurs[curseur].getNom() + ", c'est a vous de jouer !");
         	joueurs[curseur].questionDes();
-        	int[] des = lancer_de_des();
+        	des = lancer_de_des();
         	deplace(joueurs[curseur].getPion(), des);
     		System.out.println("Vous avez " + joueurs[curseur].getArgent() + "e");
         	achat_ou_vente(joueurs[curseur].getPion());
@@ -310,7 +316,7 @@ public class Jeu {
 			case "recette" :
 				joueurs[curseur].transaction(carte.getParametres());
 				break;
-			case "trajet" : //Demander pour le cas prison : direct en prison (donc rajouter un cas if) ou passer par aller en prison (moins de code)
+			case "trajet" :
 				if ( carte.getParametres() != 30 ) {
 					passeParDepart(carte.getParametres()); 
 				}
@@ -322,7 +328,7 @@ public class Jeu {
 			case "trajet spe" :
 				pion.setPosition(pion.getPosition() - carte.getParametres());
 				break;
-			case "bonus" : //Faire la possibilite de vendre sa carte
+			case "bonus" :
 				joueurs[curseur].setCarteLibPrison(true);
 				break;
 		}
@@ -358,16 +364,22 @@ public class Jeu {
     
     public void vente_IG(Pion p) {
     	Proprietes pos_actuelle = (Proprietes) plateau.getCases(p.getPosition());
-			Joueur proprietaire = pos_actuelle.getProprietaire();
-	            int prix = pos_actuelle.getPrix();
-	            joueurs[curseur].achat_effectue(prix,pos_actuelle);
-	            proprietaire.vente_effectuee(prix, pos_actuelle);
-	            pos_actuelle.setProprietaire(joueurs[curseur]);
+		Joueur proprietaire = pos_actuelle.getProprietaire();
+	    int prix = pos_actuelle.getPrix();
+
+	    while (pos_actuelle.getNbMaisons() != 0) { //Si on vend une propriete avec des batiments, on recupere l'argent des batiment et la propriete n'a plus de batiment pour le nouveau proprietaire
+	    	pos_actuelle.venteMaison();
+	    }
+	    if (pos_actuelle.aUnHotel()) { pos_actuelle.venteHotel(); }
+
+	    joueurs[curseur].achat_effectue(prix,pos_actuelle);
+	    proprietaire.vente_effectuee(prix, pos_actuelle);
+	    pos_actuelle.setProprietaire(joueurs[curseur]);
     }
     
     
     public boolean faillite_IG(Joueur j) {
-    	if (j.getArgent()<=0 && j.getProprietes().length == 0){
+    	if (j.getArgent()<=0 && j.getProprietes().length == 0 && !j.aCarteLibPrison()){
     		j.setFaillite(true);
     		return true;
     	}
@@ -384,8 +396,8 @@ public class Jeu {
     	return nbFaillite==joueurs.length-1;
     }
      
-    public int loyer_IG(Proprietes p) {
-    	return joueurs[curseur].thisPayeA(p.getProprietaire(), p.getLoyer());
+    public void loyer_IG(Proprietes p, int loyer) { //parametre loyer necessaire car pour les compagnies, loyer a payer = p.getLoyer*somme des des
+    	joueurs[curseur].thisPayeA(p.getProprietaire(), loyer);
     }
 
 	public boolean onlyRobot(){

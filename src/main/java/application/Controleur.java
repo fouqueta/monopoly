@@ -9,13 +9,14 @@ import monopoly.*;
 import java.io.*;
 import java.net.Socket;
 
-public class Controleur extends Thread {
+public class Controleur implements Runnable {
 	private Vue vue;
 	private Jeu jeu;
 	//Reseau
 	private PrintWriter pw;
 	private Socket socket;
 	private Cartes carte = null;
+	boolean running;
 
 	Controleur() {
 	}
@@ -37,11 +38,11 @@ public class Controleur extends Thread {
 		if(jeu.isReseau()){
 
 			try {
+				running = false;
 				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 				sendMsg("close","");
-				pw.close();
-				socket.close();
 				jeu.setReseau(false);
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -51,7 +52,7 @@ public class Controleur extends Thread {
 				socket = new Socket("176.144.217.163", 666);
 				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
 				jeu.setReseau(true);
-				this.start();
+				running = true;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -65,7 +66,7 @@ public class Controleur extends Thread {
 	void controleur_lancer(int[] des, int curseur) {
 		vue.changement_labelDes(des);
 		controleur_deplacement(des, curseur);
-		controleur_loyer(des, curseur);
+		controleur_loyer(curseur, des);
 		vue.changement_argent(curseur);
 		if(jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
 			Joueur j = jeu.getJoueurs()[curseur];
@@ -137,8 +138,11 @@ public class Controleur extends Thread {
 
 		switch (carteTiree.getTypeAction()) {
 			case "prelevement" :
+				verifPuisPaiement(curseur, carteTiree.getParametres(), carteTiree);
+				break;
 			case "immo" :
-				verifPuisPaiement(curseur, -carteTiree.getParametres(), carteTiree);
+				int sommeApayer = joueurJ.getNbTotalMaisons()*carteTiree.getParametres() + joueurJ.getNbTotalHotels()*4*carteTiree.getParametres();
+				verifPuisPaiement(curseur, sommeApayer, carteTiree);
 				break;
 			case "trajet" :
 			case "reculer" :
@@ -165,21 +169,28 @@ public class Controleur extends Thread {
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		jeu.surCaseSpeciale_IG(joueurJ.getPion(), case_actuelle);
 		if (case_actuelle.getNom().equals("Impots revenu") || case_actuelle.getNom().equals("Taxe de luxe")) {
-			verifPuisPaiement(curseur, -((CasesSpeciales)case_actuelle).getTransaction(), null );
+			verifPuisPaiement(curseur, ((CasesSpeciales)case_actuelle).getTransaction(), null);
 		}
 	}
 
 
 	//Paie le loyer si besoin
-	void controleur_loyer(int[] des, int curseur) {
+	void controleur_loyer(int curseur, int[] des) {
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Cases case_actuelle = jeu.getPlateau().getCases(position);
 		if(case_actuelle instanceof Proprietes) {
 			Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
 			if(!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
-				&& propriete_actuelle.coloree()){
+				&& !propriete_actuelle.estCompagnie()){
 				verifPuisPaiement(curseur, propriete_actuelle.getLoyer(), null);
 				vue.gestion_historique(vue.deuxJoueurs_historique("loyer", jeu.getJoueurs()[curseur], propriete_actuelle.getProprietaire(), null, propriete_actuelle.getLoyer()));
+				vue.changement_argent(vue.getTabProprietaires(position));
+			}
+			else if (!(propriete_actuelle.est_Libre()) && vue.getTabProprietaires(position) != curseur
+				&& propriete_actuelle.estCompagnie()){
+				int sommeDes = des[0] + des[1];
+				verifPuisPaiement(curseur, sommeDes*propriete_actuelle.getLoyer(), null);
+				vue.gestion_historique(vue.deuxJoueurs_historique("loyer", jeu.getJoueurs()[curseur], propriete_actuelle.getProprietaire(), null, sommeDes*propriete_actuelle.getLoyer()));
 				vue.changement_argent(vue.getTabProprietaires(position));
 			}
 		}
@@ -249,50 +260,88 @@ public class Controleur extends Thread {
 	}
 	
 	void controleur_vente(int curseur) {
-		Pion p = jeu.getJoueurs()[curseur].getPion();
-		int position = p.getPosition();
-		jeu.vente_IG(p);
+		Pion pion = jeu.getJoueurs()[curseur].getPion();
+		int position = pion.getPosition();
+		Proprietes propP = (Proprietes) jeu.getPlateau().getCases(position);
+		jeu.vente_IG(pion);
+		vue.actualisation_HBoxImagesMaisons(propP);
+		vue.actualisation_HBoxImageHotel(propP);
 		vue.changement_couleur_case(curseur, position);
 	}
 
 
 	//Verifie si on doit revendre ses proprietes avant de payer, puis passe au paiement
 	public void verifPuisPaiement(int curseur, int sommeApayer, Cartes carteTiree) {
-		if (jeu.getJoueurs()[curseur].getArgent() < sommeApayer && jeu.getJoueurs()[curseur].getProprietes().length!=0) {
+		if (jeu.getJoueurs()[curseur].getArgent() < sommeApayer && (jeu.getJoueurs()[curseur].getProprietes().length!=0 || jeu.getJoueurs()[curseur].aCarteLibPrison())) {
 			if(!jeu.isReseau() || jeu.getJoueurReseau() == jeu.getJoueurs()[curseur]){
 				vue.affichage_revente_proprietes(curseur, sommeApayer, carteTiree);
 			}
 		}
 		else {
-			transactionSelonType(curseur, carteTiree);
+			transactionSelonType(curseur, sommeApayer, carteTiree);
 		}
 	}
 
-	public void transactionSelonType(int curseur, Cartes carteTiree) {
-		Joueur joueurJ = jeu.getJoueurs()[curseur];
-		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		Cases caseC = jeu.getPlateau().getCases(position);
+	public void transactionSelonType(int curseur,  int sommeApayer, Cartes carteTiree) {
+        Joueur joueurJ = jeu.getJoueurs()[jeu.getCurseur()];
+        int position = joueurJ.getPion().getPosition();
+        Cases caseC = jeu.getPlateau().getCases(position);
 
-		if (caseC instanceof Proprietes) {
-			jeu.loyer_IG((Proprietes) caseC);
+        if (caseC instanceof Proprietes) {
+            jeu.loyer_IG((Proprietes) caseC, sommeApayer);
+        }
+        else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
+            joueurJ.transaction(-sommeApayer);
+        }
+        else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
+                (carteTiree.getTypeAction().equals("prelevement") || carteTiree.getTypeAction().equals("immo")) ) {
+            joueurJ.transaction(-sommeApayer);
+        }
+        else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
+                (carteTiree.getTypeAction().equals("cadeau")) ) {
+            joueurJ.thisRecoitDe(jeu.getJoueurs()[curseur], sommeApayer);
+        }
+        vue.changement_argent(curseur);
+        vue.changement_argent(vue.getTabProprietaires(position));
+    }
+
+
+	public void controleur_achatBatiment(Proprietes p, String typeBatiment) {
+		if (typeBatiment.equals("maison")) {
+			p.achatMaison();
+			vue.actualisation_HBoxImagesMaisons(p);
+			vue.gestion_historique(vue.unJoueur_historique("achatMaison", p.getProprietaire(), null, p.getPosition()));
 		}
-		else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
-			joueurJ.transaction( ((CasesSpeciales) caseC).getTransaction() );
+		else if (typeBatiment.equals("hotel")) {
+			p.achatHotel();
+			vue.actualisation_HBoxImageHotel(p);
+			vue.gestion_historique(vue.unJoueur_historique("achatHotel", p.getProprietaire(), null, p.getPosition()));
 		}
-		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) &&
-				(carteTiree.getTypeAction().equals("prelevement") || carteTiree.getTypeAction().equals("immo")) ) {
-			joueurJ.transaction(carteTiree.getParametres());
+		vue.changement_argent(jeu.getCurseur());
+	}
+
+	public void controleur_venteBatiment(Proprietes p, String typeBatiment, int nbVentesBat) {
+		for(int i = 0; i < nbVentesBat; i++) {
+			if (typeBatiment.equals("maison") && p.getNbMaisons()>0) {
+				p.venteMaison();
+				vue.actualisation_HBoxImagesMaisons(p);
+			}
+			else if (typeBatiment.equals("hotel")) {
+				p.venteHotel();
+				vue.actualisation_HBoxImageHotel(p);
+			}
 		}
-		else if ( (caseC instanceof CasesCommunaute || caseC instanceof CasesChance) && (carteTiree.getTypeAction().equals("cadeau")) ) {
-			jeu.getJoueurs()[jeu.getCurseur()].thisRecoitDe(jeu.getJoueurs()[curseur], carteTiree.getParametres());
-		}
+		vue.changement_argent(jeu.getCurseur());
+	}
+
+	public void controleur_venteCartePrison(int curseur) {
+		jeu.getJoueurs()[curseur].AVenduCartePrison();
 		vue.changement_argent(curseur);
-		vue.changement_argent(vue.getTabProprietaires(position));
 	}
 
 	
-	void controleur_loyerIG(Proprietes propriete_actuelle) {
-		int montant = jeu.loyer_IG(propriete_actuelle);
+	void controleur_loyerIG(Proprietes propriete_actuelle, int loyer) {
+		int montant = jeu.loyer_IG(propriete_actuelle, loyer);
 		if(jeu.isReseau()){
 			sendMsg("loyer", String.valueOf(montant));
 		}
@@ -316,6 +365,11 @@ public class Controleur extends Thread {
 			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+			if(joueur.getArgent()<loyerEnJeu) {
+				vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
+			}else {
+				joueur.thisPayeA(proprio, loyerEnJeu);
+			}
 			int montant = joueur.thisPayeA(proprio, loyerEnJeu);
 			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + proprio.getNom());
 		}
@@ -328,6 +382,7 @@ public class Controleur extends Thread {
 		vue.changement_argent(curseur);
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}
+
 
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
@@ -345,7 +400,7 @@ public class Controleur extends Thread {
 
 	@Override
 	public void run() {
-		boolean running = true;
+
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			while (running) {
@@ -356,7 +411,7 @@ public class Controleur extends Thread {
 				action(action, info);
 			}
 		} catch (Exception e) {
-			this.interrupt();
+			//this.interrupt();
 			running = false;
 			System.out.println(e);
 			e.printStackTrace();
@@ -447,11 +502,16 @@ public class Controleur extends Thread {
 			case "vendre":
 				Platform.runLater(() -> {
 					int n = Integer.parseInt(info);
-					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(n);
+					Proprietes p = jeu.getJoueurs()[curseur].getProprietes()[n];
+					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(p);
 					vue.changement_couleur_case_blanche(ancienne_position);
 					vue.vendPropReseau(ancienne_position, curseur);
 				});
-
+				break;
+			case "vendre prison":
+				Platform.runLater(() -> {
+					controleur_venteCartePrison(curseur);
+				});
 				break;
 			case "deco":
 				Platform.runLater(() -> {
@@ -521,11 +581,20 @@ public class Controleur extends Thread {
 				break;
 			case "erreur":
 				Platform.runLater(() -> {
-					if(info.equals("Pseudo deja prit")){
-						vue.accueil_jeu(true);
+					if(info.equals("Pseudo deja pris")){
+						vue.accueil_pseudo(true);
 					}
 				});
+				break;
+			case "close":
+				try{
+					pw.close();
+					socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 
+				break;
 			default:
 				break;
 		}
