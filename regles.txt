@@ -14,7 +14,7 @@
 	Etre le dernier joueur qui n'ait pas fait faillite.
 	
 		COMMENT PERDRE:
-	Etre en faillite: ne plus avoir d'argent ou de proprietes a vendre.
+	Etre en faillite: ne plus avoir d'argent ni de proprietes a vendre.
 	
 		DEROULEMENT D'UN TOUR:
 	Cliquez sur le bouton "Lancer" et vos pions se deplaceront suivant le nombre obtenu au lancement des des. Vous avez la possibilite de tomber sur une case:
@@ -25,13 +25,15 @@
                                       montant du loyer, vous devez vendre autant de vos biens que necessaire jusqu'a atteindre cette somme. De plus, si vous avez assez
                                       d'argent, vous pouvez demander a racheter la propriete. Si le proprietaire accepte le rachat et qu'il y a des batiments sur le 
                                       terrain, il recoit l'argent du prix d'achat de la propriete plus la moitie du prix d'achat de ses batiments.
-		- Chance/Caisse de communaute: a l'arrivee d'une de ses cases, vous piocherez une carte contenant une indication que vous devrez suivre. Si vous tirez
-					       une carte "Vous etes libere de prison", vous pouvez la garder jusqu'a ce que vous decidiez de l'utiliser.
+		- Chance/Caisse de communaute: a l'arrivee sur l'une de ces cases, vous piocherez une carte contenant une indication que vous devrez suivre. Si vous tirez
+					       une carte "Vous etes libere de prison", vous pouvez la garder jusqu'a ce que vous decidiez de l'utiliser ou de la vendre.
 					       Une carte peut vous demander de vous rendre a une autre case. Si vous passez par la case depart, recevez 2000e. Vous ne 
 					       passez pas par la case depart quand vous etes envoye en prison.
-		- Taxe/Impot: si vous vous arretez sur l'une de ces cases, payez le montant indique a la banque.
-		- Prison: Si vous arrivez sur la case "Prison", vous serez immediatement envoyer en prison et vous y resterez pendant 3 tours.
+		- Taxe/Impots: si vous vous arretez sur l'une de ces cases, payez le montant indique a la banque.
+		- Aller en prison: Si vous arrivez sur la case "-> Prison", vous serez immediatement envoye en case Prison et vous y resterez pendant 3 tours. Vous 
+			pouvez vous liberer plus tot en utilisant une carte "Vous etes libere de prison" si vous en possedez une, ou en faisant un double avec les des.
 		- Depart: vous percevrez 2000e a chaque fois que vous passerez par la case "Depart".
+		- Parc gratuit/Prison: rien de particulier si vous etes de passage sur ces cases.
 	Vous cliquerez ensuite sur le bouton "Fin" qui laissera le tour au joueur suivant.
 	
 		FIN DE PARTIE:

@@ -705,7 +705,7 @@ public class Vue {
 		texte.setPadding(new Insets(15, 15, 15, 15));
 		revente_pane.getChildren().add(texte);
 		
-		int margeEspace = 70;
+		double margeEspace = panePlateau_y*0.08;
 		Joueur joueurJ = jeu.getJoueurs()[curseur];
 		int nbPropSansBatiment = joueurJ.getProprietes().length - joueurJ.getNbPropAvecBatiments();
 		nom_proprietes_button = new Button[nbPropSansBatiment];
@@ -734,10 +734,10 @@ public class Vue {
 		}
 	}
 
-	public void affichageBoutons_revente_propSansBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace) {
+	public void affichageBoutons_revente_propSansBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, double margeEspace) {
 		int i = 0;
 		for (Proprietes p : joueurJ.getProprietesSansBat()) {
-			nom_proprietes_button[i] = new Button(p.getNom() + " - Prix de vente : " + p.getPrix());
+			nom_proprietes_button[i] = new Button(p.getPosition() + " " + p.getNom() + " - Prix de vente : " + p.getPrix());
 			nom_proprietes_button[i].setLayoutX(75);
 			nom_proprietes_button[i].setLayoutY(margeEspace);
 			margeEspace+=30;
@@ -767,10 +767,10 @@ public class Vue {
 		}
 	}
 
-	public void affichageMenus_revente_propAvecBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace) {
+	public void affichageMenus_revente_propAvecBat(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, double margeEspace) {
 		int i = 0;
 		for (Proprietes p : joueurJ.getProprietesAvecBat()) {
-			menu_proprietesBat_revente[i] = new MenuButton(p.getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons())
+			menu_proprietesBat_revente[i] = new MenuButton(p.getPosition() + " " + p.getNom() + " - " + (p.aUnHotel()?"1":p.getNbMaisons())
 					+ " batiment(s) a vendre : ");
 			menu_proprietesBat_revente[i].setLayoutX(75);
 			menu_proprietesBat_revente[i].setLayoutY(margeEspace);
@@ -834,7 +834,7 @@ public class Vue {
 		}
 	}
 
-	public void affichageBouton_revente_carteLibPrison(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, int margeEspace) {
+	public void affichageBouton_revente_carteLibPrison(int curseur, int montant, Cartes carteTiree, Joueur joueurJ, double margeEspace) {
 		if (jeu.getJoueurs()[curseur].aCarteLibPrison()) {
 			venteCartePrison = new Button ("Carte Libere de prison - Prix de vente : 500e");
 			venteCartePrison.setLayoutY(margeEspace);
@@ -1013,7 +1013,7 @@ public class Vue {
 			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				int nbMaisonsPlus1 = p.getNbMaisons()+1;
-				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n�" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison " + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 
@@ -1055,7 +1055,7 @@ public class Vue {
 		historique_button = new Button("Historique");
 		tchat_button = new Button("Tchat");
 		boutons_box.getChildren().addAll(regles_button,historique_button,quitter_button, tchat_button);
-		boutons_box.setLayoutX((panePlateau_x*35)/100);
+		boutons_box.setLayoutX((panePlateau_x*37)/100);
 		boutons_box.setLayoutY((panePlateau_y*70)/100);
 		panePlateau.getChildren().add(boutons_box);
 		regles_button.setOnAction(actionEvent -> {
@@ -1680,12 +1680,12 @@ public class Vue {
 
 			case "achatMaison":
 				nouveau = new Label(
-					joueur.getNom() + " a achete une maison a� la position " + variable + ".");
+					joueur.getNom() + " a achete une maison a la position " + variable + ".");
 				break;
 
 			case "achatHotel":
 				nouveau = new Label(
-					joueur.getNom() + " a achete un hotel a� la position " + variable + ".");
+					joueur.getNom() + " a achete un hotel a la position " + variable + ".");
 				break;
 
 			case "faillite":
