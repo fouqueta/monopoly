@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import javafx.animation.PauseTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -784,12 +785,19 @@ public class Vue {
 					int jF = j;
 					venteMaison.setOnAction(actionEvent -> {
 						controleur.controleur_venteBatiment(p, "maison", jF); //i reventes de maisons
+
+						if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
+							controleur.sendMsg("vendre", "maison-" + jF + "-" + prixReventeBat + "-" + p.getPosition());
+						}
+
 						if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
 							revente_pane.setVisible(false);
 							affichage_revente_proprietes(curseur, montant, carteTiree);
 						}
 						else {
-							panePlateau.getChildren().remove(revente_pane);
+							Platform.runLater(() -> {
+								panePlateau.getChildren().remove(revente_pane);
+							});
 							controleur.transactionSelonType(curseur, montant, carteTiree);
 							activer_bouton_achat(curseur);
 						}
@@ -803,12 +811,19 @@ public class Vue {
 
 				venteHotel.setOnAction(actionEvent -> {
 					controleur.controleur_venteBatiment(p, "hotel", 1); //une seule revente d'hotel
+
+					if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
+						controleur.sendMsg("vendre", "hotel-" + 1 + "-" + prixReventeBat + "-" + p.getPosition());
+					}
+
 					if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
 						revente_pane.setVisible(false);
 						affichage_revente_proprietes(curseur, montant, carteTiree);
 					}
 					else {
-						panePlateau.getChildren().remove(revente_pane);
+						Platform.runLater(() -> {
+							panePlateau.getChildren().remove(revente_pane);
+						});
 						controleur.transactionSelonType(curseur, montant, carteTiree);
 						activer_bouton_achat(curseur);
 					}
@@ -895,10 +910,10 @@ public class Vue {
 			}else{
 				int[] des = jeu.lancer_de_des();
 				controleur.controleur_lancer(des, curseur);
-
+				bouton_defis(curseur, argent);
+				bouton_achat(curseur, argent);
 			}
-			bouton_defis(curseur, argent);
-			bouton_achat(curseur, argent);
+
 		});
 	}
 
@@ -968,7 +983,10 @@ public class Vue {
 
 	public void actions_bouton_fin_tour(int curseur, int curseurSuivant) {
 		if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
-			controleur.controleur_fin();
+			if(!jeu.isReseau() || jeu.getJoueurs()[curseur]==jeu.getJoueurReseau()){
+				controleur.controleur_fin();
+			}
+
 			if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
 				bouton_prison(curseurSuivant);
 				prison_tab[curseur].setDisable(true);
@@ -987,6 +1005,7 @@ public class Vue {
 
 	public void achatBatiments_bouton_fin_tour(int curseurSuivant) {
 		Joueur joueurSuivant = jeu.getJoueurs()[curseurSuivant];
+		if(jeu.isReseau() && joueurSuivant!=jeu.getJoueurReseau()) return;
 		achatBatiments_menu_tab[curseurSuivant].getItems().clear();
 		maison_menuItem = null;
 		hotel_menuItem = null;
@@ -994,7 +1013,7 @@ public class Vue {
 			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				int nbMaisonsPlus1 = p.getNbMaisons()+1;
-				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison n°" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison nï¿½" + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 
@@ -1661,12 +1680,12 @@ public class Vue {
 
 			case "achatMaison":
 				nouveau = new Label(
-					joueur.getNom() + " a achete une maison a  la position " + variable + ".");
+					joueur.getNom() + " a achete une maison aï¿½ la position " + variable + ".");
 				break;
 
 			case "achatHotel":
 				nouveau = new Label(
-					joueur.getNom() + " a achete un hotel a  la position " + variable + ".");
+					joueur.getNom() + " a achete un hotel aï¿½ la position " + variable + ".");
 				break;
 
 			case "faillite":
@@ -1804,20 +1823,14 @@ public class Vue {
 
 		defis_tab[curseur].setDisable(true);
 		defis_tab[proprietaires[position]].setDisable(true);
+		achatBatiments_menu_tab[curseur].setDisable(true);
+
 		controleur.controleur_faillite(curseur);
 
 		int curseurSuivant = controleur.controleur_curseurSuivant(curseur);
-		if(!jeu.onlyRobot() || (jeu.getJoueurs()[curseur].getFaillite() && !jeu.getJoueurs()[curseur].isRobot() && jeu.getJoueurs()[curseurSuivant].isRobot())) {
-			if (jeu.getJoueurs()[curseurSuivant].isEnPrison() && jeu.getJoueurs()[curseurSuivant].aCarteLibPrison()){
-				if(!jeu.isReseau() || jeu.getJoueurs()[curseurSuivant] == jeu.getJoueurReseau()) {
-					bouton_prison(curseurSuivant);
-					prison_tab[curseur].setDisable(true);
-					System.out.println();
-				}
-			}else {
-				prison_tab[curseur].setDisable(true);
-			}
-		}
+
+		actions_bouton_fin_tour(curseur, curseurSuivant);
+		achatBatiments_bouton_fin_tour(curseurSuivant);
 	}
 
 	void achatReseau(){
@@ -1840,14 +1853,29 @@ public class Vue {
 		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
 			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
 			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
-			//FIXME: update l'argent de l'ancien proprio une fois que le joueur a assez d'argent pour payer le loyer
 			changement_argent(proprietaires[position]);
 			changement_argent(curseur);
 		}
 	}
 
+	void vendBatReseau(){
+
+		int curseur = jeu.getCurseur();
+		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
+		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+
+		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
+			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
+			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
+			changement_argent(proprietaires[position]);
+			changement_argent(curseur);
+		}
+
+	}
+
 	//Vend la propriete a un autre joueur
 	public void updateVenteReseau(int position, int curseur){
+		defis_tab[curseur].setDisable(true);
 		controleur.controleur_vente(curseur);
 		changement_argent(curseur);
 		changement_argent(proprietaires[position]);

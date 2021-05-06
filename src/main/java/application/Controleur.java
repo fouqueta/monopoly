@@ -313,11 +313,17 @@ public class Controleur implements Runnable {
 			p.achatMaison();
 			vue.actualisation_HBoxImagesMaisons(p);
 			vue.gestion_historique(vue.unJoueur_historique("achatMaison", p.getProprietaire(), null, p.getPosition()));
+			if(jeu.isReseau() && jeu.getJoueurs()[jeu.getCurseur()] == jeu.getJoueurReseau()){
+				sendMsg("batiment", "maison-" + p.getPosition() + "-" + p.getPrixBatiment());
+			}
 		}
 		else if (typeBatiment.equals("hotel")) {
 			p.achatHotel();
 			vue.actualisation_HBoxImageHotel(p);
 			vue.gestion_historique(vue.unJoueur_historique("achatHotel", p.getProprietaire(), null, p.getPosition()));
+			if(jeu.isReseau() && jeu.getJoueurs()[jeu.getCurseur()] == jeu.getJoueurReseau()){
+				sendMsg("batiment", "hotel-" + p.getPosition() + "-" + p.getPrixBatiment());
+			}
 		}
 		vue.changement_argent(jeu.getCurseur());
 	}
@@ -504,11 +510,18 @@ public class Controleur implements Runnable {
 				break;
 			case "vendre":
 				Platform.runLater(() -> {
-					int n = Integer.parseInt(info);
-					Proprietes p = jeu.getJoueurs()[curseur].getProprietes()[n];
-					int ancienne_position = jeu.getJoueurs()[curseur].vendreLaPropriete_IG(p);
-					vue.changement_couleur_case_blanche(ancienne_position);
-					vue.vendPropReseau(ancienne_position, curseur);
+					String[] temp = info.split("-");
+					if(temp[0].equals("hotel") || temp[0].equals("maison")){
+						int jF = Integer.parseInt(temp[1]);
+						Proprietes p = (Proprietes) jeu.getPlateau().getCases(Integer.parseInt(temp[3]));
+						controleur_venteBatiment(p,temp[0],jF);
+						vue.vendBatReseau();
+					}else{
+						int ancienne_position = Integer.parseInt(temp[2]);
+						vue.changement_couleur_case_blanche(ancienne_position);
+						vue.vendPropReseau(ancienne_position, curseur);
+					}
+
 				});
 				break;
 			case "vendre prison":
@@ -597,6 +610,14 @@ public class Controleur implements Runnable {
 					e.printStackTrace();
 				}
 
+				break;
+			case "batiment":
+				Platform.runLater(() -> {
+					String[] temp = info.split("-");
+					int posProp = Integer.parseInt(temp[1]);
+					Proprietes p = (Proprietes) jeu.getPlateau().getCases(posProp);
+					controleur_achatBatiment(p, temp[0]);
+				});
 				break;
 			default:
 				break;
