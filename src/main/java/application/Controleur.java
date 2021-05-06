@@ -198,7 +198,7 @@ public class Controleur implements Runnable {
 
 	//Gestion des robots
 	private void fin_only_robot(){
-		PauseTransition wait = new PauseTransition(Duration.seconds(4));
+		PauseTransition wait = new PauseTransition(Duration.seconds(0.5));
 		wait.setOnFinished((e) -> {
 			if (jeu.jeuFini_IG()) {
 				vue.fin_partie();
@@ -229,7 +229,7 @@ public class Controleur implements Runnable {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
 			if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
-				PauseTransition wait = new PauseTransition(Duration.seconds(2));
+				PauseTransition wait = new PauseTransition(Duration.seconds(0.4));
 				wait.setOnFinished((e) -> {
 					vue.lancerRobot();
 				});
@@ -451,9 +451,10 @@ public class Controleur implements Runnable {
 					int[] des = new int[2];
 					des[0] = Integer.valueOf(temp[0]);
 					des[1] = Integer.valueOf(temp[1]);
+					int argent = jeu.getJoueurs()[curseur].getArgent();
 					controleur_lancer(des, curseur);
-					vue.bouton_defis(curseur);
-					vue.bouton_achat(curseur);
+					vue.bouton_defis(curseur, argent);
+					vue.bouton_achat(curseur, argent);
 				});
 				break;
 			case "deplace":
