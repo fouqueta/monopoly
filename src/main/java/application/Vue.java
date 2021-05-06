@@ -47,6 +47,7 @@ public class Vue {
 	private Dimension tailleEcran = Toolkit.getDefaultToolkit().getScreenSize();
 	private double panePlateau_x;
 	private double panePlateau_y;
+	private double police = tailleEcran.getHeight()/500;
 
 	//Accueil
 	private AnchorPane accueil_pane;
@@ -699,7 +700,7 @@ public class Vue {
 		revente_pane.setLayoutY((panePlateau_y*15)/100);
 		
 		Label texte = new Label ("Joueur "+String.valueOf(jeu.getCurseur()+1)+", vous n'avez plus d'argent pour payer la somme due s'elevant a " + montant +"e.\nVendez une/des propriete(s) :");
-		texte.setFont(new Font("Arial", 16));
+		texte.setFont(new Font("Arial", police*9));
 		texte.setPadding(new Insets(15, 15, 15, 15));
 		revente_pane.getChildren().add(texte);
 		
@@ -1560,12 +1561,12 @@ public class Vue {
 		victoire_pane.setStyle("-fx-background-color: white; -fx-border-color: black");
 		victoire_pane.setLayoutX((panePlateau_x*21)/100);
 		victoire_pane.setLayoutY((panePlateau_y*15)/100);
-		l1.setFont(new Font(30));
-		l2.setFont(new Font(30));
+		l1.setFont(new Font(police*22));
+		l2.setFont(new Font(police*22));
 		victoire_pane.setTop(l1);
 		victoire_pane.setCenter(l2);
-		l1.setPadding(new Insets(180,0,0,0));
-		l2.setPadding(new Insets(-150,0,0,0));
+		l1.setPadding(new Insets(panePlateau_y*0.15,0,0,0));
+		l2.setPadding(new Insets(-panePlateau_y*0.1,0,0,0));
 		BorderPane.setAlignment(l1, Pos.TOP_CENTER);
 		BorderPane.setAlignment(l2, Pos.CENTER);
 		panePlateau.getChildren().add(victoire_pane);
