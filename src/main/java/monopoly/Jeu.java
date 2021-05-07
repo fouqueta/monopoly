@@ -78,8 +78,6 @@ public class Jeu {
     
     //Gestion des deplacements
     public void deplace(Pion pion, int[] des) {
-    	des[0] = 1;
-    	des[1] = 0;
     	int nbCases = des[0] + des[1];
     	Joueur joueurJ = joueurs[curseur];
     	if ( joueurJ.isEnPrison() && (des[0] == des[1] || joueurJ.getNbToursPrison() == 1) ) {
@@ -212,14 +210,11 @@ public class Jeu {
 	//Gestion de lancement de des
     public int[] lancer_de_des() {
 		int[] des = new int[2];
-
 		Random aleatoire = new Random();
 		for(int i = 0; i<des.length; i++) {
 			int intervalle = 1 + aleatoire.nextInt(7-1);
 			des[i] = intervalle;
 		}
-		des[0] = 1;
-		des[1] = 0;
 		return des;
 	}
     
