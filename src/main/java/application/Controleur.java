@@ -595,7 +595,7 @@ public class Controleur implements Runnable {
 				break;
 			case "erreur":
 				Platform.runLater(() -> {
-					if(info.equals("Pseudo deja pris")){
+					if(info.equals("Pseudo deja prit")){
 						vue.accueil_pseudo(true);
 					}
 				});
