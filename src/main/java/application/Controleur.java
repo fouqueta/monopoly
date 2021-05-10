@@ -161,7 +161,7 @@ public class Controleur implements Runnable {
 		}
 
 		if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-			sendMsg("carte", jeu.numCase(carteTiree) + "-" + joueurJ.getArgent());
+			sendMsg("carte", jeu.numCase(carteTiree) + "-" + joueurJ.getArgent()+ "-" + carteTiree.getTypeAction() + "-" + carteTiree.getParametres());
 		}
 	}
 
@@ -224,6 +224,7 @@ public class Controleur implements Runnable {
 		} else {
 			if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]){
 				sendMsg("fin tour", String.valueOf(controleur_curseurSuivant(jeu.getCurseur())));
+
 			}
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
@@ -243,7 +244,10 @@ public class Controleur implements Runnable {
 		boolean faillite = jeu.faillite_IG(joueur_actuel);
 		if(faillite) {
 			vue.gestion_historique(vue.unJoueur_historique("faillite", jeu.getJoueurs()[curseur], null, 0));
+			if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()])
+				sendMsg("faillite", "");
 		}
+
 	}
 
 
@@ -290,6 +294,10 @@ public class Controleur implements Runnable {
 
         if (caseC instanceof Proprietes) {
             jeu.loyer_IG((Proprietes) caseC, sommeApayer);
+			if(jeu.isReseau()){
+				System.out.println("loyer");
+				sendMsg("loyer", sommeApayer +"-"+ ((Proprietes) caseC).getProprietaire().getNom());
+			}
         }
         else if (caseC.getNom().equals("Impots revenu") || caseC.getNom().equals("Taxe de luxe")) {
             joueurJ.transaction(-sommeApayer);
@@ -348,10 +356,8 @@ public class Controleur implements Runnable {
 
 	
 	void controleur_loyerIG(Proprietes propriete_actuelle, int loyer) {
-		int montant = jeu.loyer_IG(propriete_actuelle, loyer);
-		if(jeu.isReseau()){
-			sendMsg("loyer", String.valueOf(montant));
-		}
+		jeu.loyer_IG(propriete_actuelle, loyer);
+
 	}
 
 	//Systeme de defis
@@ -616,6 +622,15 @@ public class Controleur implements Runnable {
 					int posProp = Integer.parseInt(temp[1]);
 					Proprietes p = (Proprietes) jeu.getPlateau().getCases(posProp);
 					controleur_achatBatiment(p, temp[0]);
+				});
+				break;
+			case "faillite":
+				Platform.runLater(() -> {
+					jeu.getJoueurs()[curseur].setFaillite(true);
+					if (jeu.jeuFini_IG()) {
+						vue.fin_partie();
+						vue.gestion_historique(new Label("La partie est terminee."));
+					}
 				});
 				break;
 			default:
