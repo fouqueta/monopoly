@@ -1,5 +1,3 @@
-package serveur.monopoly;
-
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -19,7 +17,7 @@ public class Main {
                     j.start();
                     System.out.println(socket);
                 }else{
-                    PrintWriter pw=new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+                    PrintWriter pw=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"), true);
                     pw.println("erreur");
                     pw.println("partie deja lance");
                     socket.close();

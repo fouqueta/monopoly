@@ -1,19 +1,16 @@
-package serveur.monopoly;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class JoueurS extends Thread{
     
-    private ServeurMonopoly serveur;
+    private final ServeurMonopoly serveur;
     private final Socket socket;
     private PrintWriter pw;
     private boolean pret = false;
@@ -56,8 +53,8 @@ class JoueurS extends Thread{
     @Override
     public void run(){
         try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            pw=new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+            pw=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
             while(running){    
                 String action = br.readLine();
                 String info = br.readLine();
@@ -95,12 +92,13 @@ class JoueurS extends Thread{
     
     //Traite le message reçu
     private void build_message(String action, String info) {
+        String temp[];
         switch(action){
-            case "message" -> {
+            case "message":
                 info = nom + " : " + info; 
                 sendToAllClients(action, info);
-            }
-            case "start" -> {
+                break;
+            case "start":
                 if(pseudoNonPresent(info)){
                     pret = true;
                     nom = info;
@@ -109,47 +107,63 @@ class JoueurS extends Thread{
                     pw.println("Pseudo deja prit");
                 }
                 
-            }
-            case "close" -> closeClient();
-            case "achat" -> {
+                break;
+            case "faillite":
+                this.faillite = true;
+                
+                sendToAllClientsNotSender(action, info);
+                break;
+            case "carte":
+                temp = info.split("-");
+                int arg = Integer.parseInt(temp[2]);
+                String typeAction = temp[3];
+                int p = Integer.parseInt(temp[4]);
+                actionCarte(typeAction, p, arg);
+                
+                sendToAllClientsNotSender(action, info);
+                break;
+            case "close":
+                closeClient();
+                break;
+            case "achat":
                 achatCase(Integer.parseInt(info));
                 sendToAllClientsNotSender(action, info);
-            }
-            /*case "tire carte" -> {
-                String carte = serveur.tireCarteChanceCommu(info);
-                this.sendMsg("carte tiree", carte + "-" + info);
-            }*/
-            case "lancer des" ->{
+                break;
+            case "lancer des":
                 int[] des = this.lancer_de_des();
                 this.sendMsg("lancer des", des[0] + "-" + des[1]);
-            }
-            case "deplace" -> {
-                String[] temp = info.split("-");
-                this.position = Integer.parseInt(temp[2]);
+                break;
+            case "deplace":
+                temp = info.split("-");
+                //this.position = Integer.parseInt(temp[2]);
                 this.argent = Integer.parseInt(temp[3]);
-                this.enPrison = temp[4].equals("true") ? true: false;
+                this.enPrison = temp[4].equals("true");
                 this.nbToursPrison = Integer.parseInt(temp[5]);
-                this.faillite = temp[6].equals("true") ? true: false;
-                this.cartePrison = temp[7].equals("true") ? true: false;
+                this.faillite = temp[6].equals("true");
+                //this.cartePrison = temp[7].equals("true") ? true: false;
                 sendToAllClientsNotSender(action, info);
-            }
-            case "fin tour" -> {
+                break;
+            case "fin tour" :
                 serveur.setCurseur(Integer.parseInt(info));
                 sendToAllClientsNotSender(action, info);
                 System.out.println(serveur);
-            }
-            case "vente a joueur" -> {
-                String[] temp = info.split("-");
+                break;
+            case "vente a joueur":
+                temp = info.split("-");
                 venteCase(Integer.parseInt(temp[0]), Integer.parseInt(temp[2]));
                 serveur.achatCase(temp[1], Integer.parseInt(temp[2]));
                 sendToAllClientsNotSender(action, info);
-            }
-            case "vendre" -> {
-                String[] temp = info.split("-");
-                venteCase(Integer.parseInt(temp[2]), Integer.parseInt(temp[1]));
+                break;
+            case "vendre":
+                temp = info.split("-");
+                if(temp[0].equals("hotel") || temp[0].equals("maison")){
+                    venteProp(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), Integer.parseInt(temp[3]));
+                }else{
+                    venteCase(Integer.parseInt(temp[2]), Integer.parseInt(temp[1]));
+                }
                 sendToAllClientsNotSender(action, info);
-            }
-            case "defis gagnant" -> {
+                break;
+            case "defis gagnant":
                 String[] t = info.split("-");
                 int loyerEnJeu = Integer.parseInt(t[3]);
 
@@ -160,12 +174,23 @@ class JoueurS extends Thread{
                     loyer(loyerEnJeu,t[4]);
 		}
                 sendToAllClientsNotSender(action, info);
-            }
-            case "loyer" -> {
-                String[] temp = info.split("-");
+                break;
+            case "loyer":
+                temp = info.split("-");
                 loyer(Integer.parseInt(temp[0]),temp[1]);
-            }
-            default -> sendToAllClientsNotSender(action, info);
+                break;
+            case "batiment":
+                temp = info.split("-");
+                String type = temp[0];
+                int pos = Integer.parseInt(temp[1]);
+                int prix = Integer.parseInt(temp[2]);
+                this.ajoutArgent(-prix);
+                this.serveur.achatBatiment(type, pos);
+                sendToAllClientsNotSender(action, info);
+                break;
+            default:
+                sendToAllClientsNotSender(action, info);
+                break;
         }
     }
     
@@ -188,6 +213,13 @@ class JoueurS extends Thread{
         }
         this.proprietes = temp;
         this.ajoutArgent(prix);
+    }
+    
+    private void venteProp(String type, int num, int montant, int pos){
+        this.ajoutArgent(montant);
+        if(type.equals("maison")) this.serveur.venteMaisons(num, pos);
+        else serveur.venteHotel(num, pos);
+        
     }
     
     public void loyer(int loyer, String nom){
@@ -227,12 +259,13 @@ class JoueurS extends Thread{
         this.argent = this.argent + loyer;
     }
     
+    @Override
     public String toString(){
         String rep = this.nom + ": \nArgent : " + this.argent + "\nPosition : " + this.position + "\nProprietes : ";
         for(int i: this.proprietes){
             rep = rep + i + " ";
         }
-        rep = rep + "\nEn prison :" + this.enPrison + "\nNb de Tour : " + this.nbToursPrison + "\nCarte Prison : " + this.cartePrison + "\nEn Faillite" + this.faillite + "\n";
+        rep = rep + "\nEn prison :" + this.enPrison + "\nNb de Tour : " + this.nbToursPrison + "\nCarte Prison : " + this.cartePrison + "\nEn Faillite : " + this.faillite + "\n";
         return rep;
     }  
     
@@ -243,6 +276,74 @@ class JoueurS extends Thread{
             int intervalle = 1 + aleatoire.nextInt(7-1);
             des[i] = intervalle;
 	}
+        des[0] = 1;
+        des[1] = 0;
+        avance(des);
 	return des;
+    }
+    
+    private void avance(int[] des){
+        int posFinale = (this.position + des[0] + des[1]) %40;
+        if(this.position>posFinale){
+            this.ajoutArgent(2000);
+        }
+        this.position = posFinale;
+    }
+
+    private void actionCarte(String typeAction, int p, int argent) {
+        switch (typeAction) {
+            case "prelevement" :
+		this.ajoutArgent(-p);
+		break;
+            case "immo" :
+		int sommeApayer = this.getNbTotalMaisons()*p + this.getNbTotalHotels()*4*p;
+		this.ajoutArgent(-p);
+		break;
+            case "cadeau" :
+                serveur.getList().forEach(j ->{
+                    if(this==j){
+                        ajoutArgent(p*this.serveur.nbJ());
+                    }else{
+                        j.ajoutArgent(-p);
+                    }
+                });
+                break;
+            case "recette" :
+		this.ajoutArgent(p);
+		break;
+            case "trajet" :
+		if ( p != 30 ) {
+                    this.argent = argent;
+                    this.position = p;
+		}
+		break;
+            case "reculer" :
+		this.position = p;
+                this.argent = argent;
+		break;
+            case "trajet spe" :
+                this.position -= p;
+                this.argent = argent;
+		break;
+            case "bonus" :
+		this.cartePrison = true;
+		break;
+        }
+    }
+
+    private int getNbTotalMaisons() {
+        int rep =0;
+        for(int p: this.proprietes){
+           rep = rep + this.serveur.getNbMaisons(p);
+        }
+        return rep;
+    }
+
+    private int getNbTotalHotels() {
+        int rep =0;
+        for(int p: this.proprietes){
+           rep = rep + this.serveur.getNbHotel(p);
+        }
+        return rep;
     }
 }

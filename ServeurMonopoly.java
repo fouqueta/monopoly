@@ -1,9 +1,5 @@
-package serveur.monopoly;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
 
 public class ServeurMonopoly{
@@ -11,57 +7,42 @@ public class ServeurMonopoly{
     private final ArrayList<JoueurS> list;
     private boolean lance;
     private int curseur;
-    /*private String[] cartesChance;
+    private String[] cartesChance;
     private String[] cartesCommu;
-    private Scanner scan;*/
+    private int[][] plateau;
 
     public ServeurMonopoly() {
         this.list = new ArrayList<>();
         this.lance = false;
         this.curseur = 0;
-        //init_cartes();
+        initPlateau();
+        
     }
     
-    /*public void init_cartes() {
-    	new_scan("cartes.csv");
-    	cartesChance = new String[16];
-    	cartesCommu = new String[16];
-    	int i = 0;
-        scan.nextLine(); //Pour sauter la ligne des titres des categories
-        while (scan.hasNextLine()) {
-        	String cartes = scan.nextLine();
-        	String[] attributs = cartes.split(";"); //tab de taille 4, voir cartes.csv
-        	attributs[1] = attributs[1].replace("\\n", "\n");
-            switch (attributs[0]) {
-            	case "chance":
-            		cartesChance[i] =  attributs[2];
-            		break;
-            	case "commu":
-            		cartesCommu[i%16] = attributs[2];
-            		break;
+    private void initPlateau(){
+         plateau = new int[40][2];
+         for(int i=0;i<plateau.length;i++){
+            for(int j=0; j<plateau[i].length;j++){
+                plateau[i][j] = 0; 
             }
-        	i++;
-        }
-    	scan.close();
+         }
     }
-    
-    public void new_scan(String fichier) {
-    	try {
-    		scan = new Scanner(new File(fichier), "UTF-8");
-    	}
-    	catch(Exception e) {
-    		System.out.println("Erreur lors d ouverture fichier:");
-    		e.printStackTrace();
-    		System.exit(1);
-    	}
-    }*/
     
     public String toString(){
         String rep = "Curseur : " + curseur + "\n";
         for(JoueurS j: list){
             rep = rep + j + "\n";
         }
+        rep = rep + stringPlateau();
         return rep;
+    }
+    
+    private String stringPlateau(){
+        String rep = "";
+        for(int i=0;i<plateau.length;i++){
+            rep = rep + plateau[i][0] + "," + plateau[i][1] + " ";
+        }
+        return rep + "\n";
     }
     
     public void setCurseur(int i){
@@ -82,6 +63,14 @@ public class ServeurMonopoly{
     
     public boolean estLance(){
         return lance;
+    }
+    
+    public int getNbMaisons(int p){
+        return this.plateau[p][0];
+    }
+    
+    public int getNbHotel(int p){
+        return this.plateau[p][1];
     }
         
     //Eneleve un joueur de la liste
@@ -133,18 +122,23 @@ public class ServeurMonopoly{
             }
         });
     }
-    
-    /*public String tireCarteChanceCommu(String caseC) {
-    	Random rand = new Random();
-	int alea = rand.nextInt(16);
-	String carte = null;
-	if (caseC.equals("chance")) {
-            carte = this.cartesChance[alea];
-	}
-	else if (caseC.equals("cmmu")) {
-            carte = this.cartesCommu[alea];
-	}
-	return carte;
-    }*/
+
+    void venteMaisons(int num, int pos) {
+        this.plateau[pos][0] -= num;
+        if(this.plateau[pos][0]<0) this.plateau[pos][0]=0;
+    }
+
+    void venteHotel(int num, int pos) {
+        this.plateau[pos][1] = 0;
+    }
+
+    void achatBatiment(String type, int pos) {
+        if(type.equals("maison")){
+            this.plateau[pos][0]++;
+        }else{
+            this.plateau[pos][0]=0;
+            this.plateau[pos][1]++;
+        }
+    }
     
 }
