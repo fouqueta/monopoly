@@ -200,6 +200,8 @@ class JoueurS extends Thread{
         temp[this.proprietes.length] = this.position;
         this.proprietes = temp;
         this.ajoutArgent(-prix);
+        this.serveur.venteMaisons(4, this.position);
+        this.serveur.venteHotel(1, this.position);
     }
     
     private void venteCase(int num, int prix){
@@ -211,6 +213,8 @@ class JoueurS extends Thread{
                 j++;
             }
         }
+        this.serveur.venteMaisons(4, num);
+        this.serveur.venteHotel(1, num);
         this.proprietes = temp;
         this.ajoutArgent(prix);
     }
@@ -276,8 +280,6 @@ class JoueurS extends Thread{
             int intervalle = 1 + aleatoire.nextInt(7-1);
             des[i] = intervalle;
 	}
-        des[0] = 1;
-        des[1] = 0;
         avance(des);
 	return des;
     }
