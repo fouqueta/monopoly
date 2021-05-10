@@ -39,7 +39,7 @@ public class Controleur implements Runnable {
 
 			try {
 				running = false;
-				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF8"), true);
 				sendMsg("close","");
 				jeu.setReseau(false);
 
@@ -50,7 +50,8 @@ public class Controleur implements Runnable {
 		}else{
 			try {
 				socket = new Socket("176.144.217.163", 666);
-				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+				//socket = new Socket("127.0.0.1", 666);
+				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF8"), true);
 				jeu.setReseau(true);
 				running = true;
 			} catch (IOException e) {
@@ -408,7 +409,7 @@ public class Controleur implements Runnable {
 	public void run() {
 
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
 			while (running) {
 				String action = br.readLine();
 				String info = br.readLine();
