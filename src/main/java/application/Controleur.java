@@ -380,7 +380,7 @@ public class Controleur implements Runnable {
 			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
-			if(joueur.getArgent()<loyerEnJeu) {
+			if(joueur.getArgent()<loyerEnJeu && !jeu.isReseau()) {
 				vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
 			}else {
 				joueur.thisPayeA(proprio, loyerEnJeu);
@@ -593,7 +593,11 @@ public class Controleur implements Runnable {
 						joueur.thisRecoitDe(proprio, loyerEnJeu);
 					}
 					else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
-						joueur.thisPayeA(proprio, loyerEnJeu);
+						if(joueur.getArgent()<loyerEnJeu && jeu.getJoueurReseau()==jeu.getJoueurs()[curseur]) {
+							vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
+						}else {
+							joueur.thisPayeA(proprio, loyerEnJeu);
+						}
 					}
 					vue.changement_argent(curseur);
 					vue.changement_argent(vue.getTabProprietaires(position));

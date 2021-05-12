@@ -1242,10 +1242,11 @@ public class Vue {
 			vente_tab[proprietaires[position]].setDisable(true);
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
+			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			controleur.controleur_vente(curseur);
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
-			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
+
 			proprietaires[position]=curseur;
 			if(jeu.getJoueurs()[curseur].isRobot()){
 				fin.fire();
@@ -1259,10 +1260,11 @@ public class Vue {
 			vente_tab[proprietaires[position]].setDisable(true);
 			defis_tab[curseur].setDisable(true);
 			defis_tab[proprietaires[position]].setDisable(true);
+			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
 			controleur.controleur_vente(curseur);
 			changement_argent(curseur);
 			changement_argent(proprietaires[position]);
-			gestion_historique(deuxJoueurs_historique("vente", jeu.getJoueurs()[curseur], jeu.getJoueurs()[proprietaires[position]], null, position));
+
 			proprietaires[position]=curseur;
 
 			Proprietes pos_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
@@ -1611,7 +1613,7 @@ public class Vue {
 		rootHisto = new AnchorPane();
 		rootHisto.setStyle("-fx-background-color: beige");
 
-		sceneHisto = new Scene(rootHisto, 400, (tailleEcran.height*50)/100);
+		sceneHisto = new Scene(rootHisto, 500, (tailleEcran.height*50)/100);
 		stageHisto.setScene(sceneHisto);
 
 		historiqueVBox = new VBox();
@@ -1761,7 +1763,7 @@ public class Vue {
 		rootTchat = new AnchorPane();
 		rootTchat.setStyle("-fx-background-color: pink");
 
-		sceneTchat = new Scene(rootTchat, 400, (tailleEcran.height*55)/100);
+		sceneTchat = new Scene(rootTchat, 500, (tailleEcran.height*55)/100);
 		stageTchat.setScene(sceneTchat);
 
 		tchatVBox = new VBox();
