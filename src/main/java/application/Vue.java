@@ -973,10 +973,12 @@ public class Vue {
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 	        	lancer.setVisible(false);
 	        	fin.setVisible(false);
+	        	achatBatiments_menu_tab[curseur].setVisible(false);
 	        }
 	        else {
 	        	lancer.setVisible(true);
 	        	fin.setVisible(true);
+	        	achatBatiments_menu_tab[curseur].setVisible(true);
 	        }
 		});
 	}
@@ -1566,6 +1568,8 @@ public class Vue {
 		achat.setDisable(true);
 		vente.setDisable(true);
 		defis.setDisable(true);
+		prison.setDisable(true);
+		achatBatiments_menu_tab[jeu.getCurseur()].setDisable(true);
 
 		BorderPane victoire_pane = new BorderPane ();
 		String nom = "";
