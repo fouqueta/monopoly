@@ -457,8 +457,8 @@ public class Vue {
 	
 	public void initialisation_batiments() {
 		try {
-			FileInputStream inputstreamM = new FileInputStream("maison.png");
-			FileInputStream inputstreamH = new FileInputStream("hotel.png");
+			FileInputStream inputstreamM = new FileInputStream("src/main/resources/maison.png");
+			FileInputStream inputstreamH = new FileInputStream("src/main/resources/hotel.png");
 			maison_image = new Image(inputstreamM);
 			hotel_image = new Image(inputstreamH);
 		}
@@ -859,7 +859,7 @@ public class Vue {
 	void afficherRegles() {
 		String texte="";
 		try {
-			Scanner sc = new Scanner(new File("regles.txt"));
+			Scanner sc = new Scanner(new File("src/main/java/resources/regles.txt"));
 			while(sc.hasNext()) {
 				String prochaineLigne = sc.nextLine();
 				texte=texte+prochaineLigne+"\n";

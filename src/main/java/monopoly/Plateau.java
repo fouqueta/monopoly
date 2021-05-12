@@ -45,7 +45,7 @@ public class Plateau {
 
 	//Initilisation du plateau
 	public void init_plateau() {
-    	new_scan("cases.csv");
+    	new_scan("src/main/resources/cases.csv");
     	grille = new Cases[40];
         posJoueurs = new String[40];
         int i = 0;
@@ -76,7 +76,7 @@ public class Plateau {
     
     //Initialisation des cartes chance et communaute
     public void init_cartes() {
-    	new_scan("cartes.csv");
+    	new_scan("src/main/resources/cartes.csv");
     	cartesChance = new Cartes[16];
     	cartesCommu = new Cartes[16];
     	int i = 0;
