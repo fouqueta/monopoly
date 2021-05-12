@@ -749,7 +749,7 @@ public class Vue {
 				if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 					Proprietes pos_actuelle = (Proprietes) jeu.getPlateau().getCases(ancienne_position);
 					int prix = pos_actuelle.getPrix();
-					controleur.sendMsg("vendre", iF + "-" + prix + "-" + ancienne_position);
+					controleur.sendMsg("vendre", joueurJ.getNom() + "-" + montant + "-" + ancienne_position);
 				}
 				changement_couleur_case_blanche(ancienne_position);
 				if (joueurJ.getArgent() < montant && (joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison())) {
@@ -787,7 +787,7 @@ public class Vue {
 						controleur.controleur_venteBatiment(p, "maison", jF); //i reventes de maisons
 
 						if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-							controleur.sendMsg("vendre", "maison-" + jF + "-" + prixReventeBat + "-" + p.getPosition());
+							controleur.sendMsg("vendre", "maison-" + jF + "-" + prixReventeBat + "-" + p.getPosition() +"-"+joueurJ.getNom()+"-"+montant);
 						}
 
 						if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
@@ -813,7 +813,7 @@ public class Vue {
 					controleur.controleur_venteBatiment(p, "hotel", 1); //une seule revente d'hotel
 
 					if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-						controleur.sendMsg("vendre", "hotel-" + 1 + "-" + prixReventeBat + "-" + p.getPosition());
+						controleur.sendMsg("vendre", "hotel-"+ 1 + "-" + prixReventeBat + "-" + p.getPosition() +"-"+joueurJ.getNom()+"-"+montant);;
 					}
 
 					if (joueurJ.getArgent() < montant && joueurJ.getProprietes().length>=1) {
@@ -1844,31 +1844,52 @@ public class Vue {
 	}
 
 	//Vend la propriete en reseau
-	void vendPropReseau(int ancienne_position, int curseur){
-		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+	void vendPropReseau(int ancienne_position, Joueur joueurJ, int montant){
+		if(joueurJ==null) return;
+		int curseur = jeu.getCurseurDuJoueur(joueurJ);
+		if(curseur==-1) return;
+
+		//int position = joueurJ.getPion().getPosition();
+		//Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
 
 		changement_couleur_case_blanche(ancienne_position);
 		changement_argent(curseur);
-		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
+		/*if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
 			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
 			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
 			changement_argent(proprietaires[position]);
 			changement_argent(curseur);
+		}*/
+
+		if (joueurJ.getArgent() < montant && (joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison())) {
+			changement_argent(curseur);
+		}
+		else {
+			controleur.transactionSelonType(curseur, montant, controleur.getCarte());
+			activer_bouton_achat(curseur);
 		}
 	}
 
-	void vendBatReseau(){
+	void vendBatReseau( Joueur joueurJ, int montant){
+		if(joueurJ==null) return;
+		int curseur = jeu.getCurseurDuJoueur(joueurJ);
+		if(curseur==-1) return;
 
-		int curseur = jeu.getCurseur();
-		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
-		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
+		//int position = joueurJ.getPion().getPosition();
 
-		if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
+		/*if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
 			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
 			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
 			changement_argent(proprietaires[position]);
 			changement_argent(curseur);
+		}*/
+
+		if (joueurJ.getArgent() < montant && (joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison())) {
+			changement_argent(curseur);
+		}
+		else {
+			controleur.transactionSelonType(curseur, montant, controleur.getCarte());
+			activer_bouton_achat(curseur);
 		}
 
 	}

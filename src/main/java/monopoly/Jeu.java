@@ -1,5 +1,6 @@
 package monopoly;
 
+import javax.swing.*;
 import java.util.Random;
 
 public class Jeu {
@@ -58,6 +59,24 @@ public class Jeu {
 
 	public boolean isReseau(){
     	return reseau;
+	}
+
+	public Joueur getJoueurParNom(String nom){
+    	for(Joueur j: this.joueurs){
+    		if(j.getNom().equals(nom)){
+    			return j;
+			}
+		}
+    	return null;
+	}
+
+	public int getCurseurDuJoueur(Joueur j){
+    	for(int i=0;i<joueurs.length;i++){
+    		if(j==joueurs[i]){
+    			return i;
+			}
+		}
+    	return -1;
 	}
 
 	//Setter

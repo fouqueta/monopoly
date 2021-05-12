@@ -62,6 +62,8 @@ public class Controleur implements Runnable {
 
 	//Getters
 	Jeu getJeu() { return this.jeu; }
+
+	Cartes getCarte() { return this.carte; }
 	
 	//Apres lancer de des	
 	void controleur_lancer(int[] des, int curseur) {
@@ -519,12 +521,18 @@ public class Controleur implements Runnable {
 					if(temp[0].equals("hotel") || temp[0].equals("maison")){
 						int jF = Integer.parseInt(temp[1]);
 						Proprietes p = (Proprietes) jeu.getPlateau().getCases(Integer.parseInt(temp[3]));
+						Joueur j = jeu.getJoueurParNom(temp[4]);
+						int prix = Integer.parseInt(temp[5]);
 						controleur_venteBatiment(p,temp[0],jF);
-						vue.vendBatReseau();
+						vue.vendBatReseau(j,prix);
 					}else{
+						System.out.println("ici");
+						Joueur j = jeu.getJoueurParNom(temp[0]);
+						int prix = Integer.parseInt(temp[1]);
 						int ancienne_position = Integer.parseInt(temp[2]);
+						j.vendreLaPropriete_IG((Proprietes) jeu.getPlateau().getCases(ancienne_position));
 						vue.changement_couleur_case_blanche(ancienne_position);
-						vue.vendPropReseau(ancienne_position, curseur);
+						vue.vendPropReseau(ancienne_position, j, prix);
 					}
 
 				});
