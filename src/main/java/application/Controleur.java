@@ -380,12 +380,12 @@ public class Controleur implements Runnable {
 			if(jeu.isReseau()) sendMsg("defis gagnant", "joueur-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+			int montant = 0;
 			if(joueur.getArgent()<loyerEnJeu && !jeu.isReseau()) {
 				vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
 			}else {
-				joueur.thisPayeA(proprio, loyerEnJeu);
+				montant = joueur.thisPayeA(proprio, loyerEnJeu);
 			}
-			int montant = joueur.thisPayeA(proprio, loyerEnJeu);
 			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + proprio.getNom());
 		}
 		else {

@@ -1771,7 +1771,7 @@ public class Vue {
 		rootTchat.getChildren().add(tchatVBox);
 
 		TextField zone = new TextField();
-		zone.setPrefSize(325, (rootTchat.getHeight())/100);
+		zone.setPrefSize(425, (rootTchat.getHeight())/100);
 		AnchorPane.setBottomAnchor(zone, (double) (rootTchat.getHeight())/100);
 		rootTchat.getChildren().add(zone);
 
