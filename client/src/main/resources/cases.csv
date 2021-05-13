@@ -1,0 +1,41 @@
+POSITION;TYPE;NOM;COULEUR;PRIXACHAT;LOYER;PARAMETRE/PRIXBATIMENT
+0;CasesSpeciales;Depart;;;;2000
+1;Proprietes;Belleville;violet;600;150-300-500-600-1000-1600-2500;500
+2;CasesCommunaute;Communaute;;;;
+3;Proprietes;Lecourbe;violet;600;300-600-1000-1200-1800-3200-4500;500
+4;CasesSpeciales;Impots revenu;;;;2000
+5;Proprietes;G Montparnasse;gare;2000;500-1000-2000-4000;0
+6;Proprietes;Vaugirard;ciel;1000;500-750-1000-1500-1700-2700-4000-5500;500
+7;CasesChance;Chance;;;;
+8;Proprietes;Courcelles;ciel;1000;500-750-1000-1500-1700-2700-4000-5500;500
+9;Proprietes;Republique;ciel;1200;1000-1250-1500-1700-2000-3000-4500-6000;500
+10;CasesSpeciales;Prison;;;;0
+11;Proprietes;La Villette;rose;1400;1250-1500-1750-2500-3500-4500-6250-7500;1000
+12;Proprietes;Electricite;compagnie;1500;300-500;0
+13;Proprietes;Neuilly;rose;1400;1250-1500-1750-2500-3500-4500-6250-7500;1000
+14;Proprietes;Paradis;rose;1600;1500-1750-2000-3000-3800-5000-7000-9000;1000
+15;Proprietes;G. de Lyon;gare;2000;500-1000-2000-4000;0
+16;Proprietes;Mozart;orange;1800;1750-2000-2250-3250-3750-5500-7500-9500;1000
+17;CasesCommunaute;Communaute;;;;
+18;Proprietes;Saint-Michel;orange;1800;1750-2000-2250-3250-3750-5500-7500-9500;1000
+19;Proprietes;Pigalle;orange;2000;2000-2250-2500-3250-4000-6000-8000-10000;1000
+20;CasesSpeciales;Parc gratuit;;;;0
+21;Proprietes;Matignon;rouge;2200;2250-2500-2750-3500-4250-7000-8750-10500;1500
+22;CasesChance;Chance;;;;
+23;Proprietes;Malesherbes;rouge;2200;2250-2500-2750-3500-4250-7000-8750-10500;1500
+24;Proprietes;Henri-Martin;rouge;2400;2500-2750-3000-3750-4500-7500-9250-11000;1500
+25;Proprietes;G. du Nord;gare;2000;500-1000-2000-4000;0
+26;Proprietes;Saint-Honore;jaune;2600;2750-3000-3250-4000-6500-8000-9750-11500;1500
+27;Proprietes;La Bourse;jaune;2600;2750-3000-3250-4000-6500-8000-9750-11500;1500
+28;Proprietes;Eaux;compagnie;1500;300-500;0
+29;Proprietes;La Fayette;jaune;2800;3000-3250-3500-4250-6750-8500-10250-12000;1500
+30;CasesSpeciales;Aller prison;;;;0
+31;Proprietes;Breteuil;vert;3000;3250-3500-3750-4500-7250-9000-11000-12750;2000
+32;Proprietes;Foch;vert;3000;3250-3500-3750-4500-7250-9000-11000-12750;2000
+33;CasesCommunaute;Communaute;;;;
+34;Proprietes;Capucines;vert;3200;3500-3750-4000-4750-8000-10000-12000-14000;2000
+35;Proprietes;G. St-Lazare;gare;2000;500-1000-2000-4000;0
+36;CasesChance;Chance;;;;
+37;Proprietes;Champs-Elysees;bleu;3500;3750-4000-4500-5000-11000-13000-15000;2000
+38;CasesSpeciales;Taxe de luxe;;;;1000
+39;Proprietes;Rue de la Paix;bleu;4000;4000-4500-5500-6000-14000-17000-20000;2000
