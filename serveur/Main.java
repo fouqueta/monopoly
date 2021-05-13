@@ -4,7 +4,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
-
+    
+    //Lance le serveur et accepete les connections s'il reste de la place ou si la partie n'est pas lance
     public static void main(String[] args) {
         ServeurMonopoly s = new ServeurMonopoly();
         try{
