@@ -43,6 +43,18 @@ class JoueurS extends Thread{
         return pret;
     }
     
+    public int getArgent(){
+        return argent;
+    }
+    
+    public int[] getProp(){
+        return proprietes;
+    }
+    
+    public boolean aCarteLibPrison(){
+        return this.cartePrison;
+    }
+    
     //Envoi un message
     public void sendMsg(String action, String info){
         pw.println(action);
@@ -106,34 +118,33 @@ class JoueurS extends Thread{
                     pw.println("erreur");
                     pw.println("Pseudo deja prit");
                 }
-                
                 break;
             case "faillite":
-                this.faillite = true;
-                
                 sendToAllClientsNotSender(action, info);
+                this.faillite = true;
                 break;
             case "carte":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 int arg = Integer.parseInt(temp[2]);
                 String typeAction = temp[3];
                 int p = Integer.parseInt(temp[4]);
                 actionCarte(typeAction, p, arg);
-                
-                sendToAllClientsNotSender(action, info);
                 break;
             case "close":
                 closeClient();
                 break;
             case "achat":
-                achatCase(Integer.parseInt(info));
                 sendToAllClientsNotSender(action, info);
+                achatCase(Integer.parseInt(info));
+                
                 break;
             case "lancer des":
                 int[] des = this.lancer_de_des();
                 this.sendMsg("lancer des", des[0] + "-" + des[1]);
                 break;
             case "deplace":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 //this.position = Integer.parseInt(temp[2]);
                 this.argent = Integer.parseInt(temp[3]);
@@ -141,7 +152,7 @@ class JoueurS extends Thread{
                 this.nbToursPrison = Integer.parseInt(temp[5]);
                 this.faillite = temp[6].equals("true");
                 //this.cartePrison = temp[7].equals("true") ? true: false;
-                sendToAllClientsNotSender(action, info);
+                
                 break;
             case "fin tour" :
                 serveur.setCurseur(Integer.parseInt(info));
@@ -149,44 +160,46 @@ class JoueurS extends Thread{
                 System.out.println(serveur);
                 break;
             case "vente a joueur":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 venteCase(Integer.parseInt(temp[0]), Integer.parseInt(temp[2]));
                 serveur.achatCase(temp[1], Integer.parseInt(temp[2]));
-                sendToAllClientsNotSender(action, info);
+                
                 break;
             case "vendre":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 if(temp[0].equals("hotel") || temp[0].equals("maison")){
-                    venteProp(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), Integer.parseInt(temp[3]));
+                    venteBat(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), Integer.parseInt(temp[3]));
                 }else{
                     venteCase(Integer.parseInt(temp[2]), Integer.parseInt(temp[1]));
                 }
-                sendToAllClientsNotSender(action, info);
+                
                 break;
             case "defis gagnant":
+                sendToAllClientsNotSender(action, info);
                 String[] t = info.split("-");
                 int loyerEnJeu = Integer.parseInt(t[3]);
 
 		if(t[0].equals("joueur")) { //Rembourse le loyer au joueur gagnant.
-                    this.argent = this.argent + loyerEnJeu;
-		}
-		else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
                     loyer(loyerEnJeu,t[4]);
 		}
-                sendToAllClientsNotSender(action, info);
+		else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+                    serveur.defis(this, t[4], loyerEnJeu);
+		}
                 break;
             case "loyer":
                 temp = info.split("-");
                 loyer(Integer.parseInt(temp[0]),temp[1]);
                 break;
             case "batiment":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 String type = temp[0];
                 int pos = Integer.parseInt(temp[1]);
                 int prix = Integer.parseInt(temp[2]);
                 this.ajoutArgent(-prix);
                 this.serveur.achatBatiment(type, pos);
-                sendToAllClientsNotSender(action, info);
                 break;
             default:
                 sendToAllClientsNotSender(action, info);
@@ -194,6 +207,7 @@ class JoueurS extends Thread{
         }
     }
     
+    //Achate une case et la stocke dans le tab proprietes
     public void achatCase(int prix){
         int[] temp = new int[this.proprietes.length+1];
         System.arraycopy(this.proprietes, 0, temp, 0, this.proprietes.length);
@@ -204,6 +218,7 @@ class JoueurS extends Thread{
         this.serveur.venteHotel(1, this.position);
     }
     
+    //Vend une case et la retire du tab proprietes
     private void venteCase(int num, int prix){
         int[] temp = new int[this.proprietes.length-1];
         int j = 0;
@@ -219,18 +234,21 @@ class JoueurS extends Thread{
         this.ajoutArgent(prix);
     }
     
-    private void venteProp(String type, int num, int montant, int pos){
+    //Vend num batiements
+    private void venteBat(String type, int num, int montant, int pos){
         this.ajoutArgent(montant);
         if(type.equals("maison")) this.serveur.venteMaisons(num, pos);
         else serveur.venteHotel(num, pos);
         
     }
     
+    //Loyer
     public void loyer(int loyer, String nom){
         ajoutArgent(-loyer);
         serveur.loyer(loyer, nom);
     }
     
+    //Deplace la position du joueur
     private void deplacePos(String info) {
         this.position = Integer.parseInt(info);
     }
@@ -250,7 +268,8 @@ class JoueurS extends Thread{
             Logger.getLogger(JoueurS.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    //Regarde si quelqu'un ne possede deja pas le pseudo que le joueur essaye de rentrer et qu'il ne poséde pas de "-"
     private boolean pseudoNonPresent(String info) {
         for(JoueurS j: serveur.getList()){
             //System.out.println(j + " " + this + " " + j.getNom() + " " + j.socket + " " + this.socket);
@@ -258,11 +277,13 @@ class JoueurS extends Thread{
         }
         return !info.contains("-");
     }
-
+    
+    //Ajoute/enleve de l'argent au joueur
     void ajoutArgent(int loyer) {
         this.argent = this.argent + loyer;
     }
     
+    //Affichage
     @Override
     public String toString(){
         String rep = this.nom + ": \nArgent : " + this.argent + "\nPosition : " + this.position + "\nProprietes : ";
@@ -273,6 +294,7 @@ class JoueurS extends Thread{
         return rep;
     }  
     
+    //Lance les des
     public int[] lancer_de_des() {
 	int[] des = new int[2];
 	Random aleatoire = new Random();
@@ -284,6 +306,7 @@ class JoueurS extends Thread{
 	return des;
     }
     
+    //Avance la position en fonction du resultat des des
     private void avance(int[] des){
         int posFinale = (this.position + des[0] + des[1]) %40;
         if(this.position>posFinale){
@@ -291,7 +314,8 @@ class JoueurS extends Thread{
         }
         this.position = posFinale;
     }
-
+    
+    //Réalise l'action de la crate tiree
     private void actionCarte(String typeAction, int p, int argent) {
         switch (typeAction) {
             case "prelevement" :
@@ -332,7 +356,8 @@ class JoueurS extends Thread{
 		break;
         }
     }
-
+    
+    //Retourne le nombre de maisons d'un joueur
     private int getNbTotalMaisons() {
         int rep =0;
         for(int p: this.proprietes){
@@ -340,7 +365,9 @@ class JoueurS extends Thread{
         }
         return rep;
     }
-
+    
+    
+    //Retourne le nombre d'hotels d'un joueur
     private int getNbTotalHotels() {
         int rep =0;
         for(int p: this.proprietes){

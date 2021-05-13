@@ -19,15 +19,7 @@ public class ServeurMonopoly{
         
     }
     
-    private void initPlateau(){
-         plateau = new int[40][2];
-         for(int i=0;i<plateau.length;i++){
-            for(int j=0; j<plateau[i].length;j++){
-                plateau[i][j] = 0; 
-            }
-         }
-    }
-    
+    //Affichage
     public String toString(){
         String rep = "Curseur : " + curseur + "\n";
         for(JoueurS j: list){
@@ -45,30 +37,47 @@ public class ServeurMonopoly{
         return rep + "\n";
     }
     
+    //Initialise le plateau avec nombre de maisons et d'hotels a 0
+    private void initPlateau(){
+         plateau = new int[40][2];
+         for(int i=0;i<plateau.length;i++){
+            for(int j=0; j<plateau[i].length;j++){
+                plateau[i][j] = 0; 
+            }
+         }
+    }
+    
+    //Update la valeur du curseur
     public void setCurseur(int i){
         this.curseur = i;
     }
     
+    //Renvoie la liste des joueurs
     public ArrayList<JoueurS> getList(){
         return list;
     }
     
+    //Ajoute un joueur a la liste
     public void add(JoueurS j){
         list.add(j);
     }
     
+    //Nombre de joueurs
     public int nbJ(){
         return list.size();
     }
     
+    //Renvoie le boolean indiquant si la partie est en cours
     public boolean estLance(){
         return lance;
     }
     
+    //Renvoie le nombre de maisons dans une case
     public int getNbMaisons(int p){
         return this.plateau[p][0];
     }
     
+    //Renvoie le nombre d'hotels dans une case
     public int getNbHotel(int p){
         return this.plateau[p][1];
     }
@@ -101,12 +110,14 @@ public class ServeurMonopoly{
         }
     }
     
+    //Envoie un message a tout les clients
     private void sendtoAllClients(String action, String info){
         list.forEach(j -> {
             j.sendMsg(action, info);
         });
     }
 
+    //Achat d'une case à un autre joueur
     void achatCase(String string, int prix) {
         list.forEach(j -> {
             if(j.getNom().equals(string)){
@@ -115,6 +126,7 @@ public class ServeurMonopoly{
         });
     }
 
+    //Loyer
     void loyer(int loyer, String nom) {
          list.forEach(j -> {
             if(j.getNom().equals(nom)){
@@ -122,16 +134,19 @@ public class ServeurMonopoly{
             }
         });
     }
-
+    
+    //Vente de num maisons a la propriete a la position pos
     void venteMaisons(int num, int pos) {
         this.plateau[pos][0] -= num;
         if(this.plateau[pos][0]<0) this.plateau[pos][0]=0;
     }
-
+    
+    //Vente de num hotels a la propriete a la position pos
     void venteHotel(int num, int pos) {
         this.plateau[pos][1] = 0;
     }
-
+    
+    //Achat d'un batiement
     void achatBatiment(String type, int pos) {
         if(type.equals("maison")){
             this.plateau[pos][0]++;
@@ -139,6 +154,23 @@ public class ServeurMonopoly{
             this.plateau[pos][0]=0;
             this.plateau[pos][1]++;
         }
+    }
+    
+    //Gestion des defis pour la victoire du proprio
+    void defis(JoueurS proprio, String nom, int loyerEnJeu) {
+        JoueurS joueur = null;
+        for(JoueurS j: list){
+            if(j.getNom().equals(nom)){
+                joueur = j;
+            }
+        }
+        
+        if(joueur.getArgent()>=loyerEnJeu || (joueur.getProp().length<1 && !joueur.aCarteLibPrison())){
+            joueur.ajoutArgent(-loyerEnJeu);
+            proprio.ajoutArgent(loyerEnJeu);
+	}
+        
+        
     }
     
 }
