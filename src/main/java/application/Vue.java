@@ -743,12 +743,9 @@ public class Vue {
 			margeEspace+=30;
 			revente_pane.getChildren().add(nom_proprietes_button[i]);
 
-			int iF = i;
 			nom_proprietes_button[i].setOnAction(actionEvent->{
 				int ancienne_position = joueurJ.vendreLaPropriete_IG(p);
 				if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
-					Proprietes pos_actuelle = (Proprietes) jeu.getPlateau().getCases(ancienne_position);
-					int prix = pos_actuelle.getPrix();
 					controleur.sendMsg("vendre", joueurJ.getNom() + "-" + montant + "-" + ancienne_position);
 				}
 				changement_couleur_case_blanche(ancienne_position);
@@ -973,12 +970,10 @@ public class Vue {
 	        if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
 	        	lancer.setVisible(false);
 	        	fin.setVisible(false);
-	        	achatBatiments_menu_tab[curseur].setVisible(false);
 	        }
 	        else {
 	        	lancer.setVisible(true);
 	        	fin.setVisible(true);
-	        	achatBatiments_menu_tab[curseur].setVisible(true);
 	        }
 		});
 	}
@@ -1012,10 +1007,10 @@ public class Vue {
 		maison_menuItem = null;
 		hotel_menuItem = null;
 		for (Proprietes p : joueurSuivant.getProprietes()) {
-			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { break; } //On ne peut pas acheter de batiments sur les gares ou compagnies
+			if (p.getCouleur().equals("gare") || p.getCouleur().equals("compagnie")) { continue; } //On ne peut pas acheter de batiments sur les gares ou compagnies
 			if (p.familleComplete() && p.estUniforme("maison") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() < 4 && !p.aUnHotel()) {
 				int nbMaisonsPlus1 = p.getNbMaisons()+1;
-				maison_menuItem = new MenuItem(p.getNom() + " : acheter la maison " + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
+				maison_menuItem = new MenuItem(p.getPosition() + " " + p.getNom() + " : acheter la maison " + nbMaisonsPlus1 + " pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(maison_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 
@@ -1025,7 +1020,7 @@ public class Vue {
 				});
 			}
 			else if (p.familleComplete() && p.estUniforme("hotel") && joueurSuivant.getArgent()>=p.getPrixBatiment() && p.getNbMaisons() == 4 && !p.aUnHotel()) {
-				hotel_menuItem = new MenuItem(p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
+				hotel_menuItem = new MenuItem(p.getPosition() + " " + p.getNom() + " : acheter un hotel pour " + p.getPrixBatiment() + "e");
 				achatBatiments_menu_tab[curseurSuivant].getItems().addAll(hotel_menuItem);
 				achatBatiments_menu_tab[curseurSuivant].setDisable(false);
 
@@ -1117,6 +1112,9 @@ public class Vue {
 			defis.setDisable(true);
 			prison.setDisable(true);
 			achatBatiments_menu.setDisable(true);
+			if (jeu.getJoueurs()[i].isRobot()) {
+				achatBatiments_menu_tab[i].setVisible(false);
+			}
 
 			achat.setLayoutY(5);
 			vente.setLayoutY(35);
@@ -1586,13 +1584,13 @@ public class Vue {
 		vente.setDisable(true);
 		defis.setDisable(true);
 		prison.setDisable(true);
-		achatBatiments_menu_tab[jeu.getCurseur()].setDisable(true);
 
 		BorderPane victoire_pane = new BorderPane ();
 		String nom = "";
 		for (int i=0; i<jeu.getJoueurs().length; i++) {
 			if (!jeu.getJoueurs()[i].getFaillite()) {
 				nom = jeu.getJoueurs()[i].getNom();
+				achatBatiments_menu_tab[i].setDisable(true);
 			}
 		}
 		Label l1 = new Label ("VICTOIRE DU JOUEUR");

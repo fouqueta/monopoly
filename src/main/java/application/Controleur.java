@@ -231,7 +231,7 @@ public class Controleur implements Runnable {
 			jeu.finTour_IG();
 			vue.changement_joueur_actuel();
 			if(jeu.getJoueurs()[jeu.getCurseur()].isRobot()){
-				PauseTransition wait = new PauseTransition(Duration.seconds(0.4));
+				PauseTransition wait = new PauseTransition(Duration.seconds(1));
 				wait.setOnFinished((e) -> {
 					vue.lancerRobot();
 				});
