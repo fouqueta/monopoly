@@ -367,7 +367,6 @@ public class Controleur implements Runnable {
 		int desProprio[] = jeu.lancer_de_des();
 		int sommeJoueur = desJoueur[0] + desJoueur[1];
 		int sommeProprio = desProprio[0] + desProprio[1];
-		sommeProprio = 0;
 
 		int position = jeu.getJoueurs()[curseur].getPion().getPosition();
 		Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
@@ -394,7 +393,7 @@ public class Controleur implements Runnable {
 				}
 				sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + joueur.getNom());
 			}
-
+			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + proprio.getNom());
 		}
 		else {
 			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);

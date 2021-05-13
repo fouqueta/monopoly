@@ -856,7 +856,7 @@ public class Vue {
 	void afficherRegles() {
 		String texte="";
 		try {
-			Scanner sc = new Scanner(new File("src/main/java/resources/regles.txt"));
+			Scanner sc = new Scanner(new File("src/main/resources/regles.txt"));
 			while(sc.hasNext()) {
 				String prochaineLigne = sc.nextLine();
 				texte=texte+prochaineLigne+"\n";
@@ -1442,6 +1442,7 @@ public class Vue {
 			GridPane.setConstraints(reseau, 1, 2);
 			grid.getChildren().add(reseau);
 			reseau.setOnAction(actionEvent->{
+				accueil_pane.getChildren().remove(consigne);
 				if(t!=null) {
 					t.interrupt();
 					controleur.startSocket();
