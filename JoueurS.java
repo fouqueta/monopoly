@@ -43,6 +43,18 @@ class JoueurS extends Thread{
         return pret;
     }
     
+    public int getArgent(){
+        return argent;
+    }
+    
+    public int[] getProp(){
+        return proprietes;
+    }
+    
+    public boolean aCarteLibPrison(){
+        return this.cartePrison;
+    }
+    
     //Envoi un message
     public void sendMsg(String action, String info){
         pw.println(action);
@@ -106,34 +118,33 @@ class JoueurS extends Thread{
                     pw.println("erreur");
                     pw.println("Pseudo deja prit");
                 }
-                
                 break;
             case "faillite":
-                this.faillite = true;
-                
                 sendToAllClientsNotSender(action, info);
+                this.faillite = true;
                 break;
             case "carte":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 int arg = Integer.parseInt(temp[2]);
                 String typeAction = temp[3];
                 int p = Integer.parseInt(temp[4]);
                 actionCarte(typeAction, p, arg);
-                
-                sendToAllClientsNotSender(action, info);
                 break;
             case "close":
                 closeClient();
                 break;
             case "achat":
-                achatCase(Integer.parseInt(info));
                 sendToAllClientsNotSender(action, info);
+                achatCase(Integer.parseInt(info));
+                
                 break;
             case "lancer des":
                 int[] des = this.lancer_de_des();
                 this.sendMsg("lancer des", des[0] + "-" + des[1]);
                 break;
             case "deplace":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 //this.position = Integer.parseInt(temp[2]);
                 this.argent = Integer.parseInt(temp[3]);
@@ -141,7 +152,7 @@ class JoueurS extends Thread{
                 this.nbToursPrison = Integer.parseInt(temp[5]);
                 this.faillite = temp[6].equals("true");
                 //this.cartePrison = temp[7].equals("true") ? true: false;
-                sendToAllClientsNotSender(action, info);
+                
                 break;
             case "fin tour" :
                 serveur.setCurseur(Integer.parseInt(info));
@@ -149,44 +160,46 @@ class JoueurS extends Thread{
                 System.out.println(serveur);
                 break;
             case "vente a joueur":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 venteCase(Integer.parseInt(temp[0]), Integer.parseInt(temp[2]));
                 serveur.achatCase(temp[1], Integer.parseInt(temp[2]));
-                sendToAllClientsNotSender(action, info);
+                
                 break;
             case "vendre":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 if(temp[0].equals("hotel") || temp[0].equals("maison")){
                     venteProp(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2]), Integer.parseInt(temp[3]));
                 }else{
                     venteCase(Integer.parseInt(temp[2]), Integer.parseInt(temp[1]));
                 }
-                sendToAllClientsNotSender(action, info);
+                
                 break;
             case "defis gagnant":
+                sendToAllClientsNotSender(action, info);
                 String[] t = info.split("-");
                 int loyerEnJeu = Integer.parseInt(t[3]);
 
 		if(t[0].equals("joueur")) { //Rembourse le loyer au joueur gagnant.
-                    this.argent = this.argent + loyerEnJeu;
-		}
-		else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
                     loyer(loyerEnJeu,t[4]);
 		}
-                sendToAllClientsNotSender(action, info);
+		else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
+                    serveur.defis(this, t[4], loyerEnJeu);
+		}
                 break;
             case "loyer":
                 temp = info.split("-");
                 loyer(Integer.parseInt(temp[0]),temp[1]);
                 break;
             case "batiment":
+                sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
                 String type = temp[0];
                 int pos = Integer.parseInt(temp[1]);
                 int prix = Integer.parseInt(temp[2]);
                 this.ajoutArgent(-prix);
                 this.serveur.achatBatiment(type, pos);
-                sendToAllClientsNotSender(action, info);
                 break;
             default:
                 sendToAllClientsNotSender(action, info);
@@ -280,6 +293,8 @@ class JoueurS extends Thread{
             int intervalle = 1 + aleatoire.nextInt(7-1);
             des[i] = intervalle;
 	}
+        des[0] = 0;
+        des[1] = 1;
         avance(des);
 	return des;
     }

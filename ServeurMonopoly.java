@@ -140,5 +140,21 @@ public class ServeurMonopoly{
             this.plateau[pos][1]++;
         }
     }
+
+    void defis(JoueurS proprio, String nom, int loyerEnJeu) {
+        JoueurS joueur = null;
+        for(JoueurS j: list){
+            if(j.getNom().equals(nom)){
+                joueur = j;
+            }
+        }
+        
+        if(joueur.getArgent()>=loyerEnJeu || (joueur.getProp().length<1 && !joueur.aCarteLibPrison())){
+            joueur.ajoutArgent(-loyerEnJeu);
+            proprio.ajoutArgent(loyerEnJeu);
+	}
+        
+        
+    }
     
 }
