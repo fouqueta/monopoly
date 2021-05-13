@@ -1387,10 +1387,6 @@ public class Vue {
 					accueil_pseudo(false);
 	                accueil_pane.getChildren().remove(grid);
 				});
-			}else{
-				t.interrupt();
-				controleur.startSocket();
-				t = null;
 			}
 		});
 		GridPane.setConstraints(reseau, 0, 4);
@@ -1442,6 +1438,25 @@ public class Vue {
 			bt = new Button[1];
 			flags = new boolean[1];
 			nbJoueurs=1;
+			Button reseau;
+			reseau = new Button("Mode hors-ligne");
+			reseau.setStyle("-fx-background-color: #FF0000");
+			GridPane.setConstraints(reseau, 1, 2);
+			grid.getChildren().add(reseau);
+			reseau.setOnAction(actionEvent->{
+				if(t!=null) {
+					t.interrupt();
+					controleur.startSocket();
+					t = null;
+					TranslateTransition transition = new TranslateTransition(Duration.seconds(0.5), grid);
+					transition.setToX(grid.getTranslateX() - 400);
+					transition.play();
+					transition.setOnFinished(evt -> {
+						accueil_nbPseudo_reseau();
+		                accueil_pane.getChildren().remove(grid);
+					});
+				}
+			});
 		}
 
 		for(int i=0;i<nbJoueurs;i++){
