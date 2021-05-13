@@ -393,7 +393,6 @@ public class Controleur implements Runnable {
 				}
 				sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + joueur.getNom());
 			}
-			if(jeu.isReseau()) sendMsg("defis gagnant", "proprio-" + sommeJoueur + "-" + sommeProprio + "-" + montant + "-" + proprio.getNom());
 		}
 		else {
 			if(jeu.isReseau()) sendMsg("defis gagnant", "egalite-" + sommeJoueur + "-" + sommeProprio+ "-" + loyerEnJeu);
