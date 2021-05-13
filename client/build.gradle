@@ -1,0 +1,28 @@
+
+plugins {
+	id 'application'
+	id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+	testImplementation("junit:junit:4.13")
+}
+
+application {
+    mainClass.set("application.Main")
+}
+
+javafx {
+    version = "15.0.1"
+    modules = [ 'javafx.controls' ]
+}
+
+run{
+    standardInput = System.in
+}
+
+//pour affichage terminal, mettre gradlew --console plain run
