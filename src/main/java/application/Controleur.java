@@ -381,8 +381,10 @@ public class Controleur implements Runnable {
 		}
 		else if(sommeProprio > sommeJoueur) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
 			int montant = 0;
-			if(joueur.getArgent()<loyerEnJeu && !jeu.isReseau()) {
-				vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
+			if (joueur.getArgent() < loyerEnJeu && (joueur.getProprietes().length!=0 || joueur.aCarteLibPrison())) {
+				if(!jeu.isReseau() || jeu.getJoueurReseau() == jeu.getJoueurs()[curseur]){
+					vue.affichage_revente_proprietes(curseur, loyerEnJeu, null);
+				}
 			}else {
 				montant = joueur.thisPayeA(proprio, loyerEnJeu);
 			}
