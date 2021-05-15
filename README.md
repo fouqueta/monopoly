@@ -49,7 +49,7 @@ Vous devez toujours vous plier aux instructions données par les cartes de caiss
 Etre le dernier joueur qui n'ait pas fait faillite.  
 
 *COMMENT PERDRE:*  
-Etre en faillite: ne plus avoir d'argent ni de propriétes à vendre.  
+Etre en faillite: Ne plus avoir d'argent ni de propriétes à vendre.  
 	
 *DEROULEMENT D'UN TOUR:*  
 Cliquez sur le bouton "Lancer" et vos pions se déplaceront suivant le nombre obtenu au lancement des dés. Vous avez la possibilité de tomber sur une case:  
@@ -65,7 +65,7 @@ Cliquez sur le bouton "Lancer" et vos pions se déplaceront suivant le nombre ob
 - Taxe/Impôts: Si vous vous arrêtez sur l'une de ces cases, payez le montant indiqué a la banque.  
 - Aller en prison: Si vous arrivez sur la case "-> Prison", vous serez immédiatement envoyé en case Prison et vous y resterez pendant 3 tours. Vous pouvez vous libérer plus tôt en utilisant une carte "Vous êtes libéré de prison" si vous en possedez une, ou en faisant un double avec les dés.
 - Départ: Vous percevrez 2000e à chaque fois que vous passerez par la case "Départ".
-- Parc gratuit/Prison: rien de particulier si vous etes de passage sur ces cases.  
+- Parc gratuit/Prison: Rien de particulier si vous etes de passage sur ces cases.  
 Vous cliquerez ensuite sur le bouton "Fin" qui laissera le tour au joueur suivant.  
 
 *FIN DE PARTIE:*  
@@ -93,6 +93,7 @@ La partie se termine lorsqu'il ne reste plus qu'un joueur en jeu.
 
 ## Script de compilation
 
+*Client:*
 - Télécharger l'achive tar.gz et la mettre dans le dossier souhaité
 - Aller dans le dossier où se trouve l'archive
     -> cd chemin_du_dossier
@@ -100,6 +101,16 @@ La partie se termine lorsqu'il ne reste plus qu'un joueur en jeu.
     -> tar -xzvf nom_de_larchive.tar.gz
 - Aller dans le dossier du projet décompressé
     -> cd nom_du_dossier
-- si besoin taper "chmod +x gradlew"
+- Si besoin taper "chmod +x gradlew"
 - ./gradlew build
 - ./gradlew run
+
+*Serveur:*
+- Se déplacer dans le dossier application -> cd client/src/main/java/application
+- emacs Controleur.java
+- À la ligne 52, remplacer le premier paramètre par son IP et le deuxième par le port de connexion que l’on a ouvert.
+- cd ../../../../../serveur
+- emacs Main.java
+- À la ligne 12, remplacer le paramètre par le même port de connexion.
+- javac .*java
+- java Main
