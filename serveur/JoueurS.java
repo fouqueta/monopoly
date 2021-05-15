@@ -146,7 +146,7 @@ class JoueurS extends Thread{
             case "deplace":
                 sendToAllClientsNotSender(action, info);
                 temp = info.split("-");
-                //this.position = Integer.parseInt(temp[2]);
+                this.position = Integer.parseInt(temp[2]);
                 this.argent = Integer.parseInt(temp[3]);
                 this.enPrison = temp[4].equals("true");
                 this.nbToursPrison = Integer.parseInt(temp[5]);
@@ -313,6 +313,7 @@ class JoueurS extends Thread{
             this.ajoutArgent(2000);
         }
         this.position = posFinale;
+        if(position == 30){ position = 10; }
     }
     
     //Réalise l'action de la crate tiree
