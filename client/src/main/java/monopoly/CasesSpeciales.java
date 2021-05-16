@@ -12,6 +12,4 @@ public class CasesSpeciales extends Cases {
 	//Getters
 	public int getTransaction() { return transaction; }
 
-
 }
-

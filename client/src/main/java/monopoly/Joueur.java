@@ -15,7 +15,7 @@ public class Joueur{
     private boolean faillite;
 	private boolean robot = false;
     
-    public Joueur(String nom) { // Au debut, le joueur est en case 0, a 15000 clochettes et aucune propriete
+    public Joueur(String nom) { // Au debut, le joueur est en case 0, a 10000 euros et aucune propriete
     	this.nom = nom;
     	pion = new Pion(0);
     	argent = 10000;
@@ -205,7 +205,6 @@ public class Joueur{
 
 	//Loyer
 	public int paye_loyer(int x){
-    	//TODO: modifier le while pour la vente aux encheres ou les hypotheques
     	while (argent < x && proprietes.length != 0) { //Tant que le joueur n'a pas assez d'argent mais qu'il lui reste des proprietes a vendre
     		System.out.println("Vous n'avez pas assez d'argent pour payer le loyer. Quelle propriete souhaitez-vous vendre ?");
     		for (int i = 0; i < proprietes.length; i++) {
@@ -308,6 +307,5 @@ public class Joueur{
 		carteLibPrison=false;
 		transaction(500);
 	}
-
 
 }

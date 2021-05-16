@@ -5,11 +5,11 @@ import java.net.Socket;
 
 public class Main {
     
-    //Lance le serveur et accepete les connections s'il reste de la place ou si la partie n'est pas lance
+    //Lance le serveur et accepte les connections s'il reste de la place ou si la partie n'est pas lancee
     public static void main(String[] args) {
         ServeurMonopoly s = new ServeurMonopoly();
         try{
-            ServerSocket server=new ServerSocket(666);
+            ServerSocket server=new ServerSocket(20000);
             while(true){
                 Socket socket=server.accept();
                 if(s.nbJ()<7 && !s.estLance()){

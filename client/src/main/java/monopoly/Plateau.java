@@ -276,6 +276,6 @@ public class Plateau {
         afficheLigne(166);
         afficheNom(30,19);
         afficheLigne(166);
-
     }
+    
 }

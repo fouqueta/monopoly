@@ -47,8 +47,8 @@ public class Controleur implements Runnable {
 			}
 		}else{
 			try {
-				socket = new Socket("176.144.217.163", 666);
-				//socket = new Socket("127.0.0.1", 666);
+				socket = new Socket("176.144.217.163", 20000);
+				//socket = new Socket("127.0.0.1", 20000);
 				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF8"), true);
 				jeu.setReseau(true);
 				running = true;
@@ -359,11 +359,6 @@ public class Controleur implements Runnable {
 		vue.changement_argent(curseur);
 	}
 
-	//Gestion du loyer
-	void controleur_loyerIG(Proprietes propriete_actuelle, int loyer) {
-		jeu.loyer_IG(propriete_actuelle, loyer);
-
-	}
 
 	//Systeme de defis
 	void controleur_defis(int curseur) {

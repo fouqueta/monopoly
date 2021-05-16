@@ -7,4 +7,3 @@ public class CasesCommunaute extends Cases {
 	}
 
 }
-

@@ -94,13 +94,22 @@ La partie se termine lorsqu'il ne reste plus qu'un joueur en jeu.
 ## Script de compilation
 
 *Client:*
+#Version avec téléchargement#
 - Télécharger l'achive tar.gz et la mettre dans le dossier souhaité
 - Aller dans le dossier où se trouve l'archive
     -> cd chemin_du_dossier
 - Décompresser l'archive dans le répertoire courant
     -> tar -xzvf nom_de_larchive.tar.gz
-- Aller dans le dossier du projet décompressé
-    -> cd nom_du_dossier
+##
+
+#Version avec clonage#
+- Se déplacer où l'on veut cloner le projet
+    -> cd chemin
+- git clone git@gaufre.informatique.univ-paris-diderot.fr:rochier/pi4-2021---monopoly.git
+##
+
+- Aller dans le dossier du projet décompressé/cloné
+    -> cd nom_du_dossier/client
 - Si besoin taper "chmod +x gradlew"
 - ./gradlew build
 - ./gradlew run

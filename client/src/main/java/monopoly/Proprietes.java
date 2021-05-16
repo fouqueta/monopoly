@@ -99,7 +99,7 @@ public class Proprietes extends Cases {
 	//Verifie les conditions pour acheter une maison ou un hotel
 	public boolean estUniforme(String typeBatiment) {
 		if(typeBatiment.equals("maison")) { //Si on veut acheter une maison
-			int maxNbMaisons = this.nbMaisons; //Necessaires car apres une revente de batiments, les propr d'une meme famille ne sont plus uniformes
+			int maxNbMaisons = this.nbMaisons; //Necessaire car apres une revente de batiments, les propr d'une meme famille ne sont plus uniformes
 			int minNbMaisons = this.nbMaisons; //Or, on veut pouvoir rattraper le retard d'une propr sur l'ancien seuil d'uniformite
 			for(Proprietes c : proprietaire.getProprietes()) {
 				if (c.getCouleur().equals(this.couleur) && maxNbMaisons < c.getNbMaisons()) {

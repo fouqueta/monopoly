@@ -1,14 +1,10 @@
 import java.util.ArrayList;
-import java.util.Random;
-
 
 public class ServeurMonopoly{
 
     private final ArrayList<JoueurS> list;
     private boolean lance;
     private int curseur;
-    private String[] cartesChance;
-    private String[] cartesCommu;
     private int[][] plateau;
 
     public ServeurMonopoly() {
@@ -16,7 +12,6 @@ public class ServeurMonopoly{
         this.lance = false;
         this.curseur = 0;
         initPlateau();
-        
     }
     
     //Affichage
@@ -37,7 +32,7 @@ public class ServeurMonopoly{
         return rep + "\n";
     }
     
-    //Initialise le plateau avec nombre de maisons et d'hotels a 0
+    //Initialise le plateau avec nombres de maisons et d'hotels a 0
     private void initPlateau(){
          plateau = new int[40][2];
          for(int i=0;i<plateau.length;i++){
@@ -82,13 +77,13 @@ public class ServeurMonopoly{
         return this.plateau[p][1];
     }
         
-    //Eneleve un joueur de la liste
+    //Enleve un joueur de la liste
     public void removePlayer(JoueurS j){
         list.remove(j);
         if(list.isEmpty()) lance = false;
     }
     
-    //Verifie si tout les joueurs sont prêts et envoie la liste des noms de joueurs aux clients si tous sont prets
+    //Verifie si tous les joueurs sont prets et envoie la liste des noms de joueurs aux clients si tous sont prets
     public void tousPret(){
         boolean b = true;
         String noms = "" ;
@@ -110,14 +105,14 @@ public class ServeurMonopoly{
         }
     }
     
-    //Envoie un message a tout les clients
+    //Envoie un message a tous les clients
     private void sendtoAllClients(String action, String info){
         list.forEach(j -> {
             j.sendMsg(action, info);
         });
     }
 
-    //Achat d'une case à un autre joueur
+    //Achat d'une case a un autre joueur
     void achatCase(String string, int prix) {
         list.forEach(j -> {
             if(j.getNom().equals(string)){
@@ -146,7 +141,7 @@ public class ServeurMonopoly{
         this.plateau[pos][1] = 0;
     }
     
-    //Achat d'un batiement
+    //Achat d'un batiment
     void achatBatiment(String type, int pos) {
         if(type.equals("maison")){
             this.plateau[pos][0]++;
@@ -164,13 +159,10 @@ public class ServeurMonopoly{
                 joueur = j;
             }
         }
-        
         if(joueur.getArgent()>=loyerEnJeu || (joueur.getProp().length<1 && !joueur.aCarteLibPrison())){
             joueur.ajoutArgent(-loyerEnJeu);
             proprio.ajoutArgent(loyerEnJeu);
-	}
-        
-        
+        }        
     }
     
 }

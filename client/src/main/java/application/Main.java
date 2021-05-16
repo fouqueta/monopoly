@@ -11,7 +11,6 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		
-		//Controleur controleur = new Controleur();
 		Jeu jeu = new Jeu();
 		Controleur controleur = new Controleur(jeu);
 		vue = new Vue(controleur);

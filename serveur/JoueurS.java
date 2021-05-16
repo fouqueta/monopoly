@@ -85,14 +85,14 @@ class JoueurS extends Thread{
         }
     }
     
-    //Envoie le message à tout les clients
+    //Envoie le message a tous les clients
     private void sendToAllClients(String action, String info){
         serveur.getList().forEach(s -> {
             s.sendMsg(action, info);
         });
     }
     
-    //Envoie le message à tout les clients sauf l'envoyeur 
+    //Envoie le message a tous les clients sauf l'envoyeur 
     private void sendToAllClientsNotSender(String action, String info){
         serveur.getList().forEach(s -> {
             if(!s.getNom().equals(nom)){
@@ -102,7 +102,7 @@ class JoueurS extends Thread{
     }
     
     
-    //Traite le message reçu
+    //Traite le message recu
     private void build_message(String action, String info) {
         String temp[];
         switch(action){
@@ -151,8 +151,6 @@ class JoueurS extends Thread{
                 this.enPrison = temp[4].equals("true");
                 this.nbToursPrison = Integer.parseInt(temp[5]);
                 this.faillite = temp[6].equals("true");
-                //this.cartePrison = temp[7].equals("true") ? true: false;
-                
                 break;
             case "fin tour" :
                 serveur.setCurseur(Integer.parseInt(info));
@@ -181,12 +179,12 @@ class JoueurS extends Thread{
                 String[] t = info.split("-");
                 int loyerEnJeu = Integer.parseInt(t[3]);
 
-		if(t[0].equals("joueur")) { //Rembourse le loyer au joueur gagnant.
-                    loyer(loyerEnJeu,t[4]);
-		}
-		else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore.
-                    serveur.defis(this, t[4], loyerEnJeu);
-		}
+                if(t[0].equals("joueur")) { //Rembourse le loyer au joueur gagnant
+                	loyer(loyerEnJeu,t[4]);
+                }
+                else if(t[0].equals("proprio")) { //Joueur paye deux fois le loyer, il l'a deja paye une fois donc seulement une autre fois encore
+                	serveur.defis(this, t[4], loyerEnJeu);
+                }
                 break;
             case "loyer":
                 temp = info.split("-");
@@ -207,7 +205,7 @@ class JoueurS extends Thread{
         }
     }
     
-    //Achate une case et la stocke dans le tab proprietes
+    //Achete une case et la stocke dans le tab proprietes
     public void achatCase(int prix){
         int[] temp = new int[this.proprietes.length+1];
         System.arraycopy(this.proprietes, 0, temp, 0, this.proprietes.length);
@@ -234,7 +232,7 @@ class JoueurS extends Thread{
         this.ajoutArgent(prix);
     }
     
-    //Vend num batiements
+    //Vend num batiments
     private void venteBat(String type, int num, int montant, int pos){
         this.ajoutArgent(montant);
         if(type.equals("maison")) this.serveur.venteMaisons(num, pos);
@@ -247,12 +245,7 @@ class JoueurS extends Thread{
         ajoutArgent(-loyer);
         serveur.loyer(loyer, nom);
     }
-    
-    //Deplace la position du joueur
-    private void deplacePos(String info) {
-        this.position = Integer.parseInt(info);
-    }
-    
+        
     
     //Ferme le client correctement
     private void closeClient(){
@@ -269,10 +262,9 @@ class JoueurS extends Thread{
         }
     }
     
-    //Regarde si quelqu'un ne possede deja pas le pseudo que le joueur essaye de rentrer et qu'il ne poséde pas de "-"
+    //Regarde si quelqu'un ne possede pas deja le pseudo que le joueur essaye de rentrer et qu'il ne possede pas de "-"
     private boolean pseudoNonPresent(String info) {
         for(JoueurS j: serveur.getList()){
-            //System.out.println(j + " " + this + " " + j.getNom() + " " + j.socket + " " + this.socket);
             if(j!=this && j.getNom()!=null && j.getNom().equals(info)) return false;
         }
         return !info.contains("-");
@@ -296,14 +288,14 @@ class JoueurS extends Thread{
     
     //Lance les des
     public int[] lancer_de_des() {
-	int[] des = new int[2];
-	Random aleatoire = new Random();
-	for(int i = 0; i<des.length; i++) {
-            int intervalle = 1 + aleatoire.nextInt(7-1);
-            des[i] = intervalle;
-	}
-        avance(des);
-	return des;
+		int[] des = new int[2];
+		Random aleatoire = new Random();
+		for(int i = 0; i<des.length; i++) {
+			int intervalle = 1 + aleatoire.nextInt(7-1);
+	        des[i] = intervalle;
+		}
+	    avance(des);
+		return des;
     }
     
     //Avance la position en fonction du resultat des des
@@ -316,16 +308,16 @@ class JoueurS extends Thread{
         if(position == 30){ position = 10; }
     }
     
-    //Réalise l'action de la crate tiree
+    //Realise l'action de la carte tiree
     private void actionCarte(String typeAction, int p, int argent) {
         switch (typeAction) {
             case "prelevement" :
-		this.ajoutArgent(-p);
-		break;
+				this.ajoutArgent(-p);
+				break;
             case "immo" :
-		int sommeApayer = this.getNbTotalMaisons()*p + this.getNbTotalHotels()*4*p;
-		this.ajoutArgent(-p);
-		break;
+				int sommeApayer = this.getNbTotalMaisons()*p + this.getNbTotalHotels()*4*p;
+				this.ajoutArgent(-sommeApayer);
+				break;
             case "cadeau" :
                 serveur.getList().forEach(j ->{
                     if(this==j){
@@ -336,25 +328,25 @@ class JoueurS extends Thread{
                 });
                 break;
             case "recette" :
-		this.ajoutArgent(p);
-		break;
+				this.ajoutArgent(p);
+				break;
             case "trajet" :
-		if ( p != 30 ) {
-                    this.argent = argent;
-                    this.position = p;
-		}
-		break;
+				if ( p != 30 ) {
+					this.argent = argent;
+		            this.position = p;
+				}
+				break;
             case "reculer" :
-		this.position = p;
-                this.argent = argent;
-		break;
+				this.position = p;
+		        this.argent = argent;
+				break;
             case "trajet spe" :
                 this.position -= p;
                 this.argent = argent;
-		break;
+                break;
             case "bonus" :
-		this.cartePrison = true;
-		break;
+				this.cartePrison = true;
+				break;
         }
     }
     
@@ -367,7 +359,6 @@ class JoueurS extends Thread{
         return rep;
     }
     
-    
     //Retourne le nombre d'hotels d'un joueur
     private int getNbTotalHotels() {
         int rep =0;
@@ -376,4 +367,5 @@ class JoueurS extends Thread{
         }
         return rep;
     }
+    
 }

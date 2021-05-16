@@ -1,6 +1,5 @@
 package monopoly;
 
-import javax.swing.*;
 import java.util.Random;
 
 public class Jeu {
@@ -81,7 +80,6 @@ public class Jeu {
 	}
 
 	//Setter
-
 	public void setJoueurReseau(Joueur j){
     	joueurReseau = j;
 	}
@@ -131,7 +129,7 @@ public class Jeu {
     			+ " tours pour etre libere.");
     }
     
-    //Si le pion est sur une case speciale/commu/chance, effectue les actions speciales associees a cette case (appelle les fonctions auxi)
+    //Si le pion est sur une case speciale/commu/chance, effectue les actions speciales associees a cette case (appelle les fonctions auxiliaires)
     public void surCaseParticuliere(Pion pion) {
     	Cases caseC = plateau.getCases(pion.getPosition());
     	if (caseC instanceof Proprietes) { return; }
@@ -303,7 +301,6 @@ public class Jeu {
 		System.out.println("Vous avez paye " + argent + "e. Il vous reste "+ joueurs[curseur].getArgent() + "e." );
     }
     
-    
     //Faillite
     public void faillite(Joueur joueurJ) { //joueurJ en faillite = joueurJ elimine du jeu (=du tableau de joueurs)
     	if (joueurJ.getArgent() <= 0 && joueurJ.getProprietes().length == 0) {
@@ -324,7 +321,7 @@ public class Jeu {
     public boolean jeuFini() { //Jeu fini quand tous les joueurs sauf un sont en faillite, le joueur restant a gagne
     	return joueurs.length == 1;
     }
-
+    
     
     //Interface graphique
     public void deplace_IG(Pion pion, int[] des) {
@@ -366,7 +363,7 @@ public class Jeu {
     
     public void finTour_IG() {
     	curseur = (curseur + 1) % nbJ;
-    	while(joueurs[curseur].getFaillite()==true) {
+    	while(joueurs[curseur].getFaillite()) {
 			curseur= + (curseur + 1) % nbJ;
 		}
     }

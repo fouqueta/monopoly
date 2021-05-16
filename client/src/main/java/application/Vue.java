@@ -60,8 +60,7 @@ public class Vue {
 		//Plateau
 	private AnchorPane panePlateau; //jeu_pane
 	private Pane revente_pane;
-	//private Pane joueur_boutons;
-
+	
 	private Pane[] casesPlateau = new Pane[40]; //tabCase_pane
 	private double casesPlateau_x;
 	private double casesPlateau_y;
@@ -157,7 +156,6 @@ public class Vue {
 	//Interface graphique : Initialisation
 	void initilisation_scene_jeu() {
 		scene_jeu = new Scene(root,900,600);
-		//scene_jeu.getStylesheets().add("application.css");
 		stage.setScene(scene_jeu);	
 	}
 
@@ -467,22 +465,6 @@ public class Vue {
     		e.printStackTrace();
     		System.exit(1);
     	}
-//		for (int i=0; i<40; i++) {
-//			Cases caseC = jeu.getPlateau().getGrille()[i];
-//			if (caseC instanceof Proprietes) {
-//				if ( !((Proprietes) caseC).getCouleur().equals("gare") && !((Proprietes) caseC).getCouleur().equals("compagnie") ) {
-////					HBox batiments = new HBox();
-////					batiments.setLayoutX(2);
-////					batiments.setLayoutY(52);
-////					batiments.getChildren().addAll(maison, hotel);
-//					maisonsPlateau_tab[i] = new HBox();
-//					hotelsPlateau_tab[i] = new HBox();
-//					casesPlateau[i].getChildren().addAll(maisonsPlateau_tab[i], hotelsPlateau_tab[i]);
-//					maisonsPlateau_tab[i].setVisible(false);
-//					hotelsPlateau_tab[i].setVisible(false);
-//				}
-//			}
-//		}
 	}
 
 	public void actualisation_HBoxImagesMaisons(Proprietes p) {
@@ -552,7 +534,6 @@ public class Vue {
 			
 			pseudo.setLayoutX(10);
 			
-			//joueursPane_tab[i].setStyle("-fx-background-color: mistyrose; -fx-border-color: white");
 			infoJoueurs_style(i);
 			
 			infoJoueurs[i].getChildren().add(pseudo);
@@ -684,7 +665,6 @@ public class Vue {
 	}
 	
 	public void raz(int curseur) {
-		//achat_tab[curseur].setDisable(true);
 		achatBatiments_menu_tab[curseur].setDisable(true);
 		defis_tab[curseur].setDisable(true);
 		venteHotel = null;
@@ -781,7 +761,7 @@ public class Vue {
 
 					int jF = j;
 					venteMaison.setOnAction(actionEvent -> {
-						controleur.controleur_venteBatiment(p, "maison", jF); //i reventes de maisons
+						controleur.controleur_venteBatiment(p, "maison", jF); //j reventes de maisons
 
 						if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 							controleur.sendMsg("vendre", "maison-" + jF + "-" + prixReventeBat + "-" + p.getPosition() +"-"+joueurJ.getNom()+"-"+montant);
@@ -807,7 +787,7 @@ public class Vue {
 				menu_proprietesBat_revente[i].getItems().addAll(venteHotel);
 
 				venteHotel.setOnAction(actionEvent -> {
-					controleur.controleur_venteBatiment(p, "hotel", 1); //une seule revente d'hotel
+					controleur.controleur_venteBatiment(p, "hotel", 1); //1 car une seule revente d'hotel
 
 					if(jeu.isReseau() && jeu.getJoueurReseau() == jeu.getJoueurs()[jeu.getCurseur()]) {
 						controleur.sendMsg("vendre", "hotel-"+ 1 + "-" + prixReventeBat + "-" + p.getPosition() +"-"+joueurJ.getNom()+"-"+montant);;
@@ -1808,7 +1788,6 @@ public class Vue {
 	void remplissageTemporaire_Tchat() {
 		for(int i = 0; i<19; i++) {
 			tchat_tab[i] = new Label("");
-			//tchat_tab[i] = new Label(Integer.toString(i));
 		}
 		tchat_tab[19] = new Label("Bienvenue dans Monopoly !");
 	}
@@ -1869,17 +1848,8 @@ public class Vue {
 		int curseur = jeu.getCurseurDuJoueur(joueurJ);
 		if(curseur==-1) return;
 
-		//int position = joueurJ.getPion().getPosition();
-		//Proprietes propriete_actuelle = (Proprietes) jeu.getPlateau().getCases(position);
-
 		changement_couleur_case_blanche(ancienne_position);
 		changement_argent(curseur);
-		/*if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
-			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
-			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
-			changement_argent(proprietaires[position]);
-			changement_argent(curseur);
-		}*/
 
 		if (joueurJ.getArgent() < montant && (joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison())) {
 			changement_argent(curseur);
@@ -1894,15 +1864,6 @@ public class Vue {
 		if(joueurJ==null) return;
 		int curseur = jeu.getCurseurDuJoueur(joueurJ);
 		if(curseur==-1) return;
-
-		//int position = joueurJ.getPion().getPosition();
-
-		/*if(jeu.getJoueurs()[curseur].getArgent()>=propriete_actuelle.getLoyer()){
-			if (!propriete_actuelle.estCompagnie()) { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()); }
-			else { controleur.controleur_loyerIG(propriete_actuelle, propriete_actuelle.getLoyer()*jeu.getSommeDes()); }
-			changement_argent(proprietaires[position]);
-			changement_argent(curseur);
-		}*/
 
 		if (joueurJ.getArgent() < montant && (joueurJ.getProprietes().length>=1 || joueurJ.aCarteLibPrison())) {
 			changement_argent(curseur);

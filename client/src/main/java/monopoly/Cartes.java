@@ -14,6 +14,7 @@ public class Cartes {
 	}
 
 	public String getContenu() { return contenu; }
+	
 	public String getType() { return type; }
 
 	public String getTypeAction() {	return typeAction; }
