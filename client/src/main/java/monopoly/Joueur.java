@@ -158,29 +158,32 @@ public class Joueur{
     	}
 	}
 	
+	//Gestion de l'achat d'une propriete
 	public void achat_effectue(int prix, Proprietes p) {
-		this.argent = this.argent - prix;
+		this.argent = this.argent - prix; //retrait du prix d'achat de la propriete dans l'argent du joueur
 		Proprietes[] tmp = new Proprietes[this.proprietes.length+1];
 		for(int i=0;i<this.proprietes.length;i++){
 			tmp[i] = this.proprietes[i];
 		}
-		tmp[this.proprietes.length] = p;
+		tmp[this.proprietes.length] = p; //ajout de la propriete dans la nouvelle tab proprietes du joueur
 		this.proprietes = tmp;
 	}
 	
+	//Gestion de la vente d'une propriete
 	public void vente_effectuee(int prix, Proprietes p) {
-		this.argent = this.argent + prix;
+		this.argent = this.argent + prix; //ajout du prix de vente de la propriete dans l'argent du joueur
 		Proprietes[] tmp = new Proprietes[this.proprietes.length-1];
 		int i = 0;
-		for(Proprietes c: proprietes){
+		for(Proprietes c: proprietes){ 
 			if(c!=p){
 				tmp[i] = c;
 				i++;
 			}
 		}
-		this.proprietes = tmp;
+		this.proprietes = tmp; //nouvelle tab proprietes du joueur sans la propriete vendue
 	}
 	
+	//Possibilite au joueur de choisir s'il veut vendre une de ses proprietes a un autre joueur
 	public boolean decision_vente(Joueur proprietaire) {
 		System.out.println(proprietaire.getNom() + ", souhaitez-vous vendre cette propriete a " + this.getNom() + "?");
 		System.out.println(proprietaire.getNom() + ", si vous souhaitez vendre la propriete, tapez \"oui\" sinon \"non\".");
@@ -221,6 +224,7 @@ public class Joueur{
 	    return x;	
 	}
 	
+	//Revente de proprietes
 	public void vendreSesProprietes() {
     	String s = reponse.next();
 	    for (int i = 0; i < proprietes.length; i++) {
@@ -234,6 +238,7 @@ public class Joueur{
     	vendreSesProprietes();
     }
 	
+	//Possibilite de se liberer de prison en utilisant la carte Libere de prison
 	public boolean utiliserCarteLibPrison() {
 		String s = reponse.next();
 		if (s.equals("oui")) {
@@ -256,6 +261,7 @@ public class Joueur{
     	if (argent < 0) { argent = 0; }
 	}
 	
+	//Le joueur qui est en train de jouer donne x somme d'argent a un autre joueur
 	public int thisPayeA(Joueur receveur, int montant) {
 		if(argent < montant){
 			montant = argent;
@@ -267,6 +273,7 @@ public class Joueur{
 		return montant;
 	}
 	
+	//Le joueur qui est en train de jouer recoit x somme d'argent de la part d'un autre joueur
 	public void thisRecoitDe(Joueur payeur, int montant) {
 		if(payeur.argent < montant){
 			montant = payeur.argent;
@@ -286,6 +293,7 @@ public class Joueur{
 		return position_ancienne_propriete;
 	}
 	
+	//Systeme qui permet d'utiliser sa carte Libere de prison
 	public void utiliserCarteLibPrison_IG() {
 		enPrison = false;
 		carteLibPrison = false;
@@ -295,6 +303,7 @@ public class Joueur{
         proprietes = new Proprietes[0];
     }
 	
+	//Systeme pour vendre sa carte Libere de prison
 	public void AVenduCartePrison() {
 		carteLibPrison=false;
 		transaction(500);

@@ -36,7 +36,6 @@ public class Controleur implements Runnable {
 
 	public void startSocket(){
 		if(jeu.isReseau()){
-
 			try {
 				running = false;
 				pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF8"), true);
@@ -46,7 +45,6 @@ public class Controleur implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}else{
 			try {
 				socket = new Socket("176.144.217.163", 666);
@@ -216,6 +214,7 @@ public class Controleur implements Runnable {
 		wait.play();
 	}
 
+	//Gestion de la fin d'un tour ou fin d'une partie
 	void controleur_fin() {
 		if(jeu.onlyRobot()) {
 			fin_only_robot();
@@ -240,7 +239,7 @@ public class Controleur implements Runnable {
 		}
 	}
 
-
+	//Gestion de la faillite
 	void controleur_faillite(int curseur) {
 		Joueur joueur_actuel = jeu.getJoueurs()[curseur];
 		boolean faillite = jeu.faillite_IG(joueur_actuel);
@@ -253,7 +252,7 @@ public class Controleur implements Runnable {
 	}
 
 
-	//Gestion de l'achat/vente
+	//Gestion de l'achat
 	void controleur_achat(int curseur) {
 		Pion p = jeu.getJoueurs()[curseur].getPion();
 		int position = p.getPosition();
@@ -266,6 +265,7 @@ public class Controleur implements Runnable {
 		}
 	}
 	
+	//Gestion de la vente
 	void controleur_vente(int curseur) {
 		Pion pion = jeu.getJoueurs()[curseur].getPion();
 		int position = pion.getPosition();
@@ -289,6 +289,7 @@ public class Controleur implements Runnable {
 		}
 	}
 
+	//Transaction selon la case ou l'on a atterit ou de la carte tire
 	public void transactionSelonType(int curseur,  int sommeApayer, Cartes carteTiree) {
         Joueur joueurJ = jeu.getJoueurs()[jeu.getCurseur()];
         int position = joueurJ.getPion().getPosition();
@@ -315,7 +316,8 @@ public class Controleur implements Runnable {
         vue.changement_argent(vue.getTabProprietaires(position));
     }
 
-
+	
+	//Gestion d'achat de maisons ou d'hotels
 	public void controleur_achatBatiment(Proprietes p, String typeBatiment) {
 		if (typeBatiment.equals("maison")) {
 			p.achatMaison();
@@ -335,7 +337,8 @@ public class Controleur implements Runnable {
 		}
 		vue.changement_argent(jeu.getCurseur());
 	}
-
+	
+	//Gestion de la vente de maisons ou d'hotels
 	public void controleur_venteBatiment(Proprietes p, String typeBatiment, int nbVentesBat) {
 		for(int i = 0; i < nbVentesBat; i++) {
 			if (typeBatiment.equals("maison") && p.getNbMaisons()>0) {
@@ -350,12 +353,13 @@ public class Controleur implements Runnable {
 		vue.changement_argent(jeu.getCurseur());
 	}
 
+	//Gestion de la vente de la carte Libere de prison
 	public void controleur_venteCartePrison(int curseur) {
 		jeu.getJoueurs()[curseur].AVenduCartePrison();
 		vue.changement_argent(curseur);
 	}
 
-	
+	//Gestion du loyer
 	void controleur_loyerIG(Proprietes propriete_actuelle, int loyer) {
 		jeu.loyer_IG(propriete_actuelle, loyer);
 
@@ -404,12 +408,14 @@ public class Controleur implements Runnable {
 		vue.changement_argent(vue.getTabProprietaires(position));
 	}
 
-
+	
+	//Utilisation de la carte Libere de prison
 	void controleur_libererPrison(int curseur) {
 		jeu.getJoueurs()[curseur].utiliserCarteLibPrison_IG();
 		vue.gestion_historique(vue.unJoueur_historique("carteLiberation", jeu.getJoueurs()[curseur], null, jeu.getJoueurs()[curseur].getPion().getPosition()));
 	}
 
+	//Passage au joueur suivant
 	int controleur_curseurSuivant(int curseur) {
 		int curseurSuivant = (curseur+1)%jeu.getNbJ();
     	while(jeu.getJoueurs()[curseurSuivant].getFaillite()==true) {
@@ -420,7 +426,7 @@ public class Controleur implements Runnable {
 
 
 	@Override
-	public void run() {
+	public void run() { //Traitement de l'action et de l'information recus
 
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF8"));
@@ -439,6 +445,7 @@ public class Controleur implements Runnable {
 		}
 	}
 
+	//Traite le message recu
 	private void action(String action, String info) {
 		int curseur = jeu.getCurseur();
 		switch (action) {

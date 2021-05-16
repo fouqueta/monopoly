@@ -20,6 +20,7 @@ public class Jeu {
         reseau = false;
     }
 
+    //Initialisation des joueurs (nombre de joueurs, noms et robots)
 	public void initialisation_joueurs(String[] noms, boolean[] flags){
 		nbJ = noms.length;
 		joueurs = new Joueur[nbJ];
@@ -114,8 +115,9 @@ public class Jeu {
     	}
     }
     
+    //Cas ou le joueur est en prison
     public void quandEnPrison(Pion pion, Joueur joueurJ, int nbCases) {
-    	if(joueurJ.aCarteLibPrison()) {
+    	if(joueurJ.aCarteLibPrison()) { //Possibilite d'utiliser sa carte Libere de prison si le joueur en possede un
     		System.out.println("Vous possedez une carte \"libere de prison\". L'utiliser maintenant ? Tapez \"oui\" ou \"non\".");
     		if (joueurJ.utiliserCarteLibPrison()) { 
     			pion.setPosition((pion.getPosition() + nbCases) % 40);
@@ -252,6 +254,7 @@ public class Jeu {
     	System.out.println("Bravo " + joueurs[0].getNom() + ", vous avez gagne la partie !");
     }
     
+    //Gestion d'un fin de tour
     public void finTour() {
     	if (curseur>=joueurs.length-1) {
     		curseur=0;
@@ -396,7 +399,7 @@ public class Jeu {
 	    pos_actuelle.setProprietaire(joueurs[curseur]);
     }
     
-    
+    //Le joueur est en faillite s'il n'a plus d'argent ni de proprietes ou de carte Libere de prison a vendre
     public boolean faillite_IG(Joueur j) {
     	if (j.getArgent()<=0 && j.getProprietes().length == 0 && !j.aCarteLibPrison()){
     		j.setFaillite(true);
@@ -405,6 +408,7 @@ public class Jeu {
     	return false;
     }
     
+    //Gestion fin d'une partie
     public boolean jeuFini_IG() {
     	int nbFaillite = 0;
     	for (Joueur j : joueurs) {
@@ -419,6 +423,7 @@ public class Jeu {
     	return joueurs[curseur].thisPayeA(p.getProprietaire(), loyer);
     }
 
+    //Verifie si la partie est uniquement composee de joueurs robots ou non
 	public boolean onlyRobot(){
 		for(int i=0;i< joueurs.length;i++){
 			if( !(joueurs[i].isRobot())){
